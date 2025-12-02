@@ -1,0 +1,66 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 3,
+  "settings": {
+    "custom": {
+      "brand": {
+        "colors": {
+          "deepBlue": "#0A2A43",
+          "teal": "#00A3A3",
+          "gold": "#F4D483",
+          "white": "#FFFFFF",
+          "sky": "#66D9FF",
+          "softGreen": "#8ED1B2"
+        },
+        "radius": {
+          "xl": "1.25rem",
+          "2xl": "1.5rem"
+        },
+        "shadow": {
+          "card": "0 10px 30px rgba(0,0,0,.12)"
+        }
+      }
+    },
+    "color": {
+      "palette": [
+        {"name": "Deep Blue", "slug": "deep-blue", "color": "#0A2A43"},
+        {"name": "Teal", "slug": "teal", "color": "#00A3A3"},
+        {"name": "Gold", "slug": "gold", "color": "#F4D483"},
+        {"name": "White", "slug": "white", "color": "#FFFFFF"},
+        {"name": "Sky", "slug": "sky", "color": "#66D9FF"},
+        {"name": "Soft Green", "slug": "soft-green", "color": "#8ED1B2"}
+      ]
+    },
+    "typography": {
+      "fontSizes": [
+        {"slug":"xs","size":"0.875rem"},
+        {"slug":"sm","size":"1rem"},
+        {"slug":"base","size":"1.125rem"},
+        {"slug":"lg","size":"1.25rem"},
+        {"slug":"xl","size":"1.5rem"},
+        {"slug":"2xl","size":"1.875rem"},
+        {"slug":"3xl","size":"2.25rem"},
+        {"slug":"4xl","size":"3rem"}
+      ],
+      "lineHeight": "1.6",
+      "dropCap": false
+    },
+    "spacing": {
+      "units": ["px","rem","%","vh","vw"],
+      "spacingScale": {"steps": 8}
+    },
+    "layout": {
+      "contentSize": "720px",
+      "wideSize": "1200px"
+    }
+  },
+  "styles": {
+    "color": {
+      "background": "#FFFFFF",
+      "text": "#0A2A43"
+    },
+    "elements": {
+      "button": { "border": { "radius": "1.25rem" } }
+    }
+  }
+}

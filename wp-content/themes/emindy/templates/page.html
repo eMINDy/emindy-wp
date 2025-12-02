@@ -1,0 +1,39 @@
+<!-- wp:template-part {"slug":"header","tagName":"header","align":"full"} /-->
+
+<!-- wp:group {"metadata":{"name":"Page — eMINDy"},"tagName":"main","align":"full","style":{"spacing":{"padding":{"top":"2.5rem","bottom":"2.5rem"}}},"layout":{"type":"constrained","contentSize":"900px"}} -->
+<main class="wp-block-group alignfull" id="main-content" style="padding-top:2.5rem;padding-bottom:2.5rem">
+
+  <!-- Breadcrumbs (Rank Math) -->
+  <!-- wp:group {"style":{"spacing":{"margin":{"bottom":"1rem"}}},"layout":{"type":"constrained"}} -->
+  <div class="wp-block-group" style="margin-bottom:1rem">
+    <!-- wp:shortcode -->
+    [rank_math_breadcrumb]
+    <!-- /wp:shortcode -->
+  </div>
+  <!-- /wp:group -->
+
+  <!-- Title -->
+  <!-- wp:post-title {"level":1,"style":{"typography":{"fontSize":"clamp(1.8rem,3vw,2.5rem)","lineHeight":"1.15"},"spacing":{"margin":{"bottom":"0.5rem"}}}} /-->
+
+  <!-- Optional featured image (hero-lite) -->
+  <!-- wp:post-featured-image {"align":"wide","style":{"spacing":{"margin":{"top":"0.75rem","bottom":"1.5rem"}},"border":{"radius":"var(--wp--custom--brand--radius--2xl)"},"shadow":"var(--wp--custom--brand--shadow--card)"}} /-->
+
+  <!-- Content -->
+  <!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+
+  <!-- Page foot micro-links (safety / credits / newsletter) -->
+  <!-- wp:group {"style":{"spacing":{"margin":{"top":"2rem"},"padding":{"top":"1.25rem","bottom":"1.25rem"}},"color":{"background":"#0b2d49"},"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"elements":{"link":{"color":{"text":"var(--wp--preset--color--white)"}}}},"textColor":"white","layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between"}} -->
+  <div class="wp-block-group has-white-color has-text-color has-background" style="border-radius:var(--wp--custom--brand--radius--xl);background-color:#0b2d49;padding-top:1.25rem;padding-bottom:1.25rem">
+    <!-- wp:paragraph -->
+    <p><a href="/safety/">Safety &amp; Disclaimer</a> · <a href="/credits/">Credits &amp; Resources</a></p>
+    <!-- /wp:paragraph -->
+    <!-- wp:paragraph -->
+    <p><a href="/newsletter/">Get the newsletter →</a></p>
+    <!-- /wp:paragraph -->
+  </div>
+  <!-- /wp:group -->
+
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer","align":"full"} /-->

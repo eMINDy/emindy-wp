@@ -1,0 +1,959 @@
+<?php
+namespace EMINDY\Core;
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+class Shortcodes {
+	public static function register_all() {
+		add_shortcode( 'em_player', [__CLASS__, 'player'] );
+		add_shortcode( 'em_lang_switcher', [__CLASS__, 'lang_switcher'] );
+		add_shortcode( 'em_video_chapters', [__CLASS__, 'video_chapters'] );
+		add_shortcode( 'em_phq9', [__CLASS__, 'phq9'] );
+		add_shortcode( 'em_related', [__CLASS__, 'related'] );
+		add_shortcode( 'em_newsletter', [__CLASS__, 'newsletter'] );
+		add_shortcode('em_gad7',[__CLASS__,'gad7']);
+		add_shortcode('em_assessment_result', [__CLASS__, 'assessment_result']);
+		add_shortcode('em_transcript',[__CLASS__,'transcript']);
+		add_shortcode('em_video_filters', [__CLASS__, 'video_filters']);
+		add_shortcode('em_video_player', [__CLASS__, 'video_player']);
+	}
+
+	public static function player( $atts = [], $content = '' ) : string {
+	$post_id = get_the_ID();
+	$steps = json_decode_safe( get_post_meta( $post_id, 'em_steps_json', true ) ) ?: [];
+	$total = is_array($steps) ? count($steps) : 0;
+	$total_secs = 0;
+	foreach ( $steps as $s ) { $total_secs += (int)($s['duration'] ?? 0); }
+
+	ob_start(); ?>
+	<div class="em-player" data-post="<?php echo esc_attr($post_id); ?>" data-steps="<?php echo esc_attr( wp_json_encode($steps) ); ?>">
+		<h3 class="em-p__title"><?php echo esc_html__('Guided Practice','emindy-core'); ?></h3>
+
+		<div class="em-p__header" role="group" aria-label="<?php echo esc_attr__('Exercise Controls','emindy-core'); ?>">
+			<div class="em-p__meta">
+				<span><?php echo esc_html__('Step','emindy-core'); ?> <span class="em-p__cur">1</span>/<span class="em-p__total"><?php echo (int)$total; ?></span></span>
+				<span><?php echo esc_html__('Step time','emindy-core'); ?>: <span class="em-p__step-time">0:00</span></span>
+				<span><?php echo esc_html__('Total','emindy-core'); ?>: <span class="em-p__all-time"><?php echo esc_html( gmdate('i:s', max(0,$total_secs) ) ); ?></span></span>
+			</div>
+			<div class="em-p__controls">
+				<button type="button" class="em-p__btn em-p__prev" aria-label="<?php echo esc_attr__('Previous step','emindy-core'); ?>">⟨</button>
+				<button type="button" class="em-p__btn em-p__play" aria-pressed="false"><?php echo esc_html__('Start','emindy-core'); ?></button>
+				<button type="button" class="em-p__btn em-p__next" aria-label="<?php echo esc_attr__('Next step','emindy-core'); ?>">⟩</button>
+				<button type="button" class="em-p__btn em-p__reset"><?php echo esc_html__('Reset','emindy-core'); ?></button>
+			</div>
+		</div>
+
+		<div class="em-p__barwrap" aria-hidden="true"><div class="em-p__bar"></div></div>
+		<div class="em-p__remain" aria-live="off">0:00</div>
+
+		<ol class="em-p__list" aria-label="<?php echo esc_attr__('Steps','emindy-core'); ?>"></ol>
+		<div class="em-p__live" role="status" aria-live="polite"></div>
+	</div>
+	<?php
+	return ob_get_clean();
+}
+
+	public static function video_chapters() : string {
+	    $post_id = get_the_ID();
+	    $chapters = json_decode_safe( get_post_meta($post_id,'em_chapters_json',true) ) ?: [];
+	    $yt = get_post_meta($post_id,'em_youtube_id',true); // اگر داری از این متا استفاده کن
+	    ob_start(); ?>
+	    <div class="em-chapters">
+		    <h3><?php echo esc_html__('Chapters','emindy-core'); ?></h3>
+		    <ol>
+			    <?php foreach ($chapters as $c):
+			    	$label = esc_html( $c['label'] ?? '' );
+			    	$sec   = (int) ($c['time'] ?? 0);
+			    	if ($yt && $sec>0){
+			    		$url = 'https://youtu.be/'.rawurlencode($yt).'?t='.$sec;
+			    		echo '<li><a target="_blank" rel="noopener" href="'.esc_url($url).'">'.$label.' — '.esc_html(gmdate('i:s',$sec)).'</a></li>';
+			    	}else{
+			    		echo '<li>'.$label.'</li>';
+			    	}
+		    	endforeach; ?>
+		    </ol>
+    	</div>
+    	<?php
+    	return ob_get_clean();
+    }
+
+	public static function phq9() : string {
+	ob_start(); ?>
+	<form class="em-phq9" aria-describedby="em-phq9-desc">
+		<p id="em-phq9-desc"><?php echo esc_html__('This is an educational check-in (not a diagnosis). Your responses are private on this device.','emindy-core'); ?></p>
+
+		<ol class="em-phq9__list">
+			<?php
+			$qs = [
+				__('Little interest or pleasure in doing things', 'emindy-core'),
+				__('Feeling down, depressed, or hopeless', 'emindy-core'),
+				__('Trouble falling or staying asleep, or sleeping too much', 'emindy-core'),
+				__('Feeling tired or having little energy', 'emindy-core'),
+				__('Poor appetite or overeating', 'emindy-core'),
+				__('Feeling bad about yourself — or that you are a failure or have let yourself or your family down', 'emindy-core'),
+				__('Trouble concentrating on things, such as reading or watching television', 'emindy-core'),
+				__('Moving or speaking so slowly that other people could have noticed, or the opposite — being so fidgety or restless that you have been moving a lot more than usual', 'emindy-core'),
+				__('Thoughts that you would be better off dead, or thoughts of hurting yourself', 'emindy-core'),
+			];
+			$opts = [
+				['v'=>0,'t'=>__('Not at all','emindy-core')],
+				['v'=>1,'t'=>__('Several days','emindy-core')],
+				['v'=>2,'t'=>__('More than half the days','emindy-core')],
+				['v'=>3,'t'=>__('Nearly every day','emindy-core')],
+			];
+			foreach ($qs as $i=>$q): ?>
+			<li class="em-phq9__item">
+				<fieldset>
+					<legend><?php echo esc_html($q); ?></legend>
+					<?php foreach ($opts as $j=>$o): 
+						$id = 'phq9_q'.$i.'_o'.$j; ?>
+						<label for="<?php echo esc_attr($id); ?>" class="em-phq9__opt">
+							<input type="radio" name="phq9_q<?php echo (int)$i; ?>" id="<?php echo esc_attr($id); ?>" value="<?php echo (int)$o['v']; ?>" required>
+							<span><?php echo esc_html($o['t']); ?></span>
+						</label>
+					<?php endforeach; ?>
+				</fieldset>
+			</li>
+			<?php endforeach; ?>
+		</ol>
+
+		<div class="em-phq9__actions">
+			<button type="submit" class="em-phq9__submit"><?php echo esc_html__('See my result','emindy-core'); ?></button>
+			<button type="button" class="em-phq9__reset"><?php echo esc_html__('Reset','emindy-core'); ?></button>
+		</div>
+
+		<div class="em-phq9__result" role="region" aria-live="polite" hidden>
+			<h3><?php echo esc_html__('Your result','emindy-core'); ?></h3>
+			<p class="em-phq9__score"></p>
+			<p class="em-phq9__note"><?php echo esc_html__('This check is educational and not a medical diagnosis. If you feel unsafe or in crisis, please visit the Emergency page.','emindy-core'); ?></p>
+			<div class="em-phq9__share">
+				<button type="button" class="em-phq9__print"><?php echo esc_html__('Print / Save PDF','emindy-core'); ?></button>
+				<button type="button" class="em-phq9__copy"><?php echo esc_html__('Copy summary','emindy-core'); ?></button>
+			    <button type="button" class="em-phq9__sharelink" data-kind="phq9"><?php echo esc_html__('Get shareable link','emindy-core'); ?></button>
+                <button type="button" class="em-phq9__email" data-kind="phq9"><?php echo esc_html__('Email me the summary','emindy-core'); ?></button>
+			</div>
+		</div>
+	</form>
+	<?php
+	return ob_get_clean();
+}
+
+	public static function related($atts=[]) : string {
+      // Default to the unified `topic` taxonomy.  Previously the plugin
+      // defaulted to `em_topic`, but the slug was harmonised to `topic` in
+      // the taxonomies refactor so that all content types share the same
+      // taxonomy names.  You can override this via the shortcode parameter.
+      $a = shortcode_atts([
+       'post_type' => get_post_type() ?: 'post',
+       'taxonomy'  => 'topic',
+        'count'     => 4,
+      ], $atts);
+      $post = get_post(); if(!$post) return '';
+
+      // زبان فعلی برای Polylang
+      $lang = function_exists('pll_get_post_language') ? pll_get_post_language($post->ID) : null;
+
+      // ترم‌های مشترک
+     $terms = $a['taxonomy'] ? wp_get_object_terms($post->ID, $a['taxonomy'], ['fields'=>'ids']) : [];
+      $tax_q = [];
+      if (!is_wp_error($terms) && !empty($terms)) {
+        $tax_q[] = [
+          'taxonomy' => $a['taxonomy'],
+         'field'    => 'term_id',
+         'terms'    => $terms,
+        ];
+      }
+
+     // کوئری اولیه بر اساس ترم مشترک
+      $args = [
+        'post_type'      => (array) $a['post_type'],
+        'post__not_in'   => [$post->ID],
+        'posts_per_page' => (int) $a['count'],
+        'tax_query'      => $tax_q,
+        'orderby'        => 'date',
+        'order'          => 'DESC',
+        'suppress_filters'=> false,
+      ];
+
+      // Polylang: محدود به زبان
+      if ($lang && function_exists('pll_current_language')) {
+        $args['lang'] = $lang;
+      }
+
+      $q = new \WP_Query($args);
+
+      // اگر خالی بود، fallback با شباهت متن (عنوان/خلاصه)
+      if (!$q->have_posts()) {
+        $needle = sanitize_text_field( wp_strip_all_tags( $post->post_title .' '. get_the_excerpt($post) ) );
+        $args = [
+          'post_type'      => (array) $a['post_type'],
+          'post__not_in'   => [$post->ID],
+          'posts_per_page' => (int) $a['count'],
+          's'              => $needle,
+         'orderby'        => 'relevance',
+         'suppress_filters'=> false,
+        ];
+        if ($lang && function_exists('pll_current_language')) $args['lang'] = $lang;
+        $q = new \WP_Query($args);
+      }
+
+     ob_start();
+      if ($q->have_posts()){
+       echo '<div class="em-related-grid">';
+       while($q->have_posts()){ $q->the_post();
+          echo '<article class="is-style-em-card" style="padding:12px">';
+          echo '<h4><a href="'.esc_url(get_permalink()).'">'.esc_html(get_the_title()).'</a></h4>';
+          echo '<p>'.esc_html(wp_trim_words(get_the_excerpt(),22,'…')).'</p>';
+          echo '</article>';
+        }
+        echo '</div>';
+        wp_reset_postdata();
+      }
+      return ob_get_clean();
+    }
+
+
+    /**
+     * Render the eMINDy newsletter form.
+     *
+     * The original implementation returned a placeholder string which
+     * prevented the actual signup form from appearing on the front end.
+     * This method now attempts to call the `em_newsletter_form()` function
+     * defined in includes/newsletter.php.  If that function does not exist
+     * (for example if the newsletter file is not loaded), we fall back to
+     * invoking the `[em_newsletter_form]` shortcode.  If neither is
+     * available, we display a friendly message so that administrators can
+     * diagnose the issue.  Wrapping the form in a div allows theme
+     * developers to style the newsletter consistently.
+     *
+     * @return string HTML markup for the newsletter form
+     */
+    public static function newsletter() : string {
+        // Prefer the direct function to avoid nesting shortcodes and allow
+        // developers to filter the output via hooks.
+        if ( function_exists( 'em_newsletter_form' ) ) {
+            $form = em_newsletter_form();
+            return '<div class="em-newsletter">'. $form .'</div>';
+        }
+        // Fall back to do_shortcode if the function isn't loaded yet.
+        if ( shortcode_exists( 'em_newsletter_form' ) ) {
+            $form = do_shortcode( '[em_newsletter_form]' );
+            return '<div class="em-newsletter">'. $form .'</div>';
+        }
+        // Last resort: display a translatable placeholder so site admins know
+        // something is misconfigured.  Use esc_html__ to allow translation.
+        return '<div class="em-newsletter">'. esc_html__( 'Newsletter form unavailable. Please ensure the eMINDy Core plugin is active.', 'emindy-core' ) .'</div>';
+    }
+    public static function lang_switcher( $atts = [] ) : string {
+	if ( ! function_exists( 'pll_the_languages' ) ) return '';
+
+	$defaults = [
+		'show_flags'   => '1',
+		'show_names'   => '1',
+		'dropdown'     => '1',
+		'hide_current' => '0',
+	];
+	$atts = shortcode_atts( $defaults, $atts, 'em_lang_switcher' );
+
+	$langs = pll_the_languages( [
+		'raw'                  => 1,
+		'hide_if_no_translation' => 0,
+		'display_names_as'     => 'name',
+		'show_flags'           => ( $atts['show_flags'] === '1' ),
+		'show_names'           => ( $atts['show_names'] === '1' ),
+		'hide_current'         => ( $atts['hide_current'] === '1' ),
+	] );
+
+	if ( empty( $langs ) || ! is_array( $langs ) ) return '';
+
+	ob_start();
+
+	if ( $atts['dropdown'] === '1' ) : ?>
+		<form class="em-lang-switcher em-lang-switcher--select" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>" aria-label="<?php echo esc_attr__( 'Language switcher', 'emindy-core' ); ?>">
+			<label for="em-lang-select" class="screen-reader-text"><?php echo esc_html__( 'Select language', 'emindy-core' ); ?></label>
+			<span class="em-select">
+				<select id="em-lang-select" onchange="if(this.value){window.location.href=this.value;}" aria-label="<?php echo esc_attr__( 'Select language', 'emindy-core' ); ?>">
+					<?php foreach ( $langs as $lang ) : ?>
+						<option value="<?php echo esc_url( $lang['url'] ); ?>" <?php selected( ! empty( $lang['current'] ) ); ?>>
+							<?php
+							$label = '';
+							if ( $atts['show_flags'] === '1' && ! empty( $lang['flag'] ) ) {
+								$label .= wp_kses( $lang['flag'], [ 'img' => [ 'src'=>[], 'alt'=>[], 'width'=>[], 'height'=>[] ] ] ) . ' ';
+							}
+							if ( $atts['show_names'] === '1' && ! empty( $lang['name'] ) ) {
+								$label .= esc_html( $lang['name'] );
+							} else {
+								$label .= esc_html( strtoupper( $lang['slug'] ) );
+							}
+							echo $label;
+							?>
+						</option>
+					<?php endforeach; ?>
+				</select>
+			</span>
+		</form>
+	<?php else : ?>
+		<nav class="em-lang-switcher em-lang-switcher--chips" aria-label="<?php echo esc_attr__( 'Language switcher', 'emindy-core' ); ?>">
+			<ul class="em-lang-switcher__list">
+				<?php foreach ( $langs as $lang ) : ?>
+					<li class="em-lang-switcher__item<?php echo ! empty( $lang['current'] ) ? ' is-current' : ''; ?>">
+						<a href="<?php echo esc_url( $lang['url'] ); ?>" class="em-lang-switcher__link" aria-current="<?php echo ! empty( $lang['current'] ) ? 'true' : 'false'; ?>">
+							<?php
+							if ( $atts['show_flags'] === '1' && ! empty( $lang['flag'] ) ) {
+								echo wp_kses( $lang['flag'], [ 'img' => [ 'src'=>[], 'alt'=>[], 'width'=>[], 'height'=>[] ] ] ) . ' ';
+							}
+							echo esc_html( ( $atts['show_names'] === '1' && ! empty( $lang['name'] ) ) ? $lang['name'] : strtoupper( $lang['slug'] ) );
+							?>
+						</a>
+					</li>
+				<?php endforeach; ?>
+			</ul>
+		</nav>
+	<?php endif;
+
+	// --- ضدّ <br/> و <p> ناخواسته:
+	$out = ob_get_clean();
+	$out = shortcode_unautop( $out );            // حذف <p> و <br> تزریق شده
+	$out = preg_replace( '/>\s+</', '><', $out); // جمع کردن فاصله‌ها بین تگ‌ها
+	return trim( $out );
+}
+
+public static function gad7() : string {
+	ob_start(); ?>
+	<form class="em-phq9 em-gad7" aria-describedby="em-gad7-desc">
+		<p id="em-gad7-desc"><?php echo esc_html__('Educational check-in (not a diagnosis). Your responses stay on this device.','emindy-core'); ?></p>
+
+		<ol class="em-phq9__list">
+			<?php
+			$qs = [
+				__('Feeling nervous, anxious, or on edge','emindy-core'),
+				__('Not being able to stop or control worrying','emindy-core'),
+				__('Worrying too much about different things','emindy-core'),
+				__('Trouble relaxing','emindy-core'),
+				__('Being so restless that it is hard to sit still','emindy-core'),
+				__('Becoming easily annoyed or irritable','emindy-core'),
+				__('Feeling afraid as if something awful might happen','emindy-core'),
+			];
+			$opts = [
+				['v'=>0,'t'=>__('Not at all','emindy-core')],
+				['v'=>1,'t'=>__('Several days','emindy-core')],
+				['v'=>2,'t'=>__('More than half the days','emindy-core')],
+				['v'=>3,'t'=>__('Nearly every day','emindy-core')],
+			];
+			foreach ($qs as $i=>$q): ?>
+			<li class="em-phq9__item">
+				<fieldset>
+					<legend><?php echo esc_html($q); ?></legend>
+					<?php foreach ($opts as $j=>$o):
+						$id = 'gad7_q'.$i.'_o'.$j; ?>
+						<label for="<?php echo esc_attr($id); ?>" class="em-phq9__opt">
+							<input type="radio" name="gad7_q<?php echo (int)$i; ?>" id="<?php echo esc_attr($id); ?>" value="<?php echo (int)$o['v']; ?>" required>
+							<span><?php echo esc_html($o['t']); ?></span>
+						</label>
+					<?php endforeach; ?>
+				</fieldset>
+			</li>
+			<?php endforeach; ?>
+		</ol>
+
+		<div class="em-phq9__actions">
+			<button type="submit" class="em-phq9__submit"><?php echo esc_html__('See my result','emindy-core'); ?></button>
+			<button type="button" class="em-phq9__reset"><?php echo esc_html__('Reset','emindy-core'); ?></button>
+		</div>
+
+		<div class="em-phq9__result" role="region" aria-live="polite" hidden>
+			<h3><?php echo esc_html__('Your result','emindy-core'); ?></h3>
+			<p class="em-phq9__score"></p>
+			<p class="em-phq9__note"><?php echo esc_html__('This check is educational and not a medical diagnosis. If you feel unsafe or in crisis, please visit the Emergency page.','emindy-core'); ?></p>
+			<div class="em-phq9__share">
+				<button type="button" class="em-phq9__print"><?php echo esc_html__('Print / Save PDF','emindy-core'); ?></button>
+				<button type="button" class="em-phq9__copy"><?php echo esc_html__('Copy summary','emindy-core'); ?></button>
+				<button type="button" class="em-phq9__sharelink" data-kind="gad7"><?php echo esc_html__('Get shareable link','emindy-core'); ?></button>
+				<button type="button" class="em-phq9__email" data-kind="gad7"><?php echo esc_html__('Email me the summary','emindy-core'); ?></button>
+			</div>
+		</div>
+	</form>
+	<?php
+	return ob_get_clean();
+}
+
+public static function assessment_result() : string {
+	$type  = isset($_GET['type'])  ? sanitize_key($_GET['type']) : '';
+	$score = isset($_GET['score']) ? (int) $_GET['score'] : -1;
+	$sig   = isset($_GET['sig'])   ? sanitize_text_field($_GET['sig']) : '';
+
+	// اعتبارسنجی امضا
+	$secret = wp_salt('auth');
+	$calc = hash_hmac('sha256', $type.'|'.$score, $secret);
+	if ( ! hash_equals($calc, $sig) || $score < 0 ) {
+		return '<div class="em-phq9 is-style-em-card"><p>'.esc_html__('Invalid or missing result.','emindy-core').'</p></div>';
+	}
+
+	$title = ($type==='phq9') ? __('PHQ-9 Result','emindy-core') : (($type==='gad7') ? __('GAD-7 Result','emindy-core') : __('Assessment Result','emindy-core'));
+	$max = ($type==='phq9') ? 27 : (($type==='gad7') ? 21 : 0);
+
+    // Map the numeric score to a severity band.  Use translation functions on
+    // the band names so they can be localised.  See
+    // https://developer.wordpress.org/plugins/internationalization/how-to-internationalize-your-plugin/【870389742309372†L0-L10】
+    $band = '';
+    if ( $type === 'phq9' ) {
+        if ( $score <= 4 ) {
+            $band = __( 'Minimal', 'emindy-core' );
+        } elseif ( $score <= 9 ) {
+            $band = __( 'Mild', 'emindy-core' );
+        } elseif ( $score <= 14 ) {
+            $band = __( 'Moderate', 'emindy-core' );
+        } elseif ( $score <= 19 ) {
+            $band = __( 'Moderately severe', 'emindy-core' );
+        } else {
+            $band = __( 'Severe', 'emindy-core' );
+        }
+    } elseif ( $type === 'gad7' ) {
+        if ( $score <= 4 ) {
+            $band = __( 'Minimal', 'emindy-core' );
+        } elseif ( $score <= 9 ) {
+            $band = __( 'Mild', 'emindy-core' );
+        } elseif ( $score <= 14 ) {
+            $band = __( 'Moderate', 'emindy-core' );
+        } else {
+            $band = __( 'Severe', 'emindy-core' );
+        }
+    }
+
+	ob_start(); ?>
+	<div class="em-phq9 is-style-em-card">
+		<h2><?php echo esc_html($title); ?></h2>
+        <p><?php
+            /*
+             * Wrap the score line in a translation call so that the entire
+             * sentence can be localised.  We use sprintf on the result of
+             * __() rather than on a literal string to allow translators to
+             * rearrange the placeholders as needed.
+             */
+            $score_line = sprintf( __( 'Score: %d / %d — %s', 'emindy-core' ), $score, $max, $band );
+            echo esc_html( $score_line );
+        ?></p>
+		<p><?php echo esc_html__('This check is educational, not a diagnosis. If you feel unsafe or in crisis, please visit the Emergency page.','emindy-core'); ?></p>
+		<p><a href="<?php echo esc_url( home_url('/assessments/') ); ?>">&larr; <?php echo esc_html__('Back to assessments','emindy-core'); ?></a></p>
+	</div>
+	<?php
+	return ob_get_clean();
+}
+
+public static function transcript() : string {
+	$post = get_post(); if (! $post) return '';
+	$txt = wpautop( wp_kses_post( $post->post_content ) );
+	ob_start(); ?>
+	<details class="em-transcript">
+		<summary><?php echo esc_html__('Transcript','emindy-core'); ?></summary>
+		<div class="em-transcript__body"><?php echo $txt; ?></div>
+		<button type="button" class="em-transcript__copy"><?php echo esc_html__('Copy transcript','emindy-core'); ?></button>
+	</details>
+	<script>
+	(function(){
+	  document.currentScript.previousElementSibling?.nextElementSibling?.addEventListener?.('click', async function(e){
+	    if(!e.target.matches('.em-transcript__copy')) return;
+	    const body = e.target.previousElementSibling;
+	    try{ await navigator.clipboard.writeText(body.innerText.trim()); e.target.textContent='Copied ✔'; setTimeout(()=>e.target.textContent='Copy transcript',1200);}catch(err){}
+	  });
+	})();
+	</script>
+	<?php
+	return ob_get_clean();
+}
+
+public static function video_filters() : string {
+	$action = get_post_type_archive_link('em_video');
+	$selected = isset($_GET['topic']) ? (int) $_GET['topic'] : 0;
+	ob_start(); ?>
+	<form class="em-filters" method="get" action="<?php echo esc_url( $action ); ?>" aria-label="<?php echo esc_attr__('Filter videos','emindy-core'); ?>">
+		<label>
+			<span class="screen-reader-text"><?php echo esc_html__('Search','emindy-core'); ?></span>
+			<input type="search" name="s" value="<?php echo esc_attr( get_search_query() ); ?>" placeholder="<?php echo esc_attr__('Search videos…','emindy-core'); ?>">
+		</label>
+		<label>
+			<span class="screen-reader-text"><?php echo esc_html__('Topic','emindy-core'); ?></span>
+			<?php
+            // Use the unified `topic` taxonomy in the filters.  This dropdown
+            // displays all available topic terms for filtering the video
+            // archive.  The `taxonomy` argument should match the slug used in
+            // register_taxonomies().
+            wp_dropdown_categories([
+                'taxonomy'        => 'topic',
+                'name'            => 'topic',
+                'show_option_all' => __('All topics','emindy-core'),
+                'hide_empty'      => 0,
+                'selected'        => $selected,
+                'class'           => 'em-filter-select',
+            ]);
+			?>
+		</label>
+		<button type="submit" class="em-filter-submit"><?php echo esc_html__('Apply','emindy-core'); ?></button>
+		<?php if ( ! empty($_GET) ) : ?>
+			<a class="em-filter-reset" href="<?php echo esc_url( $action ); ?>"><?php echo esc_html__('Reset','emindy-core'); ?></a>
+		<?php endif; ?>
+	</form>
+	<?php
+	return ob_get_clean();
+}
+
+public static function video_player() : string {
+	$post = get_post(); if (! $post) return '';
+	$id = trim( (string) get_post_meta($post->ID,'em_youtube_id',true) );
+	if ( ! $id ) {
+		// کشف آیدی از اولین لینک یوتیوب در محتوا
+		$c = $post->post_content;
+		if ( preg_match('~(?:youtu\.be/|youtube\.com/(?:watch\?v=|embed/))([A-Za-z0-9_-]{6,})~', $c, $m) ) {
+			$id = $m[1];
+		}
+	}
+	if ( ! $id ) return '<div class="is-style-em-card"><p>'.esc_html__('No video ID found.','emindy-core').'</p></div>';
+
+	// اگر Lyte هست
+	if ( shortcode_exists('lyte') ) {
+		return do_shortcode('[lyte id="'.esc_attr($id).'"]');
+	}
+
+	// fallback iframe (nocookie)
+	$src = 'https://www.youtube-nocookie.com/embed/'.rawurlencode($id).'?rel=0';
+	return '<div class="em-video">
+	<iframe loading="lazy" width="560" height="315" src="'.esc_url($src).'" title="YouTube video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+</div>';
+}
+
+}
+
+// [em_blog_categories pills="1"]
+add_shortcode('em_blog_categories', function($atts){
+  $a = shortcode_atts(['pills'=>'0'], $atts, 'em_blog_categories');
+  $cats = get_categories(['hide_empty'=>true]);
+  if(!$cats) return '';
+  $out = '<div class="em-cat-pills" style="display:flex;flex-wrap:wrap;gap:.5rem">';
+  foreach($cats as $c){
+    $url = esc_url(get_category_link($c->term_id));
+    $name = esc_html($c->name);
+    $out .= '<a href="'.$url.'" style="background:'.($a['pills']?'#F4D483':'none').';color:#0A2A43;padding:.4rem .8rem;border-radius:999px;text-decoration:none;font-weight:600">'.$name.'</a>';
+  }
+  return $out.'</div>';
+});
+
+// 2.1) [em_search_query] — نمایش عبارت جست‌وجو
+// 2.1) Current query helper (اگر قبلاً داری، همین را نگه‌دار)
+add_shortcode('em_search_query', function($atts){
+  $a = shortcode_atts(['raw'=>'0','url'=>'0'], $atts, 'em_search_query');
+  // Sanitize the search query to prevent injection and strip tags.
+  $s = isset($_GET['s']) ? sanitize_text_field( (string) wp_unslash($_GET['s']) ) : '';
+  if ($a['url'] === '1') return rawurlencode($s);
+  if ($a['raw'] === '1') return esc_attr($s);
+  return esc_html($s);
+});
+
+// 2.2) Search bar (فرم کامل)
+add_shortcode('em_search_bar', function(){
+  // Sanitize the search query to prevent injection and strip tags.
+  $s = isset($_GET['s']) ? sanitize_text_field( (string) wp_unslash($_GET['s']) ) : '';
+  $s_attr = esc_attr($s);
+  $action = esc_url( home_url('/') );
+  ob_start(); ?>
+  <form role="search" method="get" action="<?php echo $action; ?>" class="em-search-bar" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:.25rem 0 .75rem">
+    <label for="em-s" class="sr-only">Search</label>
+    <input id="em-s" type="search" name="s" value="<?php echo $s_attr; ?>" placeholder="Search videos, exercises, articles, blog…" style="flex:1;min-width:260px;padding:.55rem .8rem;border-radius:.75rem;border:0">
+    <button type="submit" style="padding:.6rem .95rem;border-radius:.75rem;border:0;background:#F4D483;color:#0A2A43;font-weight:600">Search</button>
+  </form>
+  <?php
+  return ob_get_clean();
+});
+
+// 2.3) Quick filters
+add_shortcode('em_quick_filters', function(){
+  // Sanitize the search query to prevent injection and strip tags.
+  $s = isset($_GET['s']) ? sanitize_text_field( (string) wp_unslash($_GET['s']) ) : '';
+  $sq = rawurlencode($s);
+  $home = home_url('/');
+  $links = [
+    $home.'?s='.$sq                                       => 'All',
+    $home.'?s='.$sq.'&post_type=em_video'                 => 'Videos',
+    $home.'?s='.$sq.'&post_type=em_exercise'              => 'Exercises',
+    $home.'?s='.$sq.'&post_type=em_article'               => 'Articles',
+    $home.'?s='.$sq.'&post_type=post'                     => 'Blog',
+  ];
+  ob_start(); ?>
+  <nav class="em-quick-filters" aria-label="Quick filters" style="display:flex;gap:.5rem;flex-wrap:wrap">
+    <?php foreach($links as $url=>$label): ?>
+      <a class="pill" href="<?php echo esc_url($url); ?>"><?php echo esc_html($label); ?></a>
+    <?php endforeach; ?>
+  </nav>
+  <?php
+  return ob_get_clean();
+});
+
+
+// 2.2) [em_result_badge] — Badge نوع محتوا برای آیتم فعلی
+add_shortcode('em_result_badge', function(){
+  $pt = get_post_type();
+  $map = [
+    'em_video'    => 'Video',
+    'em_exercise' => 'Exercise',
+    'em_article'  => 'Article',
+    'post'        => 'Blog',
+  ];
+  $label = isset($map[$pt]) ? $map[$pt] : ucfirst($pt);
+  return '<span class="em-badge em-badge-'.esc_attr($pt).'" aria-label="Content type">'.$label.'</span>';
+});
+
+// 2.3) [em_excerpt_highlight length="28"] — خلاصه با هایلایت
+add_shortcode('em_excerpt_highlight', function($atts){
+  $a = shortcode_atts(['length'=>'28'], $atts, 'em_excerpt_highlight');
+  // Sanitize the search query to prevent injection and strip tags.
+  $s = isset($_GET['s']) ? sanitize_text_field( (string) wp_unslash($_GET['s']) ) : '';
+  $text = get_the_excerpt();
+  if (!$text) $text = wp_strip_all_tags(get_the_content('', false));
+  $text = wp_trim_words($text, (int)$a['length'], '…');
+
+  $s = trim($s);
+  if ($s === '' || mb_strlen($s, 'UTF-8') > 80) {
+    return '<p class="em-excerpt">'.esc_html($text).'</p>';
+  }
+  $pattern = '/' . preg_quote($s, '/') . '/iu';
+  $result  = @preg_replace($pattern, '<mark>$0</mark>', $text);
+  if ($result === null) {
+    return '<p class="em-excerpt">'.esc_html($text).'</p>';
+  }
+  return '<p class="em-excerpt">'.$result.'</p>';
+});
+
+// 2.4) [em_result_count post_type="em_video"]
+add_shortcode('em_result_count', function($atts){
+  $a = shortcode_atts(['post_type'=>'post'], $atts, 'em_result_count');
+  $pt = is_array($a['post_type']) ? $a['post_type'] : [$a['post_type']];
+  $pt = array_values(array_filter($pt, 'post_type_exists'));
+
+  // Sanitize the search query to prevent injection and strip tags.
+  $s = isset($_GET['s']) ? sanitize_text_field( (string) wp_unslash($_GET['s']) ) : '';
+  $q = new WP_Query([
+    'post_type'        => $pt ?: 'post',
+    's'                => $s,
+    'posts_per_page'   => 1,
+    'fields'           => 'ids',
+    'no_found_rows'    => false,
+    'suppress_filters' => false,
+  ]);
+  return (string) intval($q->found_posts);
+});
+
+// 2.5) [em_search_section post_type="em_video" per_page="4"]
+add_shortcode('em_search_section', function($atts){
+  $a = shortcode_atts(['post_type'=>'post','per_page'=>'4'], $atts, 'em_search_section');
+  $pt = is_array($a['post_type']) ? $a['post_type'] : [$a['post_type']];
+  $pt = array_values(array_filter($pt, 'post_type_exists'));
+  // Sanitize the search query to prevent injection and strip tags.
+  $s  = isset($_GET['s']) ? sanitize_text_field( (string) wp_unslash($_GET['s']) ) : '';
+
+  $q = new WP_Query([
+    'post_type'        => $pt ?: 'post',
+    's'                => $s,
+    'posts_per_page'   => max(1, min(6, (int)$a['per_page'])),
+    'orderby'          => 'date',
+    'order'            => 'DESC',
+    'no_found_rows'    => true,
+    'suppress_filters' => false,
+  ]);
+  if (!$q->have_posts()) return '<p class="em-muted">No matches.</p>';
+
+  ob_start();
+  echo '<div class="em-search-list">';
+  while ($q->have_posts()){ $q->the_post();
+    echo '<article class="em-search-item" style="display:flex;gap:1rem;align-items:center;margin:.6rem 0;padding:.6rem 0">';
+      if (has_post_thumbnail()){
+        echo '<a href="'.esc_url(get_permalink()).'">'.get_the_post_thumbnail(null,'medium',['style'=>'width:160px;height:auto;border-radius:12px']).'</a>';
+      }
+      echo '<div>';
+        echo '<div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">';
+          echo '<a href="'.esc_url(get_permalink()).'"><strong>'.esc_html(get_the_title()).'</strong></a>';
+          if (shortcode_exists('em_result_badge')) echo do_shortcode('[em_result_badge]');
+        echo '</div>';
+        echo do_shortcode('[em_excerpt_highlight length="26"]');
+      echo '</div>';
+    echo '</article>';
+  }
+  echo '</div>';
+  wp_reset_postdata();
+  return ob_get_clean();
+});
+
+// 2.1) Popular: latest posts (blog)
+add_shortcode('em_popular_posts', function($atts){
+  $a = shortcode_atts(['limit'=>'4'], $atts, 'em_popular_posts');
+  $q = new WP_Query([
+    'post_type' => 'post',
+    'posts_per_page' => max(1,(int)$a['limit']),
+    'orderby'=>'date','order'=>'DESC',
+    'no_found_rows'=>true
+  ]);
+  if(!$q->have_posts()) return '<p class="em-muted">No posts yet.</p>';
+  ob_start(); echo '<ul class="em-mini-list">';
+  while($q->have_posts()){ $q->the_post();
+    echo '<li><a href="'.esc_url(get_permalink()).'">'.esc_html(get_the_title()).'</a></li>';
+  }
+  echo '</ul>'; wp_reset_postdata(); return ob_get_clean();
+});
+
+// 2.2) Popular videos (latest by date; replace with analytics-weighted later)
+add_shortcode('em_popular_videos', function($atts){
+  $a = shortcode_atts(['limit'=>'4'], $atts, 'em_popular_videos');
+  $q = new WP_Query([
+    'post_type'=>'em_video','posts_per_page'=>max(1,(int)$a['limit']),
+    'orderby'=>'date','order'=>'DESC','no_found_rows'=>true
+  ]);
+  if(!$q->have_posts()) return '<p class="em-muted">No videos yet.</p>';
+  ob_start(); echo '<ul class="em-mini-list">';
+  while($q->have_posts()){ $q->the_post();
+    echo '<li><a href="'.esc_url(get_permalink()).'">'.esc_html(get_the_title()).'</a></li>';
+  }
+  echo '</ul>'; wp_reset_postdata(); return ob_get_clean();
+});
+
+// 2.3) Popular exercises (latest by date; can switch to meta "views" later)
+add_shortcode('em_popular_exercises', function($atts){
+  $a = shortcode_atts(['limit'=>'4'], $atts, 'em_popular_exercises');
+  $q = new WP_Query([
+    'post_type'=>'em_exercise','posts_per_page'=>max(1,(int)$a['limit']),
+    'orderby'=>'date','order'=>'DESC','no_found_rows'=>true
+  ]);
+  if(!$q->have_posts()) return '<p class="em-muted">No exercises yet.</p>';
+  ob_start(); echo '<ul class="em-mini-list">';
+  while($q->have_posts()){ $q->the_post();
+    echo '<li><a href="'.esc_url(get_permalink()).'">'.esc_html(get_the_title()).'</a></li>';
+  }
+  echo '</ul>'; wp_reset_postdata(); return ob_get_clean();
+});
+
+// 2.4) Mini sitemap (top hubs)
+add_shortcode('em_sitemap_mini', function(){
+  $links = [
+    '/start-here/' => 'Start Here — Essentials',
+    '/library/'    => 'Library (All content)',
+    '/em_video/'   => 'Videos',
+    '/em_exercise/'=> 'Exercises',
+    '/articles/'   => 'Articles Hub',
+    '/phq-9/'      => 'PHQ-9 Assessment',
+    '/ask-for-help/'=> 'Ask for Help'
+  ];
+  $out = '<ul class="em-mini-list">';
+  foreach($links as $url=>$label){
+    $out .= '<li><a href="'.esc_url($url).'">'.esc_html($label).'</a></li>';
+  }
+  return $out.'</ul>';
+});
+
+// 2.5) Report broken link (simple form -> email)
+add_shortcode('em_report_link', function($atts){
+  $a = shortcode_atts(['id'=>'report'], $atts, 'em_report_link');
+  $curr = (is_ssl() ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+  $mailto = antispambot(get_option('admin_email'));
+  $subject = rawurlencode('Broken link report on eMINDy');
+  $body = rawurlencode("Broken URL:\n{$curr}\n\nUser note:");
+  $href = "mailto:{$mailto}?subject={$subject}&body={$body}";
+  return '<p id="'.esc_attr($a['id']).'"><a class="em-button" href="'.$href.'">Report this link</a></p>';
+});
+
+add_shortcode('em_reading_time', function(){
+  $content = get_post_field('post_content', get_the_ID());
+  $words = str_word_count( wp_strip_all_tags( $content ) );
+  $minutes = max(1, ceil($words / 200)); // 200 wpm
+  return '<span aria-label="Estimated reading time">~'.$minutes.' min read</span>';
+});
+
+add_shortcode('em_toc', function(){
+  $html = apply_filters('the_content', get_post_field('post_content', get_the_ID()));
+  if(!$html) return '';
+  $dom = new DOMDocument(); libxml_use_internal_errors(true);
+  $dom->loadHTML('<?xml encoding="utf-8" ?>'.$html);
+  libxml_clear_errors();
+  $xpath = new DOMXPath($dom);
+  $heads = $xpath->query('//h2|//h3');
+  if(!$heads || $heads->length===0) return '';
+  $items = [];
+  foreach($heads as $h){
+    $text = trim($h->textContent);
+    if(!$text) continue;
+    $id = $h->getAttribute('id');
+    if(!$id){
+      $id = sanitize_title($text);
+      $h->setAttribute('id',$id);
+    }
+    $items[] = ['id'=>$id,'text'=>$text,'level'=>strtolower($h->nodeName)];
+  }
+  if(!$items) return '';
+  $out = '<nav class="em-toc" aria-label="Table of contents"><ol>';
+  foreach($items as $it){
+    $pad = ($it['level']==='h3') ? ' style="margin-left:1rem"' : '';
+    $out .= '<li'.$pad.'><a href="#'.esc_attr($it['id']).'">'.esc_html($it['text']).'</a></li>';
+  }
+  $out .= '</ol></nav>';
+  return $out;
+});
+
+add_shortcode('em_share', function(){
+  $url = urlencode(get_permalink());
+  $title = urlencode(get_the_title());
+  $out = '<div class="em-share" style="display:flex;flex-wrap:wrap;gap:.5rem">'
+    .'<a class="em-button" href="https://twitter.com/intent/tweet?url='.$url.'&text='.$title.'" target="_blank" rel="noopener">X/Twitter</a>'
+    .'<a class="em-button" href="https://www.facebook.com/sharer/sharer.php?u='.$url.'" target="_blank" rel="noopener">Facebook</a>'
+    .'<a class="em-button" href="https://www.linkedin.com/shareArticle?mini=true&url='.$url.'&title='.$title.'" target="_blank" rel="noopener">LinkedIn</a>'
+    .'<a class="em-button" href="https://api.whatsapp.com/send?text='.$title.'%20'.$url.'" target="_blank" rel="noopener">WhatsApp</a>'
+    .'<button class="em-button" onclick="navigator.clipboard.writeText(\''.esc_js(get_permalink()).'\')">Copy link</button>'
+    .'</div>';
+  return $out;
+});
+
+add_shortcode('em_related_posts', function($atts){
+  $a = shortcode_atts(['limit'=>'4'], $atts, 'em_related_posts');
+  $post_id = get_the_ID();
+  $cats = wp_get_post_categories($post_id);
+  $args = [
+    'post_type'=>'post',
+    'posts_per_page'=>max(1,(int)$a['limit']),
+    'post__not_in'=>[$post_id],
+    'ignore_sticky_posts'=>1,
+    'no_found_rows'=>true
+  ];
+  if($cats) $args['category__in'] = $cats;
+  $q = new WP_Query($args);
+  if(!$q->have_posts()) return '<p class="em-muted">No related posts yet.</p>';
+  ob_start();
+  echo '<div class="em-related-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem">';
+  while($q->have_posts()){ $q->the_post();
+    echo '<article class="em-related-item" style="border-radius:16px;box-shadow:var(--wp--custom--brand--shadow--card);overflow:hidden">';
+      if(has_post_thumbnail()){
+        echo '<a href="'.esc_url(get_permalink()).'">'.get_the_post_thumbnail(null,'medium',['style'=>'width:100%;height:auto']).'</a>';
+      }
+      echo '<div style="padding:.7rem">';
+        echo '<a href="'.esc_url(get_permalink()).'"><strong>'.esc_html(get_the_title()).'</strong></a>';
+        echo '<p style="margin:.35rem 0 0">'.esc_html( wp_trim_words(get_the_excerpt(), 18,'…') ).'</p>';
+      echo '</div>';
+    echo '</article>';
+  }
+  echo '</div>';
+  wp_reset_postdata();
+  return ob_get_clean();
+});
+
+add_shortcode('em_related', function($atts){
+  $atts = shortcode_atts([
+    'topic'    => 'current', // 'current' or slug
+    'technique'=> '',
+    'format'   => '',
+    'count'    => 4,
+    'orderby'  => 'date'
+  ], $atts, 'em_related');
+
+  $post_id = get_the_ID();
+
+  // Resolve topic
+  $topic_term_id = null;
+  if ($atts['topic'] === 'current') {
+    $primary = (int) get_post_meta($post_id, EMINDY_PRIMARY_TOPIC_META, true);
+    if ($primary) {
+      $topic_term_id = $primary;
+    } else {
+      $terms = wp_get_post_terms($post_id, 'topic', ['fields'=>'ids']);
+      if ($terms) $topic_term_id = $terms[0];
+    }
+  } else {
+    $t = get_term_by('slug', $atts['topic'], 'topic');
+    if ($t) $topic_term_id = $t->term_id;
+  }
+
+  $tax_query = ['relation' => 'AND'];
+
+  if ($topic_term_id) {
+    $tax_query[] = [
+      'taxonomy' => 'topic',
+      'field'    => 'term_id',
+      'terms'    => [$topic_term_id],
+    ];
+  }
+
+  if ($atts['technique']) {
+    $tech = get_term_by('slug', $atts['technique'], 'technique');
+    if ($tech) {
+      $tax_query[] = [
+        'taxonomy'=>'technique','field'=>'term_id','terms'=>[$tech->term_id]
+      ];
+    }
+  }
+
+  if ($atts['format']) {
+    $fmt = get_term_by('slug', $atts['format'], 'format');
+    if ($fmt) {
+      $tax_query[] = [
+        'taxonomy'=>'format','field'=>'term_id','terms'=>[$fmt->term_id]
+      ];
+    }
+  }
+
+  $q = new WP_Query([
+    'post__not_in'   => [$post_id],
+    'posts_per_page' => (int)$atts['count'],
+    'orderby'        => $atts['orderby'],
+    'tax_query'      => count($tax_query)>1 ? $tax_query : [],
+    'no_found_rows'  => true,
+  ]);
+
+  if (!$q->have_posts()) return '';
+
+  ob_start();
+  echo '<div class="em-related-grid">';
+  while ($q->have_posts()){ $q->the_post();
+    echo '<article class="em-related-card">';
+    echo '<a href="'. esc_url(get_permalink()) .'">';
+    if (has_post_thumbnail()) the_post_thumbnail('medium', ['loading'=>'lazy']);
+    echo '<h3>'. esc_html(get_the_title()) .'</h3>';
+    echo '<p>'. esc_html( wp_trim_words(get_the_excerpt(), 18) ) .'</p>';
+    echo '</a></article>';
+  }
+  echo '</div>';
+  wp_reset_postdata();
+  return ob_get_clean();
+});
+
+// [em_i18n key="help_title" default="We couldn’t find that page."]
+add_shortcode('em_i18n', function($atts){
+  $a = shortcode_atts(['key'=>'','default'=>''], $atts, 'em_i18n');
+  if(!$a['key']) return esc_html($a['default']);
+  $val = function_exists('pll__') ? pll__($a['key']) : '';
+  if(!$val) $val = $a['default'];
+  return esc_html($val);
+});
+
+// [em_admin_notice_missing_pages]
+add_shortcode('em_admin_notice_missing_pages', function(){
+  if( ! current_user_can('manage_options') ) return '';
+  $out = [];
+  if( ! get_page_by_path('blog') )     $out[] = 'Missing page: /blog (Posts landing)';
+  if( ! get_page_by_path('library') )  $out[] = 'Missing page: /library (Library hub)';
+  if( empty($out) ) return '';
+  $html = '<div class="em-admin-note" style="margin-top:1rem;padding:.8rem;border:1px solid #f5d27d;border-radius:8px;background:#fff9e8">';
+  $html .= '<strong>Admin note:</strong><ul style="margin:.4rem 0 0 .9rem">';
+  foreach($out as $li){ $html .= '<li>'.$li.'</li>'; }
+  $html .= '</ul><p>Tip: You can create them or set a redirect (see em_redirect_missing_pages).</p></div>';
+  return $html;
+});
+
+// [em_topics_pills taxonomy="topic"]
+add_shortcode('em_topics_pills', function($atts){
+  // Default to the `topic` taxonomy unless a custom taxonomy is provided.
+  $a = shortcode_atts(['taxonomy'=>'topic'], $atts, 'em_topics_pills');
+  $terms = get_terms(['taxonomy'=>$a['taxonomy'], 'hide_empty'=>true]);
+  if (is_wp_error($terms) || empty($terms)) return '<span>No topics yet.</span>';
+
+  $out = '<div class="em-topic-pills" role="navigation" aria-label="Filter by topic">';
+  $archive_url = get_post_type_archive_link('em_video');
+  // "All" link
+  $out .= '<a class="pill" href="'.esc_url($archive_url).'">All</a>';
+  foreach ($terms as $t) {
+    $out .= '<a class="pill" href="'.esc_url(get_term_link($t)).'">'.esc_html($t->name).'</a>';
+  }
+  $out .= '</div>';
+  return $out;
+});

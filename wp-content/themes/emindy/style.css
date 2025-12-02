@@ -1,0 +1,401 @@
+/*
+Theme Name: eMINDy
+Template: twentytwentyfive
+Version: 0.4.0
+Description: Child theme for eMINDy with calm, multilingual, accessible design.
+Text Domain: emindy
+*/
+
+/* Light (default) */
+:root{
+  --em-bg: #FFFFFF;
+  --em-text: #0A2A43;
+  --em-teal: #00A3A3;
+  --em-gold: #F4D483;
+  --em-ink: #111111;
+  --em-card: #F8FAFC;
+  --em-border: rgba(0,0,0,0.08);
+  color-scheme: light;
+}
+
+/*
+ * Support explicit light/dark themes via the data-em-theme attribute.
+ * When the root has data-em-theme="dark", override the variables defined
+ * above. These values mirror the ones used in the prefers-color-scheme
+ * media query further down in this file. The toggle is implemented in
+ * assets/js/dark-mode-toggle.js.
+ */
+:root[data-em-theme='dark']{
+  --em-bg: #0A2A43;
+  --em-text: #FFFFFF;
+  --em-teal: #66D9FF;
+  --em-gold: #F4D483;
+  --em-ink: #EDEDED;
+  --em-card: rgba(255,255,255,0.06);
+  --em-border: rgba(255,255,255,0.18);
+  /* Also adjust menu tokens for dark mode */
+  --menu-hover: rgba(255,255,255,0.10);
+  --menu-shadow: 0 12px 36px rgba(0,0,0,0.35);
+  color-scheme: dark;
+}
+
+:root[data-em-theme='light']{
+  color-scheme: light;
+}
+
+:root[data-em-theme='dark'] body,
+:root[data-em-theme='dark'] .wp-site-blocks{
+  background: var(--em-bg) !important;
+  color: var(--em-text);
+}
+
+:root[data-em-theme='dark'] a{
+  color: var(--em-teal);
+}
+
+body, .wp-site-blocks{ background: var(--em-bg) !important; color: var(--em-text); }
+a{ color: var(--em-teal); }
+
+/* Cards */
+.em-player, .em-chapters, .em-related, .em-newsletter, .em-phq9,
+.wp-block-group.is-style-em-card {
+  border: 1px solid var(--em-border);
+  border-radius: 16px;
+  background: var(--em-card);
+  padding: 20px; margin: 16px 0;
+}
+
+/* Dark mode toggle button */
+.em-dark-mode-toggle{
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--em-text);
+  font-size: 20px;
+  line-height: 1;
+  padding: 4px;
+}
+
+/* Skip link */
+.skip-link{ position:absolute; left:-999px; top:auto; width:1px; height:1px; overflow:hidden; }
+.skip-link:focus{ position:static; width:auto; height:auto; padding:8px 12px; background:var(--em-teal); color:#fff; border-radius:8px; }
+
+/* RTL helpers */
+html[dir="rtl"] .wp-block-list{ padding-right: 1.2rem; padding-left: 0; }
+
+/* Dark (automatic, based on system) */
+@media (prefers-color-scheme: dark){
+  :root{
+    --em-bg: #0A2A43;
+    --em-text: #FFFFFF;
+    --em-teal: #66D9FF;
+    --em-gold: #F4D483;
+    --em-ink: #EDEDED;
+    --em-card: rgba(255,255,255,0.06);
+    --em-border: rgba(255,255,255,0.18);
+    color-scheme: dark;
+  }
+  body, .wp-site-blocks{ background: var(--em-bg) !important; color: var(--em-text); }
+  a{ color: var(--em-teal); }
+}
+
+/* ===============================
+   Polylang Language Switcher (Final, theme-aligned)
+   =============================== */
+
+/* 1) حالت FSE / Navigation block زیرمنو */
+.wp-block-navigation .wp-block-navigation__submenu-container{
+  background: var(--menu-surface);
+  border: 1px solid var(--menu-border);
+  border-radius: 12px;
+  padding: 8px;
+  min-width: 180px;
+  box-shadow: var(--menu-shadow);
+  z-index: 1000;
+}
+.wp-block-navigation .wp-block-navigation__submenu-container .wp-block-navigation-item__content{
+  color: var(--menu-text);
+  padding: 8px 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  display: block;
+  transition: background-color .15s ease, color .15s ease;
+}
+.wp-block-navigation .wp-block-navigation__submenu-container .wp-block-navigation-item__content:hover,
+.wp-block-navigation .wp-block-navigation__submenu-container .wp-block-navigation-item__content:focus{
+  background: var(--menu-hover);
+  outline: none;
+}
+
+/* برجسته‌سازی آیتم زبان فعلی (اگر Polylang کلاس بدهد) */
+.wp-block-navigation .wp-block-navigation__submenu-container .current-lang > .wp-block-navigation-item__content,
+.wp-block-navigation .wp-block-navigation__submenu-container .is-current > .wp-block-navigation-item__content{
+  outline: 2px solid var(--menu-current);
+  outline-offset: 1px;
+}
+
+/* 2) حالت کلاسیک / منوهای قدیمی (در صورت استفاده) */
+.menu-item-language .sub-menu,
+.pll-parent-menu-item .sub-menu,
+.lang-item .sub-menu{
+  background: var(--menu-surface);
+  border: 1px solid var(--menu-border);
+  border-radius: 12px;
+  padding: 8px;
+  min-width: 180px;
+  box-shadow: var(--menu-shadow);
+  z-index: 1000;
+}
+.menu-item-language .sub-menu a,
+.pll-parent-menu-item .sub-menu a,
+.lang-item .sub-menu a{
+  color: var(--menu-text) !important;
+  padding: 8px 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  display: block;
+  transition: background-color .15s ease, color .15s ease;
+}
+.menu-item-language .sub-menu a:hover,
+.menu-item-language .sub-menu a:focus,
+.pll-parent-menu-item .sub-menu a:hover,
+.pll-parent-menu-item .sub-menu a:focus,
+.lang-item .sub-menu a:hover,
+.lang-item .sub-menu a:focus{
+  background: var(--menu-hover);
+  outline: none;
+}
+.menu-item-language .sub-menu .current-lang > a,
+.pll-parent-menu-item .sub-menu .current-lang > a,
+.lang-item .sub-menu .current-lang > a{
+  outline: 2px solid var(--menu-current);
+  outline-offset: 1px;
+}
+
+/* 3) ریزتنظیم RTL */
+html[dir="rtl"] .wp-block-navigation .wp-block-navigation__submenu-container,
+html[dir="rtl"] .menu-item-language .sub-menu{ text-align: right; }
+
+
+/* ====== Menu tokens (inherit theme colors) ====== */
+:root{
+  --menu-surface: var(--em-card);           /* پس‌زمینه زیرمنو */
+  --menu-text:    var(--em-text);           /* رنگ متن آیتم‌ها */
+  --menu-border:  var(--em-border);         /* دور منو */
+  --menu-hover:   rgba(0,0,0,0.06);         /* پس‌زمینه هاور/فوکوس در Light */
+  --menu-shadow:  0 8px 28px rgba(0,0,0,0.08);
+  --menu-current: var(--em-teal);           /* تاکید آیتم جاری */
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --menu-surface: var(--em-card);         /* نیمه‌تیره‌ی لطیف */
+    --menu-text:    var(--em-text);
+    --menu-border:  var(--em-border);
+    --menu-hover:   rgba(255,255,255,0.10); /* هاور در Dark */
+    --menu-shadow:  0 12px 36px rgba(0,0,0,0.35);
+    --menu-current: var(--em-teal);
+  }
+}
+
+@media print{
+  header, footer, .wp-block-navigation, .em-header-actions { display:none !important; }
+  body { background:#fff !important; color:#000 !important; }
+  .is-style-em-card, .em-player, .em-phq9 { border:1px solid #000; background:#fff; }
+  a:after{ content:" (" attr(href) ")"; font-size:12px; }
+  .em-p__controls, .em-p__barwrap { display:none !important; }
+}
+
+img[fetchpriority="high"]{ content-visibility:auto; }
+
+@media print{
+  .site-header, header, footer, .wp-block-navigation { display:none !important; }
+}
+
+/* Accessible visually-hidden utility (keeps element for AT/SEO) */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.focusable-skip a:focus,
+.focusable-skip a:active {
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  clip: auto !important;
+  white-space: normal !important;
+  padding: .5rem .75rem;
+  background: #F4D483;
+  color: #0A2A43;
+  border-radius: .5rem;
+  box-shadow: 0 0 0 3px rgba(244,212,131,.4);
+}
+
+/* Transcript details */
+.em-transcript { line-height: 1.8; }
+details > summary { cursor: pointer; padding: .25rem 0; }
+details[open] > summary { opacity: .9; }
+
+/* Chapters list injected by [em_video_chapters] */
+.em-chapters { margin-top: 1rem; }
+.em-chapters a { text-decoration: none; }
+.em-chapters a:hover { text-decoration: underline; }
+
+.em-steps li { margin-bottom:.5rem; line-height:1.7; }
+.em-steps strong { color:var(--wp--preset--color--teal); }
+#em-timer { font-weight:600; }
+
+/* Reading time (اگر افزونه نداری و دستی مقدار می‌گذاری) */
+.em-reading-time { opacity:.85; }
+.em-reading-min { font-weight:600; }
+
+/* TOC */
+.em-toc ul { margin: .25rem 0 0 1rem; }
+.em-toc a { text-decoration: none; }
+.em-toc a:hover { text-decoration: underline; }
+
+/* Author box */
+.em-author-box .wp-block-post-author__name { font-size: 1.05rem; font-weight: 600; }
+.em-author-box p { margin: .25rem 0 0; }
+
+.em-topic-pills { display:flex; gap:.5rem; flex-wrap:wrap }
+.em-topic-pills .pill {
+  display:inline-block; padding:.35rem .7rem; border-radius:999px;
+  background:#0b2d49; color:#fff; text-decoration:none; font-size:.9rem
+}
+.em-topic-pills .pill:hover { text-decoration:underline }
+
+.em-archive-search input[type="search"]::placeholder { color:#666; }
+.em-meta { line-height:1.4; }
+.wp-block-query .wp-block-post-template { gap:1rem; }
+
+.em-archive-search input[type="search"]::placeholder { color:#666; }
+.wp-block-query .wp-block-post-template { gap:1rem; }
+.wp-block-post-excerpt p { margin-bottom:0; }
+.wp-block-query-pagination { margin-top:1rem; }
+
+.em-tabs .em-tab {
+  display:inline-block; padding:.45rem .8rem; border-radius:999px;
+  background:#0b2d49; color:#fff; text-decoration:none; font-weight:600;
+}
+.em-tabs .em-tab.is-active { outline:3px solid rgba(244,212,131,.35) }
+
+/* Search placeholder */
+.em-archive-search input[type="search"]::placeholder { color:#666 }
+
+/* Grid niceties */
+.wp-block-query .wp-block-post-template { gap:1rem }
+
+/* Tabs (basic) */
+.em-tabs .em-tab { display:inline-block; padding:.45rem .8rem; border-radius:999px; background:#0b2d49; color:#fff; text-decoration:none; font-weight:600 }
+.em-tabs .em-tab.is-active { outline:3px solid rgba(244,212,131,.35) }
+
+/* Pills */
+.em-quick-filters .pill {
+  display:inline-block; padding:.38rem .8rem; border-radius:999px;
+  background:#0b2d49; color:#fff; text-decoration:none; font-weight:600;
+}
+.em-quick-filters .pill:hover { text-decoration:underline }
+
+/* Badges */
+.em-badge {
+  display:inline-block; padding:.15rem .5rem; border-radius:6px;
+  font-size:.8rem; font-weight:700; line-height:1; vertical-align:middle;
+  background:#eef2f7; color:#0A2A43;
+}
+.em-badge-em_video { background:#e8f7ff }
+.em-badge-em_exercise { background:#e9fff3 }
+.em-badge-em_article { background:#fff6e8 }
+.em-badge-post { background:#f0e9ff }
+
+/* Highlight */
+mark { background: #F4D483; padding:0 .15em; border-radius:2px }
+
+/* Excerpt spacing */
+.em-excerpt { margin:.35rem 0 0 }
+
+/* 404 search placeholder */
+.em-404-search input[type="search"]::placeholder { color:#666 }
+
+/* Mini lists */
+.em-mini-list { list-style:none; padding-left:0; margin:.4rem 0 }
+.em-mini-list li { margin:.25rem 0 }
+
+/* Button */
+.em-button {
+  display:inline-block; padding:.55rem 1rem; border-radius:999px;
+  background:#F4D483; color:#0A2A43; text-decoration:none; font-weight:700
+}
+.em-button:hover { text-decoration:underline }
+
+/* Typography refinements for single */
+.single-post .wp-block-post-content p { margin: 0 0 1.05rem }
+.single-post .wp-block-post-content h2 { margin: 1.4rem 0 .6rem }
+.single-post .wp-block-post-content h3 { margin: 1rem 0 .5rem }
+.single-post figure img { border-radius: 12px }
+
+/* TOC */
+.em-toc ol { margin:.25rem 0 0 1rem; padding-left:0 }
+.em-toc li { margin:.2rem 0 }
+.em-toc a { text-decoration:none }
+.em-toc a:hover { text-decoration:underline }
+
+/* Share buttons (re-use brand button style) */
+.em-button {
+  display:inline-block; padding:.5rem .9rem; border-radius:999px;
+  background:#F4D483; color:#0A2A43; text-decoration:none; font-weight:700;
+}
+.em-button:hover { text-decoration:underline }
+
+/* Buttons */
+.em-button {
+  display:inline-block; padding:.55rem 1rem; border-radius:999px;
+  background:#F4D483; color:#0A2A43; font-weight:700; text-decoration:none;
+}
+.em-button:hover { text-decoration:underline }
+
+/*
+ * Dark mode overrides
+ *
+ * Some templates set explicit background colours (e.g. dark blue sections) which do not change
+ * when the dark‑mode toggle is activated. To ensure dark mode provides sufficient contrast, we
+ * override backgrounds and text colours for blocks with background styles and common UI pills.
+ */
+/* General background override for blocks with a background colour */
+:root[data-em-theme='dark'] .has-background,
+:root[data-em-theme='dark'] [class*="is-style-em-card"] {
+  background: var(--em-card) !important;
+  color: var(--em-text) !important;
+}
+
+/* Override pills and tab backgrounds in dark mode */
+:root[data-em-theme='dark'] .em-topic-pills .pill,
+:root[data-em-theme='dark'] .em-tabs .em-tab,
+:root[data-em-theme='dark'] .em-quick-filters .pill {
+  background: var(--em-card) !important;
+  color: var(--em-text) !important;
+}
+
+/* Override inline dark backgrounds defined in templates (e.g. #0e3252, #0b2d49) */
+:root[data-em-theme='dark'] [style*="#0e3252"],
+:root[data-em-theme='dark'] [style*="#0b2d49"],
+:root[data-em-theme='dark'] [style*="#0B2D49"],
+:root[data-em-theme='dark'] [style*="#0E3252"] {
+  background: var(--em-card) !important;
+  color: var(--em-text) !important;
+}
+
+/* Search placeholders */
+.em-help-search input::placeholder { color:#666 }
+
+/* Cards */
+.wp-block-group[style*="box-shadow:var(--wp--custom--brand--shadow--card)"] p { margin:.35rem 0 }
+

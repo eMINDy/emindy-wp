@@ -1,0 +1,22 @@
+# System files
+.DS_Store
+Thumbs.db
+
+# Node / Composer / tools (اگر بعداً اضافه شد)
+node_modules/
+vendor/
+*.log
+
+# IDE configs
+.vscode/
+.idea/
+
+# WordPress stuff that we *don't* want in this repo
+wp-config.php
+wp-content/uploads/
+wp-content/cache/
+wp-content/advanced-cache.php
+wp-content/object-cache.php
+wp-content/backups/
+*.sql
+.env

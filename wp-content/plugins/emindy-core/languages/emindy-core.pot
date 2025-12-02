@@ -1,0 +1,15 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: eMINDy Core Plugin\n"
+"POT-Creation-Date: 2025-11-27\n"
+"Report-Msgid-Bugs-To: https://example.com\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+##
+# This POT file was automatically generated as a starting point for
+# translations.  To update it, run `wp i18n make-pot` from the plugin
+# directory or use Poedit.  For more information see
+# https://developer.wordpress.org/plugins/internationalization-basics/.

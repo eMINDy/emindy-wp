@@ -1,0 +1,112 @@
+<!-- wp:template-part {"slug":"header","tagName":"header","align":"full"} /-->
+
+<!-- wp:group {"metadata":{"name":"Index — Fallback"},"tagName":"main","align":"full","style":{"spacing":{"padding":{"top":"1.5rem","bottom":"2.25rem"}}},"layout":{"type":"constrained","contentSize":"1100px"}} -->
+<main id="main-content" class="wp-block-group alignfull" style="padding-top:1.5rem;padding-bottom:2.25rem">
+
+  <!-- Intro -->
+  <!-- wp:group {"layout":{"type":"constrained","contentSize":"900px"},"style":{"spacing":{"margin":{"bottom":"1rem"}}}} -->
+  <div class="wp-block-group" style="margin-bottom:1rem">
+    <!-- wp:heading {"level":1,"style":{"typography":{"fontSize":"clamp(2rem,3vw,2.4rem)"}}} -->
+    <h1>Welcome to eMINDy</h1>
+    <!-- /wp:heading -->
+    <!-- wp:paragraph -->
+    <p>Search across videos, exercises, articles, and our blog—or use the shortcuts below.</p>
+    <!-- /wp:paragraph -->
+  </div>
+  <!-- /wp:group -->
+
+  <!-- Search bar -->
+  <!-- wp:group {"style":{"spacing":{"padding":{"top":"0.75rem","bottom":"0.75rem","left":"0.75rem","right":"0.75rem"},"margin":{"bottom":"1rem"}},"color":{"background":"#0e3252"},"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"elements":{"link":{"color":{"text":"var(--wp--preset--color--white)"}}}},"textColor":"white"} -->
+  <div class="wp-block-group has-white-color has-text-color has-background" style="background-color:#0e3252;border-radius:var(--wp--custom--brand--radius--xl);padding:.75rem;margin-bottom:1rem">
+    <!-- wp:html -->
+    <form role="search" method="get" action="/" class="em-index-search" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
+      <label for="idx-s" class="sr-only">Search eMINDy</label>
+      <input id="idx-s" type="search" name="s" placeholder="Search videos, exercises, articles, blog…" style="flex:1;min-width:260px;padding:.55rem .8rem;border-radius:.75rem;border:0">
+      <input type="hidden" name="post_type[]" value="em_video">
+      <input type="hidden" name="post_type[]" value="em_exercise">
+      <input type="hidden" name="post_type[]" value="em_article">
+      <input type="hidden" name="post_type[]" value="post">
+      <button type="submit" style="padding:.6rem .95rem;border-radius:.75rem;border:0;background:#F4D483;color:#0A2A43;font-weight:700">Search</button>
+    </form>
+    <!-- /wp:html -->
+  </div>
+  <!-- /wp:group -->
+
+  <!-- Shortcuts -->
+  <!-- wp:group {"layout":{"type":"flex","flexWrap":"wrap"},"style":{"spacing":{"blockGap":"0.5rem","margin":{"bottom":"1rem"}}}} -->
+  <div class="wp-block-group" style="margin-bottom:1rem">
+    <!-- wp:paragraph --><p><strong>Shortcuts:</strong></p><!-- /wp:paragraph -->
+    <!-- wp:paragraph --><p><a href="/start-here/">Start Here</a> · <a href="/library/">Library</a> · <a href="/em_video/">Videos</a> · <a href="/em_exercise/">Exercises</a> · <a href="/articles/">Articles Hub</a> · <a href="/blog/">Blog</a></p><!-- /wp:paragraph -->
+  </div>
+  <!-- /wp:group -->
+
+  <!-- Latest strips (CPT + post) -->
+  <!-- wp:columns {"style":{"spacing":{"blockGap":{"left":"1rem"}}}} -->
+  <div class="wp-block-columns">
+    <div class="wp-block-column">
+      <!-- wp:heading {"level":2} --><h2>Latest Videos</h2><!-- /wp:heading -->
+      <!-- wp:query {"queryId":9001,"query":{"perPage":4,"postType":"em_video","order":"desc","orderBy":"date","inherit":false},"displayLayout":{"type":"grid","columns":2}} -->
+      <div class="wp-block-query">
+        <!-- wp:post-template -->
+          <!-- wp:group {"style":{"border":{"radius":"12px"},"shadow":"var(--wp--custom--brand--shadow--card)","spacing":{"padding":{"top":"0.6rem","bottom":"0.6rem","left":"0.6rem","right":"0.6rem"}}}} -->
+          <div class="wp-block-group" style="border-radius:12px;box-shadow:var(--wp--custom--brand--shadow--card);padding:.6rem">
+            <!-- wp:post-featured-image {"isLink":true,"style":{"border":{"radius":"10px"}}} /-->
+            <!-- wp:post-title {"isLink":true,"level":4,"style":{"spacing":{"margin":{"top":"0.4rem"}}}} /-->
+          </div>
+          <!-- /wp:group -->
+        <!-- /wp:post-template -->
+      </div>
+      <!-- /wp:query -->
+      <p><a href="/em_video/">See all videos →</a></p>
+
+      <!-- wp:heading {"level":2,"style":{"spacing":{"margin":{"top":"1rem"}}}} --><h2>Latest Exercises</h2><!-- /wp:heading -->
+      <!-- wp:query {"queryId":9002,"query":{"perPage":4,"postType":"em_exercise","order":"desc","orderBy":"date","inherit":false},"displayLayout":{"type":"grid","columns":2}} -->
+      <div class="wp-block-query">
+        <!-- wp:post-template -->
+          <div class="wp-block-group" style="border-radius:12px;box-shadow:var(--wp--custom--brand--shadow--card);padding:.6rem">
+            <!-- wp:post-title {"isLink":true,"level":4} /-->
+            <!-- wp:post-excerpt {"excerptLength":18} /-->
+          </div>
+        <!-- /wp:post-template -->
+      </div>
+      <!-- /wp:query -->
+      <p><a href="/em_exercise/">Browse exercises →</a></p>
+    </div>
+
+    <div class="wp-block-column">
+      <!-- wp:heading {"level":2} --><h2>Latest Articles</h2><!-- /wp:heading -->
+      <!-- wp:query {"queryId":9003,"query":{"perPage":4,"postType":"em_article","order":"desc","orderBy":"date","inherit":false},"displayLayout":{"type":"list"}} -->
+      <div class="wp-block-query">
+        <!-- wp:post-template -->
+          <div class="wp-block-group" style="margin:.5rem 0">
+            <!-- wp:post-title {"isLink":true,"level":4} /-->
+            <!-- wp:post-excerpt {"excerptLength":22} /-->
+          </div>
+        <!-- /wp:post-template -->
+      </div>
+      <!-- /wp:query -->
+      <p><a href="/articles/">Go to Articles Hub →</a></p>
+
+      <!-- wp:heading {"level":2,"style":{"spacing":{"margin":{"top":"1rem"}}}} --><h2>Latest from the Blog</h2><!-- /wp:heading -->
+      <!-- wp:query {"queryId":9004,"query":{"perPage":4,"postType":"post","order":"desc","orderBy":"date","inherit":false},"displayLayout":{"type":"list"}} -->
+      <div class="wp-block-query">
+        <!-- wp:post-template -->
+          <div class="wp-block-group" style="margin:.5rem 0">
+            <!-- wp:post-title {"isLink":true,"level":4} /-->
+            <!-- wp:post-date {"format":"M j, Y"} /-->
+          </div>
+        <!-- /wp:post-template -->
+      </div>
+      <!-- /wp:query -->
+      <p><a href="/blog/">Open blog →</a></p>
+    </div>
+  </div>
+  <!-- /wp:columns -->
+
+  <!-- Optional admin-only notice (via shortcode) -->
+  <!-- wp:shortcode -->[em_admin_notice_missing_pages]<!-- /wp:shortcode -->
+
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer","align":"full"} /-->
