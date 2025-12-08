@@ -8,13 +8,15 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-    exit;
+  exit;
 }
 
-add_action( 'wp_enqueue_scripts', function () {
+/**
+ * Enqueue child theme assets.
+ */
+function emindy_enqueue_child_assets(): void {
   wp_enqueue_style( 'emindy-child', get_stylesheet_uri(), [ 'twentytwentyfive-style' ], '0.4.0' );
-  // Enqueue the dark mode toggle script. It depends on no other scripts and
-  // loads in the footer for better performance. See assets/js/dark-mode-toggle.js.
+
   wp_enqueue_script(
     'emindy-dark-mode-toggle',
     get_stylesheet_directory_uri() . '/assets/js/dark-mode-toggle.js',
@@ -22,99 +24,132 @@ add_action( 'wp_enqueue_scripts', function () {
     '1.0',
     true
   );
-} );
+}
+add_action( 'wp_enqueue_scripts', 'emindy_enqueue_child_assets' );
 
-// Theme supports
-/*
- * Register basic theme supports and load the theme’s translation files.
- *
- * In addition to adding support for common WordPress features, we call
- * load_theme_textdomain() so that all translatable strings in the theme
- * (wrapped with __(), _e(), etc.) use the `emindy` text domain. Without
- * loading the text domain WordPress will not find the .mo files in the
- * languages directory and translations will not work【766128347407102†L100-L116】.
+/**
+ * Register theme supports and translation domain.
  */
-add_action('after_setup_theme', function () {
-    // Load translations from the `languages` folder in this child theme.
-    load_theme_textdomain('emindy', get_stylesheet_directory() . '/languages');
-    
-    add_theme_support('title-tag');
-    add_theme_support('post-thumbnails');
-    add_theme_support('html5', ['search-form','gallery','caption','style','script']);
-    add_theme_support('align-wide');
-    add_theme_support('editor-styles');
-    add_theme_support('responsive-embeds');
-});
+function emindy_setup_theme(): void {
+  load_theme_textdomain( 'emindy', get_stylesheet_directory() . '/languages' );
 
-// Robots: noindex برای جستجو و 404 (با Rank Math)
-add_filter('rank_math/frontend/robots', function($robots){
-    if ( is_search() || is_404() ) {
-        $robots['index']  = 'noindex';
-        $robots['follow'] = 'follow';
+  add_theme_support( 'title-tag' );
+  add_theme_support( 'post-thumbnails' );
+  add_theme_support( 'html5', [ 'search-form', 'gallery', 'caption', 'style', 'script' ] );
+  add_theme_support( 'align-wide' );
+  add_theme_support( 'editor-styles' );
+  add_theme_support( 'responsive-embeds' );
+}
+add_action( 'after_setup_theme', 'emindy_setup_theme' );
+
+/**
+ * Ensure search and 404 pages are noindexed when Rank Math is active.
+ *
+ * @param array $robots Robots directives.
+ * @return array
+ */
+function emindy_rank_math_robots( $robots ): array {
+  if ( is_search() || is_404() ) {
+    $robots['index']  = 'noindex';
+    $robots['follow'] = 'follow';
+  }
+
+  return $robots;
+}
+add_filter( 'rank_math/frontend/robots', 'emindy_rank_math_robots' );
+
+/**
+ * Fallback robots meta when Rank Math is not available.
+ */
+function emindy_fallback_robots_meta(): void {
+  if ( function_exists( 'rank_math' ) ) {
+    return;
+  }
+
+  if ( is_search() || is_404() ) {
+    echo '<meta name="robots" content="' . esc_attr( 'noindex,follow' ) . '" />' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+  }
+}
+add_action( 'wp_head', 'emindy_fallback_robots_meta', 99 );
+
+/**
+ * Output a skip link for accessibility.
+ */
+function emindy_skip_link(): void {
+  echo '<a class="skip-link screen-reader-text" href="', esc_url( '#main-content' ), '">', esc_html__( 'Skip to content', 'emindy' ), '</a>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+}
+add_action( 'wp_body_open', 'emindy_skip_link' );
+
+/**
+ * Adjust em_video archive queries with topic filtering and search support.
+ *
+ * @param WP_Query $query Main query.
+ */
+function emindy_adjust_em_video_archive( WP_Query $query ): void {
+  if ( is_admin() || ! $query->is_main_query() ) {
+    return;
+  }
+
+  if ( $query->is_post_type_archive( 'em_video' ) ) {
+    $query->set( 'posts_per_page', 9 );
+
+    $topic = filter_input( INPUT_GET, 'topic', FILTER_VALIDATE_INT );
+    if ( $topic ) {
+      $query->set(
+        'tax_query',
+        [
+          [
+            'taxonomy' => 'topic',
+            'field'    => 'term_id',
+            'terms'    => $topic,
+          ],
+        ]
+      );
     }
-    return $robots;
-});
 
-// Fallback اگر Rank Math نبود (ایمن)
-add_action('wp_head', function () {
-    if ( function_exists('rank_math') ) return;
-    if ( is_search() || is_404() ) {
-        echo '<meta name="robots" content="noindex,follow" />' . "\n";
-    }
-}, 99);
-
-
-add_action('wp_body_open', function(){
-  echo '<a class="skip-link screen-reader-text" href="#main-content">'.esc_html__('Skip to content','emindy').'</a>';
-});
-
-// آرشیو em_video: فیلتر موضوع + کنترل per_page + جستجو
-add_action('pre_get_posts', function($q){
-  if ( is_admin() || ! $q->is_main_query() ) return;
-
-  if ( $q->is_post_type_archive('em_video') ) {
-    $q->set('posts_per_page', 9);
-
-    if ( ! empty( $_GET['topic'] ) ) {
-      $topic = absint( wp_unslash( $_GET['topic'] ) );
-      if ( $topic ) {
-      // Use the unified `topic` taxonomy instead of the old `em_topic` slug.
-        $q->set('tax_query', [[
-          'taxonomy' => 'topic',
-          'field'    => 'term_id',
-          'terms'    => $topic,
-        ]]);
-      }
-    }
-    if ( isset( $_GET['s'] ) ) {
-      // Sanitize the search term from the query string. wp_unslash() removes
-      // added slashes before sanitize_text_field() strips tags and entities,
-      // preventing injection and ensuring safe output.
-      $search = sanitize_text_field( wp_unslash( (string) $_GET['s'] ) );
-      $q->set('s', $search);
+    if ( isset( $_GET['s'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+      $search = sanitize_text_field( wp_unslash( (string) $_GET['s'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+      $query->set( 's', $search );
     }
   }
-});
+}
+add_action( 'pre_get_posts', 'emindy_adjust_em_video_archive' );
 
-add_filter('the_excerpt', function($excerpt){
-  if (is_search() && get_search_query()){
-    $q = preg_quote(get_search_query(),'/');
-    $excerpt = preg_replace('/('.$q.')/iu','<mark>$1</mark>',$excerpt);
+/**
+ * Highlight search terms in excerpts.
+ *
+ * @param string $excerpt Post excerpt.
+ * @return string
+ */
+function emindy_highlight_search_terms( string $excerpt ): string {
+  $search_query = get_search_query( false );
+  if ( is_search() && '' !== $search_query ) {
+    $quoted_query = preg_quote( $search_query, '/' );
+    $excerpt      = preg_replace( '/(' . $quoted_query . ')/iu', '<mark>$1</mark>', $excerpt );
   }
-  return $excerpt;
-});
 
-// Preconnect/Preload برای Lyte/YouTube
-add_filter('wp_resource_hints', function($urls, $relation_type){
+  return (string) $excerpt;
+}
+add_filter( 'the_excerpt', 'emindy_highlight_search_terms' );
+
+/**
+ * Add resource hints for YouTube assets.
+ *
+ * @param array  $urls          Current URLs.
+ * @param string $relation_type Relation type.
+ * @return array
+ */
+function emindy_resource_hints( array $urls, string $relation_type ): array {
   if ( 'preconnect' === $relation_type ) {
     $urls[] = 'https://i.ytimg.com';
     $urls[] = 'https://www.youtube-nocookie.com';
     $urls[] = 'https://www.youtube.com';
     $urls[] = 'https://s.ytimg.com';
   }
-  return array_unique($urls);
-}, 10, 2);
 
+  return array_unique( $urls );
+}
+add_filter( 'wp_resource_hints', 'emindy_resource_hints', 10, 2 );
 
 /*
  * The taxonomy registration and default term insertion previously defined in this
@@ -126,94 +161,161 @@ add_filter('wp_resource_hints', function($urls, $relation_type){
  * types.  If you need to add or modify terms, do so via the plugin.
  */
 
-
-function emindy_print_itemlist_jsonld( $title, $items ) {
-  // $items: array of ['name'=>'', 'url'=>'']
+/**
+ * Print ItemList JSON-LD schema.
+ *
+ * @param string $title List name.
+ * @param array  $items Array of [ 'name' => '', 'url' => '' ].
+ */
+function emindy_print_itemlist_jsonld( string $title, array $items ): void {
   $list = [];
-  $pos = 0;
-  foreach ($items as $it) {
-    if ( empty($it['name']) || empty($it['url']) ) continue;
+  $pos  = 0;
+
+  foreach ( $items as $item ) {
+    if ( empty( $item['name'] ) || empty( $item['url'] ) ) {
+      continue;
+    }
+
     $pos++;
     $list[] = [
-      '@type' => 'ListItem',
+      '@type'    => 'ListItem',
       'position' => $pos,
-      'item' => [
+      'item'     => [
         '@type' => 'WebPage',
-        'name'  => wp_strip_all_tags($it['name']),
-        'url'   => esc_url_raw($it['url']),
-      ]
+        'name'  => wp_strip_all_tags( (string) $item['name'] ),
+        'url'   => esc_url_raw( (string) $item['url'] ),
+      ],
     ];
   }
 
-  if (!$list) return;
+  if ( ! $list ) {
+    return;
+  }
 
   $graph = [
-    '@context' => 'https://schema.org',
-    '@type'    => 'ItemList',
-    'name'     => $title,
-    'itemListElement' => $list
+    '@context'        => 'https://schema.org',
+    '@type'           => 'ItemList',
+    'name'            => wp_strip_all_tags( $title ),
+    'itemListElement' => $list,
   ];
 
-  echo '<script type="application/ld+json">'. wp_json_encode($graph, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE ) .'</script>';
+  echo '<script type="application/ld+json">', wp_json_encode( $graph, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT ), '</script>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 }
 
-// Meta key to store primary topic term_id
-define('EMINDY_PRIMARY_TOPIC_META', '_em_primary_topic');
+define( 'EMINDY_PRIMARY_TOPIC_META', '_em_primary_topic' );
 
-// Add meta box
-add_action('add_meta_boxes', function(){
-  add_meta_box('emindy_primary_topic', __('Primary Topic', 'emindy'), 'emindy_primary_topic_box', ['post','page'], 'side', 'default');
-});
+/**
+ * Register the Primary Topic meta box.
+ */
+function emindy_register_primary_topic_metabox(): void {
+  add_meta_box( 'emindy_primary_topic', __( 'Primary Topic', 'emindy' ), 'emindy_primary_topic_box', [ 'post', 'page' ], 'side', 'default' );
+}
+add_action( 'add_meta_boxes', 'emindy_register_primary_topic_metabox' );
 
-function emindy_primary_topic_box($post){
-  $saved = (int) get_post_meta($post->ID, EMINDY_PRIMARY_TOPIC_META, true);
-  $terms = wp_get_post_terms($post->ID, 'topic');
-  echo '<p>'. esc_html__( 'Select the primary topic (required if topics are set):', 'emindy' ) .'</p>';
-  echo '<select name="em_primary_topic" style="width:100%">';
-  echo '<option value="">'. esc_html__( '— None —', 'emindy' ) .'</option>';
-  foreach($terms as $t){
+/**
+ * Render the Primary Topic meta box.
+ *
+ * @param WP_Post $post Current post object.
+ */
+function emindy_primary_topic_box( WP_Post $post ): void {
+  $saved = (int) get_post_meta( $post->ID, EMINDY_PRIMARY_TOPIC_META, true );
+  $terms = wp_get_post_terms( $post->ID, 'topic' );
+
+  echo '<p>', esc_html__( 'Select the primary topic (required if topics are set):', 'emindy' ), '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+  echo '<select name="em_primary_topic" style="width:100%">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+  echo '<option value="">', esc_html__( '— None —', 'emindy' ), '</option>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+
+  foreach ( $terms as $term ) {
     printf(
-      '<option value="%d" %s>%s</option>',
-      $t->term_id,
-      selected($saved, $t->term_id, false),
-      esc_html($t->name)
+      '<option value="%1$d" %2$s>%3$s</option>',
+      (int) $term->term_id,
+      selected( $saved, (int) $term->term_id, false ),
+      esc_html( $term->name )
     );
   }
-  echo '</select>';
-  wp_nonce_field('em_primary_topic_save','em_primary_topic_nonce');
+
+  echo '</select>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+  wp_nonce_field( 'em_primary_topic_save', 'em_primary_topic_nonce' );
 }
 
-// Save
-add_action('save_post', function($post_id){
-  if( !isset($_POST['em_primary_topic_nonce']) || !wp_verify_nonce($_POST['em_primary_topic_nonce'],'em_primary_topic_save') ) return;
-  if( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
-  if( isset($_POST['em_primary_topic']) ){
-    $primary = (int) wp_unslash( $_POST['em_primary_topic'] );
-    update_post_meta($post_id, EMINDY_PRIMARY_TOPIC_META, $primary);
+/**
+ * Save the Primary Topic meta value.
+ *
+ * @param int $post_id Post ID.
+ */
+function emindy_save_primary_topic( int $post_id ): void {
+  if ( ! isset( $_POST['em_primary_topic_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['em_primary_topic_nonce'] ) ), 'em_primary_topic_save' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+    return;
   }
-});
 
-add_action('admin_notices', function(){
-  $screen = get_current_screen();
-  if ( !in_array($screen->id, ['post','page','em_video','em_exercise','em_article']) ) return;
-  $post_id = isset($_GET['post']) ? absint( wp_unslash( $_GET['post'] ) ) : 0;
-  if (!$post_id) return;
-  $topics = wp_get_post_terms($post_id,'topic', ['fields'=>'ids']);
-  if ($topics && !get_post_meta($post_id, '_em_primary_topic', true)) {
-    echo '<div class="notice notice-warning"><p><strong>'. esc_html__( 'Primary Topic', 'emindy' ) .'</strong> '. esc_html__( 'is not set. Please select one in the sidebar meta box for better recommendations & SEO.', 'emindy' ) .'</p></div>';
+  if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+    return;
   }
-});
 
+  if ( ! current_user_can( 'edit_post', $post_id ) ) {
+    return;
+  }
 
-add_action('pre_get_posts', function($q){
-  if ( is_admin() || !$q->is_main_query() ) return;
-  if ( $q->is_post_type_archive('em_video') || ($q->is_tax('topic') && $q->get('post_type')==='em_video') ) {
-    $sort = isset($_GET['sort']) ? sanitize_text_field( wp_unslash( $_GET['sort'] ) ) : '';
-    if ($sort === 'alpha') {
-      $q->set('orderby','title'); $q->set('order','ASC');
-    } else { // default latest
-      $q->set('orderby','date'); $q->set('order','DESC');
+  if ( isset( $_POST['em_primary_topic'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+    $primary = (int) wp_unslash( $_POST['em_primary_topic'] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+
+    if ( $primary > 0 ) {
+      update_post_meta( $post_id, EMINDY_PRIMARY_TOPIC_META, $primary );
+    } else {
+      delete_post_meta( $post_id, EMINDY_PRIMARY_TOPIC_META );
     }
   }
-});
+}
+add_action( 'save_post', 'emindy_save_primary_topic' );
 
+/**
+ * Warn editors when a primary topic is missing.
+ */
+function emindy_primary_topic_notice(): void {
+  $screen = get_current_screen();
+
+  if ( ! $screen || ! in_array( $screen->id, [ 'post', 'page', 'em_video', 'em_exercise', 'em_article' ], true ) ) {
+    return;
+  }
+
+  $post_id = isset( $_GET['post'] ) ? absint( wp_unslash( $_GET['post'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+  if ( ! $post_id ) {
+    return;
+  }
+
+  $topics = wp_get_post_terms( $post_id, 'topic', [ 'fields' => 'ids' ] );
+
+  if ( $topics && ! get_post_meta( $post_id, EMINDY_PRIMARY_TOPIC_META, true ) ) {
+    echo '<div class="notice notice-warning"><p><strong>', esc_html__( 'Primary Topic', 'emindy' ), '</strong> ', esc_html__( 'is not set. Please select one in the sidebar meta box for better recommendations & SEO.', 'emindy' ), '</p></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+  }
+}
+add_action( 'admin_notices', 'emindy_primary_topic_notice' );
+
+/**
+ * Handle sorting for em_video archives and topic term pages.
+ *
+ * @param WP_Query $query Main query.
+ */
+function emindy_sort_em_video_archives( WP_Query $query ): void {
+  if ( is_admin() || ! $query->is_main_query() ) {
+    return;
+  }
+
+  $is_em_video_archive = $query->is_post_type_archive( 'em_video' );
+  $is_topic_em_video    = $query->is_tax( 'topic' ) && 'em_video' === $query->get( 'post_type' );
+
+  if ( $is_em_video_archive || $is_topic_em_video ) {
+    $sort = filter_input( INPUT_GET, 'sort', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+    $sort = 'alpha' === $sort ? 'alpha' : '';
+
+    if ( 'alpha' === $sort ) {
+      $query->set( 'orderby', 'title' );
+      $query->set( 'order', 'ASC' );
+    } else {
+      $query->set( 'orderby', 'date' );
+      $query->set( 'order', 'DESC' );
+    }
+  }
+}
+add_action( 'pre_get_posts', 'emindy_sort_em_video_archives' );
