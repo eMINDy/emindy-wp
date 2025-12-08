@@ -1,109 +1,110 @@
 /*! eMINDy — self-hosted variable fonts (Inter + Vazirmatn)
-	Family alias: "eMINDy Sans"
-	Place this file at /assets/fonts/fonts.css and reference from style.css (or @import).
-	License: Inter (SIL OFL), Vazirmatn (SIL OFL) — include LICENSE files in this folder. */
+    Family alias: "eMINDy Sans"
+    Place this file at /assets/fonts/fonts.css and reference from style.css (or @import).
+    License: Inter (SIL OFL), Vazirmatn (SIL OFL) — include LICENSE files in this folder. */
 
 /* -----------------------------------------------------------
-	(A) Latin — Inter Variable (wght range)
-	Notes:
-	- Uses unicode-range for Latin & common symbols
-	- If user has Inter installed, local() will skip download
+    (A) Latin — Inter Variable (wght range)
+    Notes:
+    - Uses unicode-range for Latin & common symbols
+    - If user has Inter installed, local() will skip download
 ------------------------------------------------------------*/
 @font-face {
-	font-family: 'eMINDy Sans';
-	font-style: normal;
-	font-weight: 100 900;
-	font-display: swap;
-	src:
-		local('Inter var'),
-		local('InterVariable'),
-		local('Inter'),
-		url('inter-var-latin.woff2') format('woff2-variations'),
-		url('inter-var-latin.woff2') format('woff2');
-	unicode-range:
-		U+0000-00FF,
-		/* Basic Latin + Latin-1 */ U+0131,
-		/* dotless i */ U+0152-0153,
-		/* Œ œ */ U+02BB-02BC,
-		/* ʻ ʼ */ U+02C6,
-		U+02DA,
-		U+02DC,
-		U+2000-206F,
-		/* General Punctuation */ U+2074,
-		/* superscript 4 */ U+20AC,
-		/* € */ U+2122,
-		/* ™ */ U+2191,
-		U+2193,
-		/* arrows */ U+2212,
-		U+2215,
-		/* −, ⁄ */ U+FEFF,
-		U+FFFD; /* BOM, replacement char */
+    font-family: "eMINDy Sans";
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src:
+        local("Inter var"),
+        local("InterVariable"),
+        local("Inter"),
+        url("inter-var-latin.woff2") format("woff2-variations"),
+        url("inter-var-latin.woff2") format("woff2");
+    unicode-range:
+        U+0000-00FF,
+        /* Basic Latin + Latin-1 */ U+0131,
+        /* dotless i */ U+0152-0153,
+        /* Œ œ */ U+02BB-02BC,
+        /* ʻ ʼ */ U+02C6,
+        U+02DA,
+        U+02DC,
+        U+2000-206F,
+        /* General Punctuation */ U+2074,
+        /* superscript 4 */ U+20AC,
+        /* € */ U+2122,
+        /* ™ */ U+2191,
+        U+2193,
+        /* arrows */ U+2212,
+        U+2215,
+        /* −, ⁄ */ U+FEFF,
+        U+FFFD; /* BOM, replacement char */
 }
 
 /* (Optional) Oblique support using the same variable file (Inter supports 'slnt' axis).
-	Uncomment if you want native oblique range mapping.
+    Uncomment if you want native oblique range mapping.
 @font-face {
-	font-family: "eMINDy Sans";
-	font-style: oblique 0deg 10deg;
-	font-weight: 100 900;
-	font-display: swap;
-	src:
-	local("Inter var"),
-	local("InterVariable"),
-	local("Inter"),
-	url("inter-var-latin.woff2") format("woff2-variations"),
-	url("inter-var-latin.woff2") format("woff2");
-	unicode-range:
-	U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
-	U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    font-family: "eMINDy Sans";
+    font-style: oblique 0deg 10deg;
+    font-weight: 100 900;
+    font-display: swap;
+    src:
+        local("Inter var"),
+        local("InterVariable"),
+        local("Inter"),
+        url("inter-var-latin.woff2") format("woff2-variations"),
+        url("inter-var-latin.woff2") format("woff2");
+    unicode-range:
+        U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+        U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 */
 
 /* -----------------------------------------------------------
-	(B) Arabic/Persian — Vazirmatn Variable (wght range)
-	Notes:
-	- Covers Arabic + Persian digits; includes ZWNJ/ZWJ explicitly
-	- local() names help skip download on systems with Vazirmatn installed
+    (B) Arabic/Persian — Vazirmatn Variable (wght range)
+    Notes:
+    - Covers Arabic + Persian digits; includes ZWNJ/ZWJ explicitly
+    - local() names help skip download on systems with Vazirmatn installed
 ------------------------------------------------------------*/
 @font-face {
-	font-family: 'eMINDy Sans';
-	font-style: normal;
-	font-weight: 100 900;
-	font-display: swap;
-	src:
-		local('Vazirmatn'),
-		local('Vazirmatn Variable'),
-		local('Vazirmatn[wght]'),
-		url('vazirmatn-var-arabic.woff2') format('woff2-variations'),
-		url('vazirmatn-var-arabic.woff2') format('woff2');
-	unicode-range:
-		U+0600-06FF,
-		/* Arabic */ U+0750-077F,
-		/* Arabic Supplement */ U+08A0-08FF,
-		/* Arabic Extended-A */ U+FB50-FDFF,
-		/* Arabic Presentation Forms-A */ U+FE70-FEFF,
-		/* Arabic Presentation Forms-B */ U+200C,
-		U+200D; /* ZWNJ, ZWJ */
+    font-family: "eMINDy Sans";
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src:
+        local("Vazirmatn"),
+        local("Vazirmatn Variable"),
+        local("Vazirmatn[wght]"),
+        url("vazirmatn-var-arabic.woff2") format("woff2-variations"),
+        url("vazirmatn-var-arabic.woff2") format("woff2");
+    unicode-range:
+        U+0600-06FF,
+        /* Arabic */ U+0750-077F,
+        /* Arabic Supplement */ U+08A0-08FF,
+        /* Arabic Extended-A */ U+FB50-FDFF,
+        /* Arabic Presentation Forms-A */ U+FE70-FEFF,
+        /* Arabic Presentation Forms-B */ U+200C,
+        U+200D; /* ZWNJ, ZWJ */
 }
 
 /* -----------------------------------------------------------
-	(C) Optional: Latin-Extended / Arabic-Extended subsets
-	If you provide additional subset files, add rules similar to (A)/(B)
-	with narrower unicode-range and specific file names, e.g.:
-	- inter-var-latin-ext.woff2
-	- vazirmatn-var-arabic-ext.woff2
-	This keeps default downloads minimal.
+    (C) Optional: Latin-Extended / Arabic-Extended subsets
+    If you provide additional subset files, add rules similar to (A)/(B)
+    with narrower unicode-range and specific file names, e.g.:
+    - inter-var-latin-ext.woff2
+    - vazirmatn-var-arabic-ext.woff2
+    This keeps default downloads minimal.
 ------------------------------------------------------------*/
 
 /* -----------------------------------------------------------
-	(D) Recommended: declare a font variable (does NOT override anything)
-	Use in your CSS: font-family: var(--font-sans);
+    (D) Recommended: declare a font variable (does NOT override anything)
+    Use in your CSS: font-family: var(--font-sans);
 ------------------------------------------------------------*/
 :root {
-	--font-sans:
-		'eMINDy Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
-		'Vazirmatn', 'Noto Naskh Arabic', 'Noto Sans Arabic', 'Segoe UI Variable Text', 'Inter',
-		sans-serif;
+    --font-sans:
+        "eMINDy Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+        "Vazirmatn", "Noto Naskh Arabic", "Noto Sans Arabic", "Segoe UI Variable Text", "Inter",
+        sans-serif;
+    font-synthesis: none;
 }
 
 /* End of fonts.css */
