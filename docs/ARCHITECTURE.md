@@ -135,11 +135,12 @@ Deprecated/legacy helpers such as `[em_transcript]`, `[em_video_filters]`, and `
 
 Two schema layers are present:
 
+- **Central builders**
+  - `includes/class-emindy-schema.php` exposes static builders for HowTo (exercises), VideoObject (videos) and Article (articles). Each helper maps core post data, featured image, author/dates and relevant meta (steps, timing, supplies/tools, chapters, video embed, etc.) into a single JSON-LD array, returning `null` when key data (e.g. HowTo steps) is missing.【F:wp-content/plugins/emindy-core/includes/class-emindy-schema.php†L9-L195】
 - **Rank Math integration (primary path)**
-  - `includes/schema.php` enriches Rank Math JSON-LD with Organization, WebSite/SearchAction, SearchResultsPage, CollectionPage/ItemList for archives, and content-specific nodes: VideoObject for videos, HowTo for exercises, Article for articles.【eab9f6†L1-L137】
-  - Helpers convert durations to ISO 8601, parse timestamps and extract headings.
+  - `includes/schema.php` enriches Rank Math JSON-LD with Organization, WebSite/SearchAction and safe archive CollectionPage/ItemList nodes, and injects the central builders’ output for CPTs so Rank Math and the plugin stay in sync.【F:wp-content/plugins/emindy-core/includes/schema.php†L15-L173】
 - **Fallback schema (when Rank Math is not active)**
-  - `includes/class-emindy-schema.php` outputs minimal JSON-LD in `<head>` with VideoObject, HowTo or Article based on post type, including timing, supplies/tools and steps from meta.【0ab3bb†L1-L86】
+  - `includes/class-emindy-schema.php`’s `output_jsonld()` reuses the same builders to print a single JSON-LD `<script>` for the current singular CPT, keeping behaviour aligned with the Rank Math path.【F:wp-content/plugins/emindy-core/includes/class-emindy-schema.php†L197-L240】【F:wp-content/plugins/emindy-core/emindy-core.php†L118-L136】
 
 ### 2.7 Newsletter & analytics
 
