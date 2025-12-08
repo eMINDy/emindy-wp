@@ -2,14 +2,14 @@
 /**
  * Plugin Name: eMINDy Core
  * Description: Core CPTs, taxonomies, shortcodes, schema, and content injectors for eMINDy.
- * Version: 0.1.0
+ * Version: 0.5.0
  * Author: eMINDy
  * Text Domain: emindy-core
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'EMINDY_CORE_VERSION', '0.1.0' );
+define( 'EMINDY_CORE_VERSION', '0.5.0' );
 define( 'EMINDY_CORE_PATH', plugin_dir_path( __FILE__ ) );
 define( 'EMINDY_CORE_URL',  plugin_dir_url( __FILE__ ) );
 
