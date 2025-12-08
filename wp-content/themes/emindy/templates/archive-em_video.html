@@ -3,28 +3,20 @@
 <!-- wp:group {"metadata":{"name":"Archive — em_video"},"tagName":"main","align":"full","style":{"spacing":{"padding":{"top":"1.25rem","bottom":"2.5rem"}}},"layout":{"type":"constrained","contentSize":"1200px"}} -->
 <main class="wp-block-group alignfull" id="main-content" style="padding-top:1.25rem;padding-bottom:2.5rem">
 
-  <!-- Archive header -->
+  <!-- Header / Breadcrumbs -->
   <!-- wp:group {"style":{"spacing":{"margin":{"bottom":"1rem"}}},"layout":{"type":"constrained","contentSize":"900px"}} -->
   <div class="wp-block-group" style="margin-bottom:1rem">
-    <!-- Breadcrumbs -->
-    <!-- wp:shortcode -->
-    [rank_math_breadcrumb]
-    <!-- /wp:shortcode -->
-
-    <!-- Title -->
-    <!-- wp:archive-title {"type":"archive","showPrefix":false,"style":{"typography":{"fontSize":"clamp(1.9rem,3vw,2.6rem)","lineHeight":"1.15"},"spacing":{"margin":{"top":"0.5rem","bottom":"0.25rem"}}}} /-->
-
-    <!-- Optional description -->
+    <!-- wp:shortcode -->[rank_math_breadcrumb]<!-- /wp:shortcode -->
+    <!-- wp:archive-title {"showPrefix":false,"style":{"typography":{"fontSize":"clamp(1.9rem,3vw,2.6rem)","lineHeight":"1.15"},"spacing":{"margin":{"top":"0.5rem","bottom":"0.25rem"}}}} /-->
     <!-- wp:term-description {"style":{"typography":{"fontSize":"1.05rem"}}} /-->
-    <!-- اگر در برگه آرشیو سفارشی توضیحی گذاشته‌ای، اینجا نمایش می‌یابد -->
   </div>
   <!-- /wp:group -->
 
-  <!-- Toolbar: Search (post_type=em_video) + Topic filter -->
+  <!-- Toolbar: search + topic filter -->
   <!-- wp:group {"className":"is-style-em-card","layout":{"type":"constrained","contentSize":"1200px"},"style":{"spacing":{"margin":{"bottom":"1rem"},"padding":{"top":"0.75rem","bottom":"0.75rem","left":"0.75rem","right":"0.75rem"}}}} -->
   <div class="wp-block-group is-style-em-card" style="padding:.75rem;margin-bottom:1rem">
 
-    <!-- Search (scoped to em_video via simple HTML form) -->
+    <!-- Search -->
     <!-- wp:html -->
     <form role="search" method="get" action="/" class="em-archive-search" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:.25rem 0 .75rem">
       <label for="emvideo-s" class="sr-only">Search videos</label>
@@ -34,28 +26,23 @@
     </form>
     <!-- /wp:html -->
 
-    <!-- Topics quick filter (links to taxonomy term archives) -->
+    <!-- Topics -->
     <!-- wp:group {"layout":{"type":"flex","flexWrap":"wrap"},"style":{"spacing":{"blockGap":"0.5rem"}}} -->
     <div class="wp-block-group">
       <!-- wp:paragraph --><p><strong>Topics:</strong></p><!-- /wp:paragraph -->
-      <!-- wp:shortcode -->
-      [em_topics_pills taxonomy="topic"]
-      <!-- /wp:shortcode -->
-      <!-- یادداشت: اگر این شورتکد را نداری، یک فهرست دستی از ترم‌ها هم می‌توان گذاشت (کد در بخش «افزودنی اختیاری» آمده). -->
+      <!-- wp:shortcode -->[em_topics_pills taxonomy="topic"]<!-- /wp:shortcode -->
     </div>
     <!-- /wp:group -->
   </div>
   <!-- /wp:group -->
 
-  <!-- Video Grid -->
+  <!-- Grid -->
   <!-- wp:query {"queryId":101,"query":{"perPage":9,"pages":0,"offset":0,"postType":"em_video","order":"desc","orderBy":"date","inherit":true},"displayLayout":{"type":"grid","columns":3},"layout":{"type":"constrained","contentSize":"1200px"}} -->
   <div class="wp-block-query">
     <!-- wp:post-template -->
-    <!-- Card -->
     <!-- wp:group {"style":{"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"shadow":"var(--wp--custom--brand--shadow--card)","overflow":"hidden","spacing":{"margin":{"bottom":"1rem"}}},"layout":{"type":"constrained"}} -->
     <div class="wp-block-group" style="border-radius:var(--wp--custom--brand--radius--xl);box-shadow:var(--wp--custom--brand--shadow--card);overflow:hidden;margin-bottom:1rem">
       <!-- wp:post-featured-image {"isLink":true,"aspectRatio":"16/9"} /-->
-      <!-- wp:group {"style":{"spacing":{"padding":{"top":"0.8rem","bottom":"0.8rem","left":"0.8rem","right":"0.8rem"}}}} -->
       <div class="wp-block-group" style="padding:.8rem">
         <!-- wp:post-title {"isLink":true,"level":3,"style":{"typography":{"fontSize":"1.1rem","lineHeight":"1.3"}}} /-->
         <!-- wp:group {"layout":{"type":"flex","flexWrap":"wrap"},"style":{"spacing":{"blockGap":"0.5rem"},"typography":{"fontSize":"0.9rem"}}} -->
@@ -67,10 +54,8 @@
         <!-- /wp:group -->
         <!-- wp:post-excerpt {"moreText":"Watch →","excerptLength":16} /-->
       </div>
-      <!-- /wp:group -->
     </div>
     <!-- /wp:group -->
-    <!-- /Card -->
     <!-- /wp:post-template -->
 
     <!-- Pagination -->
@@ -88,6 +73,14 @@
     <!-- /wp:query-no-results -->
   </div>
   <!-- /wp:query -->
+
+  <!-- CTA -->
+  <!-- wp:group {"style":{"spacing":{"margin":{"top":"2rem"},"padding":{"top":"1.5rem","bottom":"1.5rem"}},"color":{"background":"#0b2d49"},"border":{"radius":"var(--wp--custom--brand--radius--2xl)"},"elements":{"link":{"color":{"text":"var(--wp--preset--color--white)"}}}},"textColor":"white","layout":{"type":"constrained"}} -->
+  <div class="wp-block-group has-white-color has-text-color has-background" style="border-radius:var(--wp--custom--brand--radius--2xl);background-color:#0b2d49;padding-top:1.5rem;padding-bottom:1.5rem">
+    <h3>Want more ways to learn?</h3>
+    <p>Explore the <a href="/em_exercise/">Exercise Library</a> for hands-on practice alongside your videos.</p>
+  </div>
+  <!-- /wp:group -->
 
 </main>
 <!-- /wp:group -->
