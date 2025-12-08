@@ -1,20 +1,76 @@
-.em-phq9__score[data-severity="minimal"] { border-left: 4px solid #8ED1B2; padding-left: .6rem; }
-.em-phq9__score[data-severity="mild"]    { border-left: 4px solid #66D9FF; padding-left: .6rem; }
-.em-phq9__score[data-severity="moderate"]{ border-left: 4px solid #F4D483; padding-left: .6rem; }
-.em-phq9__score[data-severity="severe"]  { border-left: 4px solid #cf2e2e; padding-left: .6rem; }
+/*
+ * PHQ-9 Assessment Styles
+ * Maintains severity-specific accents and print-friendly layout.
+ */
+
+:root {
+  --em-phq9-border-padding: 0.6rem;
+  --em-phq9-border-minimal: #8ed1b2;
+  --em-phq9-border-mild: #66d9ff;
+  --em-phq9-border-moderate: #f4d483;
+  --em-phq9-border-severe: #cf2e2e;
+  --em-phq9-text-color: #0a2a43;
+  --em-phq9-note-color: #333;
+  --em-phq9-print-background: #fefefe;
+  --em-phq9-border-default: #ccc;
+  --em-phq9-border-radius: 8px;
+  --em-phq9-print-padding: 20px;
+  --em-phq9-print-margin-top: 20px;
+}
+
+.em-phq9__score[data-severity="minimal"] {
+  border-left: 4px solid var(--em-phq9-border-minimal);
+  padding-left: var(--em-phq9-border-padding);
+}
+
+.em-phq9__score[data-severity="mild"] {
+  border-left: 4px solid var(--em-phq9-border-mild);
+  padding-left: var(--em-phq9-border-padding);
+}
+
+.em-phq9__score[data-severity="moderate"] {
+  border-left: 4px solid var(--em-phq9-border-moderate);
+  padding-left: var(--em-phq9-border-padding);
+}
+
+.em-phq9__score[data-severity="severe"] {
+  border-left: 4px solid var(--em-phq9-border-severe);
+  padding-left: var(--em-phq9-border-padding);
+}
 
 @media print {
-  body { color: #0A2A43; font: 14px/1.5 "Segoe UI", sans-serif; background: #fff !important; }
-  .site-header, .site-footer, nav, .wp-block-navigation, .wp-block-social-links { display: none !important; }
-  .em-phq9__result {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 20px;
-    margin-top: 20px;
-    background: #fefefe;
+  body {
+    color: var(--em-phq9-text-color);
+    font: 14px/1.5 "Segoe UI", sans-serif;
+    background: #fff !important;
   }
-  .em-phq9__score { font-weight: bold; color: #0A2A43; }
-  .em-phq9__note { font-size: 12px; color: #333; }
+
+  .site-header,
+  .site-footer,
+  nav,
+  .wp-block-navigation,
+  .wp-block-social-links {
+    display: none !important;
+  }
+
+  .em-phq9__result {
+    border: 1px solid var(--em-phq9-border-default);
+    border-radius: var(--em-phq9-border-radius);
+    padding: var(--em-phq9-print-padding);
+    margin-top: var(--em-phq9-print-margin-top);
+    background: var(--em-phq9-print-background);
+  }
+
+  .em-phq9__score {
+    font-weight: bold;
+    color: var(--em-phq9-text-color);
+  }
+
+  .em-phq9__note {
+    font-size: 12px;
+    color: var(--em-phq9-note-color);
+  }
+
   .em-brand-header::before {
     content: "eMINDy — Easy Mind, Daily";
     display: block;
