@@ -10,8 +10,8 @@ class Admin {
   }
 
   public static function metabox() {
-    add_meta_box('emindy_json_meta','eMINDy JSON Meta',[__CLASS__,'render'],'em_video','normal','default');
-    add_meta_box('emindy_json_meta_ex','eMINDy JSON Meta',[__CLASS__,'render_ex'],'em_exercise','normal','default');
+    add_meta_box('emindy_json_meta', esc_html__( 'eMINDy JSON Meta', 'emindy-core' ), [__CLASS__,'render'],'em_video','normal','default');
+    add_meta_box('emindy_json_meta_ex', esc_html__( 'eMINDy JSON Meta', 'emindy-core' ), [__CLASS__,'render_ex'],'em_exercise','normal','default');
   }
 
   public static function render($post) {
@@ -44,11 +44,11 @@ class Admin {
     echo '<p><label for="em_perform_seconds"><strong>'.esc_html__('Perform time (seconds)','emindy-core').'</strong></label><br />';
     echo '<input type="number" id="em_perform_seconds" name="em_perform_seconds" value="'.esc_attr($perform).'" placeholder="0" /></p>';
     echo '<p><label for="em_supplies"><strong>'.esc_html__('Supplies (comma-separated or JSON array)','emindy-core').'</strong></label><br />';
-    echo '<input type="text" style="width:100%" id="em_supplies" name="em_supplies" value="'.esc_attr($supplies).'" placeholder="Mat, Strap" /></p>';
+    echo '<input type="text" style="width:100%" id="em_supplies" name="em_supplies" value="'.esc_attr($supplies).'" placeholder="'. esc_attr__( 'Mat, Strap', 'emindy-core' ) .'" /></p>';
     echo '<p><label for="em_tools"><strong>'.esc_html__('Tools (comma-separated or JSON array)','emindy-core').'</strong></label><br />';
-    echo '<input type="text" style="width:100%" id="em_tools" name="em_tools" value="'.esc_attr($tools).'" placeholder="Block, Timer" /></p>';
+    echo '<input type="text" style="width:100%" id="em_tools" name="em_tools" value="'.esc_attr($tools).'" placeholder="'. esc_attr__( 'Block, Timer', 'emindy-core' ) .'" /></p>';
     echo '<p><label for="em_yield"><strong>'.esc_html__('Yield (optional)','emindy-core').'</strong></label><br />';
-    echo '<input type="text" style="width:100%" id="em_yield" name="em_yield" value="'.esc_attr($yield).'" placeholder="e.g. Number of repetitions" /></p>';
+    echo '<input type="text" style="width:100%" id="em_yield" name="em_yield" value="'.esc_attr($yield).'" placeholder="'. esc_attr__( 'e.g. Number of repetitions', 'emindy-core' ) .'" /></p>';
   }
 
   public static function save($post_id,$post){

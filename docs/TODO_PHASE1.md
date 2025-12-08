@@ -55,10 +55,10 @@ Phases:
 
 ## I18N (Internationalisation & Polylang)
 
-- **Translate all user-facing strings** — All hard-coded English strings in templates and shortcodes should be wrapped with translation functions and registered so that Polylang can localise them.  \
-  Target phase: **Phase 5**
-- **Meta duplication across translations** — When posts are translated, custom meta (steps, chapters, durations) may not automatically copy over. A strategy is needed either to sync meta or to provide a separate meta translation UI.  \
-  Target phase: **Phase 5**
+- **Translate all user-facing strings** — Plugin and theme PHP UI strings now use WordPress translation helpers so Polylang can localise them; block template content remains editorial and should be localised per language in the editor.  \
+  Target phase: **Phase 5** (completed)
+- **Meta duplication across translations** — New translations copy the key structured meta (steps, chapters, durations, etc.) via the `pll_copy_post_metas` filter; existing translations still need manual review.  \
+  Target phase: **Phase 5** (completed)
 - **Language switcher UX** — Shortcode updated with clearer labels, aria attributes and active-language indicators to improve accessibility while retaining existing structure.  \
   Target phase: **Phase 3** (completed)
 

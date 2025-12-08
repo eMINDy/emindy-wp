@@ -150,15 +150,15 @@ define('EMINDY_PRIMARY_TOPIC_META', '_em_primary_topic');
 
 // Add meta box
 add_action('add_meta_boxes', function(){
-  add_meta_box('emindy_primary_topic', 'Primary Topic', 'emindy_primary_topic_box', ['post','page'], 'side', 'default');
+  add_meta_box('emindy_primary_topic', __('Primary Topic', 'emindy'), 'emindy_primary_topic_box', ['post','page'], 'side', 'default');
 });
 
 function emindy_primary_topic_box($post){
   $saved = (int) get_post_meta($post->ID, EMINDY_PRIMARY_TOPIC_META, true);
   $terms = wp_get_post_terms($post->ID, 'topic');
-  echo '<p>Select the primary topic (required if topics are set):</p>';
+  echo '<p>'. esc_html__( 'Select the primary topic (required if topics are set):', 'emindy' ) .'</p>';
   echo '<select name="em_primary_topic" style="width:100%">';
-  echo '<option value="">— None —</option>';
+  echo '<option value="">'. esc_html__( '— None —', 'emindy' ) .'</option>';
   foreach($terms as $t){
     printf(
       '<option value="%d" %s>%s</option>',
@@ -188,7 +188,7 @@ add_action('admin_notices', function(){
   if (!$post_id) return;
   $topics = wp_get_post_terms($post_id,'topic', ['fields'=>'ids']);
   if ($topics && !get_post_meta($post_id, '_em_primary_topic', true)) {
-    echo '<div class="notice notice-warning"><p><strong>Primary Topic</strong> is not set. Please select one in the sidebar meta box for better recommendations & SEO.</p></div>';
+    echo '<div class="notice notice-warning"><p><strong>'. esc_html__( 'Primary Topic', 'emindy' ) .'</strong> '. esc_html__( 'is not set. Please select one in the sidebar meta box for better recommendations & SEO.', 'emindy' ) .'</p></div>';
   }
 });
 

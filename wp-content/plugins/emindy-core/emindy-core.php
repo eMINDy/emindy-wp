@@ -81,7 +81,25 @@ register_uninstall_hook( __FILE__, 'emindy_core_uninstall' );
 add_action('init', function(){ \EMINDY\Core\Admin::register(); });
 
 add_action( 'plugins_loaded', function () {
-	load_plugin_textdomain( 'emindy-core', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+        load_plugin_textdomain( 'emindy-core', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+
+        // Polylang: copy structured meta into new translations so editors start
+        // with the same steps/chapters/timing values.
+        if ( defined( 'POLYLANG_VERSION' ) || function_exists( 'pll_the_languages' ) ) {
+                add_filter( 'pll_copy_post_metas', function( array $metas ) {
+                        $extra = [
+                                'em_steps_json',
+                                'em_chapters_json',
+                                'em_total_seconds',
+                                'em_prep_seconds',
+                                'em_perform_seconds',
+                                'em_supplies',
+                                'em_tools',
+                                'em_yield',
+                        ];
+                        return array_values( array_unique( array_merge( $metas, $extra ) ) );
+                } );
+        }
 } );
 
 add_action( 'init', function () {
