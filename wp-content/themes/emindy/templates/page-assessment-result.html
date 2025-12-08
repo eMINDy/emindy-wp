@@ -1,0 +1,30 @@
+<!--
+Template: Assessment Result Page
+
+Dedicated layout for the shared assessment result page at /assessment-result/.
+The main content renders the [em_assessment_result] shortcode so the page
+works even if the editor content is empty.
+-->
+
+<!-- wp:template-part {"slug":"header","tagName":"header","align":"full"} /-->
+
+<!-- wp:group {"metadata":{"name":"Assessment Result"},"tagName":"main","align":"full","style":{"spacing":{"padding":{"top":"2rem","bottom":"2.5rem"}}},"layout":{"type":"constrained","contentSize":"900px"}} -->
+<main id="main-content" class="wp-block-group alignfull" style="padding-top:2rem;padding-bottom:2.5rem">
+  <!-- wp:group {"className":"em-assessment-result-hero","style":{"spacing":{"blockGap":"0.75rem","margin":{"bottom":"1.5rem"}}},"layout":{"type":"constrained","contentSize":"780px"}} -->
+  <div class="wp-block-group em-assessment-result-hero" style="margin-bottom:1.5rem">
+    <!-- wp:post-title {"level":1,"fontSize":"x-large"} /-->
+    <!-- wp:paragraph {"fontSize":"medium"} -->
+    <p class="has-medium-font-size">This self-check result is for your personal reflection. It is not a diagnosis, and supportive care from a professional may help if you are concerned.</p>
+    <!-- /wp:paragraph -->
+  </div>
+  <!-- /wp:group -->
+
+  <!-- wp:shortcode -->
+  [em_assessment_result]
+  <!-- /wp:shortcode -->
+
+  <!-- wp:post-content {"layout":{"type":"constrained","contentSize":"780px"},"style":{"typography":{"lineHeight":"1.7"},"spacing":{"margin":{"top":"1.5rem"}}}} /-->
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer","align":"full"} /-->

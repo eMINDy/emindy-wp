@@ -21,7 +21,7 @@ class Ajax {
     }
     $secret = wp_salt('auth');
     $sig = hash_hmac('sha256', $type.'|'.$score, $secret);
-    $url = home_url('/assessment-result/') . '?type=' . rawurlencode($type) . '&score=' . (int)$score . '&sig=' . rawurlencode($sig);
+    $url = assessment_result_base_url() . '?type=' . rawurlencode($type) . '&score=' . (int)$score . '&sig=' . rawurlencode($sig);
     wp_send_json_success( [ 'url' => $url ] );
   }
 
