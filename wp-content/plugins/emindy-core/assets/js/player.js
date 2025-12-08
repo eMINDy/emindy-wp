@@ -32,11 +32,56 @@
     return `${m}:${s.toString().padStart(2,'0')}`;
   }
 
+  function parseSteps(raw){
+    try {
+      const parsed = JSON.parse(raw || '[]');
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function buildStepItem(step, index, i18n){
+    const li = document.createElement('li');
+    li.className = 'em-p__item';
+    li.setAttribute('role','button');
+    li.setAttribute('tabindex','0');
+    li.setAttribute('data-index', String(index));
+
+    const top = document.createElement('div');
+    top.className = 'em-p__item-top';
+
+    const stepIndex = document.createElement('span');
+    stepIndex.className = 'em-p__item-index';
+    stepIndex.textContent = String(index + 1);
+
+    const label = document.createElement('span');
+    label.className = 'em-p__item-label';
+    label.textContent = typeof step.label === 'string' ? step.label : '';
+
+    const duration = document.createElement('span');
+    duration.className = 'em-p__item-dur';
+    duration.setAttribute('aria-label', i18n.stepTime);
+    duration.textContent = fmtTime(Number(step.duration||0));
+
+    top.append(stepIndex, label, duration);
+    li.appendChild(top);
+
+    if (step.tip){
+      const tip = document.createElement('div');
+      tip.className = 'em-p__item-tip';
+      tip.textContent = String(step.tip);
+      li.appendChild(tip);
+    }
+
+    return li;
+  }
+
   function initPlayer(root){
-    if (!root) return;
+    if (!root || typeof emindyPlayer === 'undefined') return;
     const postId = root.getAttribute('data-post');
-    const steps = JSON.parse(root.getAttribute('data-steps') || '[]');
-    if (!Array.isArray(steps) || steps.length===0) return;
+    const steps = parseSteps(root.getAttribute('data-steps'));
+    if (!postId || steps.length===0) return;
 
     const ui = {
       title: $('.em-p__title', root),
@@ -54,28 +99,17 @@
       timeAll: $('.em-p__all-time', root),
     };
 
+    if (!ui.list) return;
+
     // build list
     ui.list.innerHTML = '';
     steps.forEach((s, i)=>{
-      const li = document.createElement('li');
-      li.className = 'em-p__item';
-      li.setAttribute('role','button');
-      li.setAttribute('tabindex','0');
-      li.setAttribute('data-index', String(i));
-      li.innerHTML = `
-        <div class="em-p__item-top">
-          <span class="em-p__item-index">${i+1}</span>
-          <span class="em-p__item-label">${(s.label||'').toString()}</span>
-          <span class="em-p__item-dur" aria-label="${emindyPlayer.i18n.stepTime}">${fmtTime(Number(s.duration||0))}</span>
-        </div>
-        ${s.tip ? `<div class="em-p__item-tip">${s.tip}</div>` : '' }
-      `;
-      ui.list.appendChild(li);
+      ui.list.appendChild(buildStepItem(s, i, emindyPlayer.i18n));
     });
 
     const totalSecs = steps.reduce((a,s)=>a+Number(s.duration||0),0);
-    ui.total.textContent = String(steps.length);
-    ui.timeAll.textContent = fmtTime(totalSecs);
+    if (ui.total) ui.total.textContent = String(steps.length);
+    if (ui.timeAll) ui.timeAll.textContent = fmtTime(totalSecs);
 
     // state
     let idx = 0;
@@ -93,16 +127,17 @@
         li.classList.toggle('is-active', k===idx);
         if (k===idx) li.setAttribute('aria-current','step'); else li.removeAttribute('aria-current');
       });
-      ui.cur.textContent = String(idx+1);
-      ui.title.textContent = steps[idx].label || emindyPlayer.i18n.step;
+      if (ui.cur) ui.cur.textContent = String(idx+1);
+      if (ui.title) ui.title.textContent = steps[idx].label || emindyPlayer.i18n.step;
       remain = Number(steps[idx].duration||0);
-      ui.timeStep.textContent = fmtTime(remain);
-      ui.timeRemain.textContent = fmtTime(remain);
+      if (ui.timeStep) ui.timeStep.textContent = fmtTime(remain);
+      if (ui.timeRemain) ui.timeRemain.textContent = fmtTime(remain);
       updateBar();
       if(announceChange) announce(emindyPlayer.i18n.stepChanged.replace('%s', String(idx+1)));
       persist();
     }
     function updateBar(){
+      if (!ui.bar) return;
       const p = ((idx)/Math.max(1,steps.length)) * 100;
       ui.bar.style.width = p+'%';
     }
@@ -113,7 +148,7 @@
       if (dt >= 1){
         t0 = ts;
         remain = Math.max(0, remain-1);
-        ui.timeRemain.textContent = fmtTime(remain);
+        if (ui.timeRemain) ui.timeRemain.textContent = fmtTime(remain);
         if (remain<=0){
           next(true);
           return;
@@ -124,8 +159,10 @@
     function play(){
       if (playing) return;
       playing = true;
-      ui.btnPlay.setAttribute('aria-pressed','true');
-      ui.btnPlay.textContent = emindyPlayer.i18n.pause;
+      if (ui.btnPlay){
+        ui.btnPlay.setAttribute('aria-pressed','true');
+        ui.btnPlay.textContent = emindyPlayer.i18n.pause;
+      }
       announce(emindyPlayer.i18n.started);
       rafId = requestAnimationFrame(tick);
       persist();
@@ -133,8 +170,10 @@
     function pause(){
       if (!playing) return;
       playing = false;
-      ui.btnPlay.setAttribute('aria-pressed','false');
-      ui.btnPlay.textContent = emindyPlayer.i18n.start;
+      if (ui.btnPlay){
+        ui.btnPlay.setAttribute('aria-pressed','false');
+        ui.btnPlay.textContent = emindyPlayer.i18n.start;
+      }
       if (rafId) cancelAnimationFrame(rafId);
       rafId = 0;
       t0 = null;
@@ -154,7 +193,7 @@
         select(idx+1, !auto);
       } else {
         announce(emindyPlayer.i18n.completed);
-        ui.bar.style.width = '100%';
+        if (ui.bar) ui.bar.style.width = '100%';
       }
     }
     function reset(){
@@ -168,10 +207,10 @@
     }
 
     // events
-    ui.btnPrev.addEventListener('click', prev);
-    ui.btnNext.addEventListener('click', ()=>next(false));
-    ui.btnPlay.addEventListener('click', toggle);
-    ui.btnReset.addEventListener('click', reset);
+    if (ui.btnPrev) ui.btnPrev.addEventListener('click', prev);
+    if (ui.btnNext) ui.btnNext.addEventListener('click', ()=>next(false));
+    if (ui.btnPlay) ui.btnPlay.addEventListener('click', toggle);
+    if (ui.btnReset) ui.btnReset.addEventListener('click', reset);
 
     ui.list.addEventListener('click', e=>{
       const li = e.target.closest('.em-p__item');
@@ -189,7 +228,7 @@
     const saved = readProgress(postId);
     if (saved && typeof saved.idx === 'number'){
       idx = saved.idx; select(idx, false);
-      if (typeof saved.remain === 'number') { remain = Math.max(0, saved.remain); ui.timeRemain.textContent = fmtTime(remain); }
+      if (typeof saved.remain === 'number' && ui.timeRemain) { remain = Math.max(0, saved.remain); ui.timeRemain.textContent = fmtTime(remain); }
     }else{
       select(0, false);
     }
