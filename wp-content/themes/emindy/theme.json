@@ -59,8 +59,28 @@
       "background": "#FFFFFF",
       "text": "#0A2A43"
     },
+    "typography": {
+      "lineHeight": "1.6"
+    },
     "elements": {
-      "button": { "border": { "radius": "1.25rem" } }
+      "button": {
+        "border": { "radius": "1.25rem" },
+        "color": {
+          "background": "var(--wp--preset--color--deep-blue)",
+          "text": "var(--wp--preset--color--white)"
+        },
+        "typography": {
+          "fontWeight": "700"
+        }
+      },
+      "link": {
+        "color": {
+          "text": "var(--wp--preset--color--deep-blue)"
+        },
+        "typography": {
+          "textDecoration": "underline"
+        }
+      }
     }
   }
 }
