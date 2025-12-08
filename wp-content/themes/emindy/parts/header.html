@@ -1,3 +1,8 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+?>
 <!-- wp:group {"tagName":"header","align":"full","style":{"spacing":{"padding":{"top":"1rem","bottom":"1rem"},"margin":{"bottom":"0"},"blockGap":"0"},"border":{"bottom":{"color":"var(--em-border)","width":"1px","style":"solid"}}},"layout":{"type":"constrained"}} -->
 <header class="wp-block-group alignfull" style="border-bottom:1px solid var(--em-border)">
   <!--
@@ -13,16 +18,16 @@
     <!-- wp:group {"layout":{"type":"flex","verticalAlignment":"center"},"style":{"spacing":{"blockGap":"0.5rem"}}} -->
     <div class="wp-block-group" style="display:flex;align-items:center;gap:0.5rem">
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"1.7rem","fontWeight":"700"}}} -->
-      <p style="font-size:1.7rem;font-weight:700;color:var(--em-text);margin:0">eMINDy</p>
+      <p style="font-size:1.7rem;font-weight:700;color:var(--em-text);margin:0"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></p>
       <!-- /wp:paragraph -->
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"0.8rem"},"color":{"text":"var(--em-teal)"}}} -->
-      <p style="font-size:0.8rem;color:var(--em-teal);margin:0">Easy Mind, Daily</p>
+      <p style="font-size:0.8rem;color:var(--em-teal);margin:0"><?php echo esc_html( get_bloginfo( 'description' ) ); ?></p>
       <!-- /wp:paragraph -->
     </div>
     <!-- /wp:group -->
 
     <!-- Navigation -->
-    <!-- wp:navigation {"overlayMenu":"never","layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"blockGap":"1.5rem"}},"fontSize":"small"} /-->
+    <!-- wp:navigation {"overlayMenu":"never","layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"blockGap":"1.5rem"}},"fontSize":"small","ariaLabel":"<?php echo esc_attr__( 'Primary navigation', 'emindy' ); ?>"} /-->
 
     <!-- Action items -->
     <!-- wp:group {"layout":{"type":"flex","verticalAlignment":"center","justifyContent":"right"},"style":{"spacing":{"blockGap":"0.75rem"}}} -->
@@ -33,18 +38,18 @@
       <!-- /wp:shortcode -->
 
       <!-- Search: use WordPress search block with custom placeholder and style tokens for dark/light mode -->
-      <!-- wp:search {"label":"Search eMINDy","showLabel":false,"buttonUseIcon":true,"placeholder":"Search…","style":{"border":{"radius":"12px"}},"backgroundColor":"em-card"} /-->
+      <!-- wp:search {"label":"<?php echo esc_attr__( 'Search eMINDy', 'emindy' ); ?>","showLabel":false,"buttonUseIcon":true,"placeholder":"<?php echo esc_attr__( 'Search…', 'emindy' ); ?>","style":{"border":{"radius":"12px"}},"backgroundColor":"em-card"} /-->
 
       <!-- CTA button -->
       <!-- wp:button {"className":"is-style-fill","fontSize":"small"} -->
       <div class="wp-block-button is-style-fill has-custom-font-size has-small-font-size">
-        <a class="wp-block-button__link" href="/start-here/" style="background:var(--em-gold);color:var(--em-bg);padding:0.5rem 0.9rem;border-radius:999px;font-weight:600;text-decoration:none"><?php echo esc_html__('Start Here','emindy'); ?></a>
+        <a class="wp-block-button__link" href="<?php echo esc_url( home_url( '/start-here/' ) ); ?>" style="background:var(--em-gold);color:var(--em-bg);padding:0.5rem 0.9rem;border-radius:999px;font-weight:600;text-decoration:none"><?php echo esc_html__( 'Start Here', 'emindy' ); ?></a>
       </div>
       <!-- /wp:button -->
 
       <!-- Dark mode toggle: accessible button toggled via JS -->
       <!-- wp:html -->
-      <button id="em-dark-mode-toggle" class="em-dark-mode-toggle" aria-label="Toggle dark mode" data-light-label="🌙" data-dark-label="☀️" style="font-size:1.2rem;line-height:1;background:transparent;border:none;color:var(--em-text);cursor:pointer">🌙</button>
+      <button id="em-dark-mode-toggle" class="em-dark-mode-toggle" aria-label="<?php echo esc_attr__( 'Toggle dark mode', 'emindy' ); ?>" data-light-label="<?php echo esc_attr__( 'Enable dark mode', 'emindy' ); ?>" data-dark-label="<?php echo esc_attr__( 'Disable dark mode', 'emindy' ); ?>" style="font-size:1.2rem;line-height:1;background:transparent;border:none;color:var(--em-text);cursor:pointer" type="button">🌙</button>
       <!-- /wp:html -->
     </div>
     <!-- /wp:group -->
