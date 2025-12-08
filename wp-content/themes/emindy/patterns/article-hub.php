@@ -19,7 +19,7 @@ Using CSS variables ensures consistent dark mode styling.
   <!-- wp:group {"tagName":"header","layout":{"type":"constrained"},"style":{"spacing":{"margin":{"bottom":"1rem"}}}} -->
   <header class="wp-block-group">
     <!-- wp:heading {"level":1} -->
-    <h1><?php echo esc_html__( 'Articles', 'emindy' ); ?></h1>
+    <h1><?php echo esc_html__( 'Article library', 'emindy' ); ?></h1>
     <!-- /wp:heading -->
     <!-- wp:paragraph -->
     <p><?php echo esc_html__( 'Explore mindful reading, stories and insights. Search or select a topic to begin.', 'emindy' ); ?></p>
@@ -54,7 +54,7 @@ Using CSS variables ensures consistent dark mode styling.
 
   <!-- Recent articles grid -->
   <!-- wp:heading {"level":2,"style":{"spacing":{"margin":{"bottom":"0.5rem"}}}} -->
-  <h2><?php echo esc_html__( 'Recently Published Articles', 'emindy' ); ?></h2>
+  <h2><?php echo esc_html__( 'Latest articles', 'emindy' ); ?></h2>
   <!-- /wp:heading -->
   <!-- wp:query {"query":{"perPage":9,"postType":"em_article","order":"desc","orderBy":"date"},"displayLayout":{"type":"grid","columns":3},"layout":{"type":"constrained","contentSize":"1200px"}} -->
   <div class="wp-block-query">

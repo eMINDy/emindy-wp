@@ -19,7 +19,7 @@ Colours rely on CSS variables so they adapt to dark mode.
   <!-- wp:group {"tagName":"header","layout":{"type":"constrained"},"style":{"spacing":{"margin":{"bottom":"1rem"}}}} -->
   <header class="wp-block-group">
     <!-- wp:heading {"level":1} -->
-    <h1><?php echo esc_html__( 'Exercises', 'emindy' ); ?></h1>
+    <h1><?php echo esc_html__( 'Exercise library', 'emindy' ); ?></h1>
     <!-- /wp:heading -->
     <!-- wp:paragraph -->
     <p><?php echo esc_html__( 'Find gentle, guided exercises to relax, reflect and grow. Use the search or filter by topic.', 'emindy' ); ?></p>
@@ -54,7 +54,7 @@ Colours rely on CSS variables so they adapt to dark mode.
 
   <!-- Recent exercises grid -->
   <!-- wp:heading {"level":2,"style":{"spacing":{"margin":{"bottom":"0.5rem"}}}} -->
-  <h2><?php echo esc_html__( 'Recently Added Exercises', 'emindy' ); ?></h2>
+  <h2><?php echo esc_html__( 'Latest exercises', 'emindy' ); ?></h2>
   <!-- /wp:heading -->
   <!-- wp:query {"query":{"perPage":9,"postType":"em_exercise","order":"desc","orderBy":"date"},"displayLayout":{"type":"grid","columns":3},"layout":{"type":"constrained","contentSize":"1200px"}} -->
   <div class="wp-block-query">

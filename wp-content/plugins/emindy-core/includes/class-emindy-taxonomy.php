@@ -60,6 +60,7 @@ class Taxonomy {
     protected static function insert_default_terms() {
         $terms = [
             'topic' => [
+                // Core wellbeing themes used across videos, exercises and articles.
                 [ 'Stress Relief',       'stress-relief'       ],
                 [ 'Anxiety & Clarity',   'anxiety-clarity'     ],
                 [ 'Confidence & Growth', 'confidence-growth'    ],
@@ -68,6 +69,7 @@ class Taxonomy {
                 [ 'Sleep & Focus',       'sleep-focus'          ],
             ],
             'technique' => [
+                // Techniques and modalities offered in practices.
                 [ 'Breathing',        'breathing'        ],
                 [ 'Body Scan',        'body-scan'        ],
                 [ 'Grounding',        'grounding'        ],
@@ -78,6 +80,7 @@ class Taxonomy {
                 [ 'Mindful Walking',  'mindful-walking'  ],
             ],
             'duration' => [
+                // Suggested practice lengths for filtering content.
                 [ '30s',    '30s'      ],
                 [ '1m',     '1m'       ],
                 [ '2-5m',   '2-5m'     ],
@@ -85,6 +88,7 @@ class Taxonomy {
                 [ '10m+',   '10m-plus' ],
             ],
             'format' => [
+                // Content formats spanning media types.
                 [ 'Video',     'video'     ],
                 [ 'Article',   'article'   ],
                 [ 'Worksheet', 'worksheet' ],
@@ -94,6 +98,7 @@ class Taxonomy {
                 [ 'Checklist', 'checklist' ],
             ],
             'use_case' => [
+                // Situational use cases; confirm relevance during future audits. @todo Phase 4 content review
                 [ 'Morning',        'morning'        ],
                 [ 'Bedtime',        'bedtime'        ],
                 [ 'Work Break',     'work-break'     ],
@@ -104,12 +109,14 @@ class Taxonomy {
                 [ 'Social Context', 'social-context' ],
             ],
             'level' => [
+                // Experience levels for exercises.
                 [ 'Beginner',     'beginner'     ],
                 [ 'Gentle',       'gentle'       ],
                 [ 'Intermediate', 'intermediate' ],
                 [ 'Deep',         'deep'         ],
             ],
             'a11y_feature' => [
+                // Accessibility features to flag alternative formats and support tools.
                 [ 'Captions',           'captions'            ],
                 [ 'Transcript',         'transcript'          ],
                 [ 'Keyboard-friendly',  'keyboard-friendly'   ],
