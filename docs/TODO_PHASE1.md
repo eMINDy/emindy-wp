@@ -20,6 +20,8 @@ Phases:
   Target phase: **Phase 3** (partially completed; schema/meta automation deferred)
 - **Pattern duplication and naming** — library hub patterns reviewed and labelled for their intended destinations (video/exercise/article hubs, overview hub, unified archive).  \
   Target phase: **Phase 3** (completed for naming/role clarity)
+- **Dedicated assessment result page & template** — ensure `/assessment-result/` uses a consistent template that renders `[em_assessment_result]` without relying on manual page content.  \
+  Target phase: **Phase 4** (completed)
 - **Translation readiness (templates)** — Many headings and labels in templates/patterns (e.g. search labels, section titles, CTAs) are hard-coded in English. They should be wrapped in translation helpers and registered for Polylang.  \
   Target phase: **Phase 5**
 - **Hard-coded CTAs and section copy** — Important CTAs and section texts are embedded directly in templates/patterns, which makes updating and translating them difficult. These should be moved to options or translatable strings.  \

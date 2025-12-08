@@ -106,13 +106,13 @@ add_action( 'wp_enqueue_scripts', function () {
 	wp_enqueue_style( 'emindy-core', EMINDY_CORE_URL . 'assets/css/emindy-core.css', [], EMINDY_CORE_VERSION );
 	wp_enqueue_style( 'emindy-player', EMINDY_CORE_URL . 'assets/css/player.css', [], EMINDY_CORE_VERSION );
 	// Core data for assessments (must load BEFORE phq9/gad7)
-	wp_register_script( 'emindy-assess-core', EMINDY_CORE_URL . 'assets/js/assess-core.js', [], EMINDY_CORE_VERSION, true );
-	wp_localize_script( 'emindy-assess-core', 'emindyAssess', [
+        wp_register_script( 'emindy-assess-core', EMINDY_CORE_URL . 'assets/js/assess-core.js', [], EMINDY_CORE_VERSION, true );
+        wp_localize_script( 'emindy-assess-core', 'emindyAssess', [
         'ajax'        => admin_url('admin-ajax.php'),
         'nonce'       => wp_create_nonce('emindy_assess'),
-        'results_url' => home_url('/assessment-result/'),
+        'results_url' => \EMINDY\Core\assessment_result_base_url(),
     ] );
-	wp_enqueue_script( 'emindy-assess-core' );
+        wp_enqueue_script( 'emindy-assess-core' );
 	// Player
 	wp_enqueue_script( 'emindy-player', EMINDY_CORE_URL . 'assets/js/player.js', [ 'emindy-assess-core' ], EMINDY_CORE_VERSION, true );
 	// Assessments
