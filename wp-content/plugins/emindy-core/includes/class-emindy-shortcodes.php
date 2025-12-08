@@ -3,54 +3,146 @@ namespace EMINDY\Core;
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 class Shortcodes {
-	public static function register_all() {
-		add_shortcode( 'em_player', [__CLASS__, 'player'] );
-		add_shortcode( 'em_lang_switcher', [__CLASS__, 'lang_switcher'] );
-		add_shortcode( 'em_video_chapters', [__CLASS__, 'video_chapters'] );
-		add_shortcode( 'em_phq9', [__CLASS__, 'phq9'] );
-		add_shortcode( 'em_related', [__CLASS__, 'related'] );
-		add_shortcode( 'em_newsletter', [__CLASS__, 'newsletter'] );
-		add_shortcode('em_gad7',[__CLASS__,'gad7']);
-		add_shortcode('em_assessment_result', [__CLASS__, 'assessment_result']);
-		add_shortcode('em_transcript',[__CLASS__,'transcript']);
-		add_shortcode('em_video_filters', [__CLASS__, 'video_filters']);
-		add_shortcode('em_video_player', [__CLASS__, 'video_player']);
-	}
+    public static function register_all() {
+        add_shortcode( 'em_player', [ __CLASS__, 'player' ] );
+        add_shortcode( 'em_exercise_steps', [ __CLASS__, 'exercise_steps' ] );
+        add_shortcode( 'em_lang_switcher', [ __CLASS__, 'lang_switcher' ] );
+        add_shortcode( 'em_video_chapters', [ __CLASS__, 'video_chapters' ] );
+        add_shortcode( 'em_phq9', [ __CLASS__, 'phq9' ] );
+        add_shortcode( 'em_related', [ __CLASS__, 'related' ] );
+        add_shortcode( 'em_newsletter', [ __CLASS__, 'newsletter' ] );
+        add_shortcode( 'em_gad7', [ __CLASS__, 'gad7' ] );
+        add_shortcode( 'em_assessment_result', [ __CLASS__, 'assessment_result' ] );
+        add_shortcode( 'em_transcript', [ __CLASS__, 'transcript' ] );
+        add_shortcode( 'em_video_filters', [ __CLASS__, 'video_filters' ] );
+        add_shortcode( 'em_video_player', [ __CLASS__, 'video_player' ] );
+    }
 
-	public static function player( $atts = [], $content = '' ) : string {
-	$post_id = get_the_ID();
-	$steps = json_decode_safe( get_post_meta( $post_id, 'em_steps_json', true ) ) ?: [];
-	$total = is_array($steps) ? count($steps) : 0;
-	$total_secs = 0;
-	foreach ( $steps as $s ) { $total_secs += (int)($s['duration'] ?? 0); }
+    /**
+     * Retrieve and decode the step data for an exercise post.
+     *
+     * This helper centralises JSON parsing so shortcodes such as
+     * [em_player] and [em_exercise_steps] share the same behaviour
+     * and avoid duplicate logic.
+     *
+     * @param int $post_id Exercise post ID.
+     * @return array Parsed steps array or an empty array on failure.
+     */
+    protected static function get_exercise_steps_data( int $post_id ) : array {
+        if ( ! $post_id ) {
+            return [];
+        }
 
-	ob_start(); ?>
-	<div class="em-player" data-post="<?php echo esc_attr($post_id); ?>" data-steps="<?php echo esc_attr( wp_json_encode($steps) ); ?>">
-		<h3 class="em-p__title"><?php echo esc_html__('Guided Practice','emindy-core'); ?></h3>
+        $steps = json_decode_safe( get_post_meta( $post_id, 'em_steps_json', true ) ) ?: [];
+        return is_array( $steps ) ? $steps : [];
+    }
 
-		<div class="em-p__header" role="group" aria-label="<?php echo esc_attr__('Exercise Controls','emindy-core'); ?>">
-			<div class="em-p__meta">
-				<span><?php echo esc_html__('Step','emindy-core'); ?> <span class="em-p__cur">1</span>/<span class="em-p__total"><?php echo (int)$total; ?></span></span>
-				<span><?php echo esc_html__('Step time','emindy-core'); ?>: <span class="em-p__step-time">0:00</span></span>
-				<span><?php echo esc_html__('Total','emindy-core'); ?>: <span class="em-p__all-time"><?php echo esc_html( gmdate('i:s', max(0,$total_secs) ) ); ?></span></span>
-			</div>
-			<div class="em-p__controls">
-				<button type="button" class="em-p__btn em-p__prev" aria-label="<?php echo esc_attr__('Previous step','emindy-core'); ?>">⟨</button>
-				<button type="button" class="em-p__btn em-p__play" aria-pressed="false"><?php echo esc_html__('Start','emindy-core'); ?></button>
-				<button type="button" class="em-p__btn em-p__next" aria-label="<?php echo esc_attr__('Next step','emindy-core'); ?>">⟩</button>
-				<button type="button" class="em-p__btn em-p__reset"><?php echo esc_html__('Reset','emindy-core'); ?></button>
-			</div>
-		</div>
+    /**
+     * Normalise a single exercise step row for display.
+     *
+     * @param mixed $step Raw step item from em_steps_json.
+     * @return array{text:string,duration:?int}|array Empty array when unusable.
+     */
+    protected static function normalize_exercise_step( $step ) : array {
+        $text     = '';
+        $duration = null;
 
-		<div class="em-p__barwrap" aria-hidden="true"><div class="em-p__bar"></div></div>
-		<div class="em-p__remain" aria-live="off">0:00</div>
+        if ( is_array( $step ) ) {
+            $text = $step['text'] ?? $step['label'] ?? $step['title'] ?? '';
+            if ( isset( $step['duration'] ) && is_numeric( $step['duration'] ) ) {
+                $duration = (int) $step['duration'];
+            }
+        } elseif ( is_scalar( $step ) ) {
+            $text = (string) $step;
+        }
 
-		<ol class="em-p__list" aria-label="<?php echo esc_attr__('Steps','emindy-core'); ?>"></ol>
-		<div class="em-p__live" role="status" aria-live="polite"></div>
-	</div>
-	<?php
-	return ob_get_clean();
-}
+        $text = is_string( $text ) ? trim( wp_strip_all_tags( $text ) ) : '';
+        if ( '' === $text ) {
+            return [];
+        }
+
+        return [
+            'text'     => $text,
+            'duration' => $duration,
+        ];
+    }
+
+    public static function player( $atts = [], $content = '' ) : string {
+        $post_id    = get_the_ID();
+        $steps      = self::get_exercise_steps_data( (int) $post_id );
+        $total      = is_array( $steps ) ? count( $steps ) : 0;
+        $total_secs = 0;
+        foreach ( $steps as $s ) {
+            $total_secs += (int) ( $s['duration'] ?? 0 );
+        }
+
+        ob_start(); ?>
+        <div class="em-player" data-post="<?php echo esc_attr( $post_id ); ?>" data-steps="<?php echo esc_attr( wp_json_encode( $steps ) ); ?>">
+                <h3 class="em-p__title"><?php echo esc_html__( 'Guided Practice', 'emindy-core' ); ?></h3>
+
+                <div class="em-p__header" role="group" aria-label="<?php echo esc_attr__( 'Exercise Controls', 'emindy-core' ); ?>">
+                        <div class="em-p__meta">
+                                <span><?php echo esc_html__( 'Step', 'emindy-core' ); ?> <span class="em-p__cur">1</span>/<span class="em-p__total"><?php echo (int) $total; ?></span></span>
+                                <span><?php echo esc_html__( 'Step time', 'emindy-core' ); ?>: <span class="em-p__step-time">0:00</span></span>
+                                <span><?php echo esc_html__( 'Total', 'emindy-core' ); ?>: <span class="em-p__all-time"><?php echo esc_html( gmdate( 'i:s', max( 0, $total_secs ) ) ); ?></span></span>
+                        </div>
+                        <div class="em-p__controls">
+                                <button type="button" class="em-p__btn em-p__prev" aria-label="<?php echo esc_attr__( 'Previous step', 'emindy-core' ); ?>">⟨</button>
+                                <button type="button" class="em-p__btn em-p__play" aria-pressed="false"><?php echo esc_html__( 'Start', 'emindy-core' ); ?></button>
+                                <button type="button" class="em-p__btn em-p__next" aria-label="<?php echo esc_attr__( 'Next step', 'emindy-core' ); ?>">⟩</button>
+                                <button type="button" class="em-p__btn em-p__reset"><?php echo esc_html__( 'Reset', 'emindy-core' ); ?></button>
+                        </div>
+                </div>
+
+                <div class="em-p__barwrap" aria-hidden="true"><div class="em-p__bar"></div></div>
+                <div class="em-p__remain" aria-live="off">0:00</div>
+
+                <ol class="em-p__list" aria-label="<?php echo esc_attr__( 'Steps', 'emindy-core' ); ?>"></ol>
+                <div class="em-p__live" role="status" aria-live="polite"></div>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+
+    /**
+     * Render a read-only ordered list of exercise steps from em_steps_json.
+     *
+     * This helper is intentionally forgiving: if no valid steps are present it
+     * returns an empty string without emitting warnings.
+     *
+     * @return string
+     */
+    public static function exercise_steps() : string {
+        $post_id   = get_the_ID();
+        $raw_steps = self::get_exercise_steps_data( (int) $post_id );
+
+        $steps = [];
+        foreach ( $raw_steps as $step ) {
+            $normalized = self::normalize_exercise_step( $step );
+            if ( ! empty( $normalized ) ) {
+                $steps[] = $normalized;
+            }
+        }
+
+        if ( empty( $steps ) ) {
+            return '';
+        }
+
+        ob_start();
+        ?>
+        <ol class="em-exercise-steps">
+                <?php foreach ( $steps as $step ) : ?>
+                        <li class="em-exercise-steps__item">
+                                <span class="em-exercise-steps__text"><?php echo esc_html( $step['text'] ); ?></span>
+                                <?php if ( isset( $step['duration'] ) && $step['duration'] > 0 ) : ?>
+                                        <small class="em-exercise-steps__meta"><?php echo esc_html__( 'Time', 'emindy-core' ); ?>: <?php echo esc_html( gmdate( 'i:s', max( 0, (int) $step['duration'] ) ) ); ?></small>
+                                <?php endif; ?>
+                        </li>
+                <?php endforeach; ?>
+        </ol>
+        <?php
+        return ob_get_clean();
+    }
 
 	public static function video_chapters() : string {
 	    $post_id = get_the_ID();
@@ -371,21 +463,27 @@ class Shortcodes {
 	<?php else : ?>
 		<nav class="em-lang-switcher em-lang-switcher--chips" aria-label="<?php echo esc_attr__( 'Language switcher', 'emindy-core' ); ?>">
 			<ul class="em-lang-switcher__list">
-				<?php foreach ( $langs as $lang ) : ?>
-					<li class="em-lang-switcher__item<?php echo ! empty( $lang['current'] ) ? ' is-current' : ''; ?>">
-						<a href="<?php echo esc_url( $lang['url'] ); ?>" class="em-lang-switcher__link" aria-current="<?php echo ! empty( $lang['current'] ) ? 'true' : 'false'; ?>">
-							<?php
-							if ( $atts['show_flags'] === '1' && ! empty( $lang['flag'] ) ) {
-								echo wp_kses( $lang['flag'], [ 'img' => [ 'src'=>[], 'alt'=>[], 'width'=>[], 'height'=>[] ] ] ) . ' ';
-							}
-							echo esc_html( ( $atts['show_names'] === '1' && ! empty( $lang['name'] ) ) ? $lang['name'] : strtoupper( $lang['slug'] ) );
-							?>
-						</a>
-					</li>
-				<?php endforeach; ?>
+			<?php foreach ( $langs as $lang ) :
+				$is_current  = ! empty( $lang['current'] );
+				$label_text  = ( $atts['show_names'] === '1' && ! empty( $lang['name'] ) ) ? $lang['name'] : strtoupper( $lang['slug'] );
+				$aria_label  = $is_current
+					? sprintf( __( '%s (current language)', 'emindy-core' ), $label_text )
+					: sprintf( __( 'Switch to %s', 'emindy-core' ), $label_text );
+			?>
+				<li class="em-lang-switcher__item<?php echo $is_current ? ' is-current' : ''; ?>">
+					<a href="<?php echo esc_url( $lang['url'] ); ?>" class="em-lang-switcher__link" aria-label="<?php echo esc_attr( $aria_label ); ?>"<?php echo $is_current ? ' aria-current="page"' : ''; ?>>
+						<?php
+						if ( $atts['show_flags'] === '1' && ! empty( $lang['flag'] ) ) {
+							echo wp_kses( $lang['flag'], [ 'img' => [ 'src'=>[], 'alt'=>[], 'width'=>[], 'height'=>[], 'aria-hidden'=>[] ] ] );
+						}
+						echo '<span class="em-lang-switcher__name">' . esc_html( $label_text ) . '</span>';
+						?>
+					</a>
+				</li>
+			<?php endforeach; ?>
 			</ul>
 		</nav>
-	<?php endif;
+	<?php endif; ?>
 
 	// --- ضدّ <br/> و <p> ناخواسته:
 	$out = ob_get_clean();
@@ -532,10 +630,13 @@ public static function gad7() : string {
 		return ob_get_clean();
 	}
 
-public static function transcript() : string {
-	$post = get_post(); if (! $post) return '';
-	$txt = wpautop( wp_kses_post( $post->post_content ) );
-	ob_start(); ?>
+	/**
+	 * @deprecated Not used by the emindy theme as of 2025-12; retained for legacy content and future transcript refactors.
+	 */
+	public static function transcript() : string {
+		$post = get_post(); if (! $post) return "";
+		$txt = wpautop( wp_kses_post( $post->post_content ) );
+		ob_start(); ?>
 	<details class="em-transcript">
 		<summary><?php echo esc_html__('Transcript','emindy-core'); ?></summary>
 		<div class="em-transcript__body"><?php echo $txt; ?></div>
@@ -554,14 +655,15 @@ public static function transcript() : string {
 	return ob_get_clean();
 }
 
-	/**
-	 * Render the archive filter form for video listings.
-	 *
-	 * Provides a search box and topic dropdown, respecting any existing query
-	 * parameters from the request while sanitising the selected topic ID.
-	 *
-	 * @return string HTML markup for the filter form.
-	 */
+/**
+ * Render the archive filter form for video listings.
+ *
+ * Provides a search box and topic dropdown, respecting any existing query
+ * parameters from the request while sanitising the selected topic ID.
+ *
+ * @deprecated Not used by the emindy theme as of 2025-12; retained for legacy/experimental archive filters.
+ * @return string HTML markup for the filter form.
+ */
 	public static function video_filters() : string {
 	$action   = get_post_type_archive_link( 'em_video' );
 	$selected = isset( $_GET['topic'] ) ? absint( wp_unslash( $_GET['topic'] ) ) : 0;
@@ -597,29 +699,32 @@ public static function transcript() : string {
 		return ob_get_clean();
 	}
 
-public static function video_player() : string {
-	$post = get_post(); if (! $post) return '';
-	$id = trim( (string) get_post_meta($post->ID,'em_youtube_id',true) );
-	if ( ! $id ) {
-		// کشف آیدی از اولین لینک یوتیوب در محتوا
-		$c = $post->post_content;
-		if ( preg_match('~(?:youtu\.be/|youtube\.com/(?:watch\?v=|embed/))([A-Za-z0-9_-]{6,})~', $c, $m) ) {
-			$id = $m[1];
-		}
-	}
-	if ( ! $id ) return '<div class="is-style-em-card"><p>'.esc_html__('No video ID found.','emindy-core').'</p></div>';
+        /**
+         * @deprecated Not used by the emindy theme as of 2025-12; retained for legacy embeds.
+         */
+        public static function video_player() : string {
+                $post = get_post(); if (! $post) return '';
+                $id = trim( (string) get_post_meta($post->ID,'em_youtube_id',true) );
+                if ( ! $id ) {
+                        // کشف آیدی از اولین لینک یوتیوب در محتوا
+                        $c = $post->post_content;
+                        if ( preg_match('~(?:youtu\.be/|youtube\.com/(?:watch\?v=|embed/))([A-Za-z0-9_-]{6,})~', $c, $m) ) {
+                                $id = $m[1];
+                        }
+                }
+                if ( ! $id ) return '<div class="is-style-em-card"><p>'.esc_html__('No video ID found.','emindy-core').'</p></div>';
 
-	// اگر Lyte هست
-	if ( shortcode_exists('lyte') ) {
-		return do_shortcode('[lyte id="'.esc_attr($id).'"]');
-	}
+                // اگر Lyte هست
+                if ( shortcode_exists('lyte') ) {
+                        return do_shortcode('[lyte id="'.esc_attr($id).'"]');
+                }
 
-	// fallback iframe (nocookie)
-	$src = 'https://www.youtube-nocookie.com/embed/'.rawurlencode($id).'?rel=0';
-	return '<div class="em-video">
-	<iframe loading="lazy" width="560" height="315" src="'.esc_url($src).'" title="YouTube video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                // fallback iframe (nocookie)
+                $src = 'https://www.youtube-nocookie.com/embed/'.rawurlencode($id).'?rel=0';
+                return '<div class="em-video">
+                <iframe loading="lazy" width="560" height="315" src="'.esc_url($src).'" title="YouTube video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 </div>';
-}
+        }
 
 }
 

@@ -17,8 +17,8 @@ This document describes the current structure of the custom child theme and core
 
 Key templates under `wp-content/themes/emindy/templates/` and their purposes:
 
-- `single-em_exercise.html` – Single exercise view; shows breadcrumbs, title/meta, auto-injected `[em_player]`, and hard-coded steps, tips, resource links and newsletter CTA blocks.【3b2d05†L1-L80】
-- `single-em_video.html` – Single video view; renders breadcrumbs, title/meta, post content with embedded video, followed by manually authored key takeaways, transcript and resources sections.【1f4a2e†L1-L79】
+- `single-em_exercise.html` – Single exercise view; shows breadcrumbs, title/meta, auto-injected `[em_player]`, a shortcode-driven steps list via `[em_exercise_steps]`, editable tips section, resource links and newsletter CTA blocks.【F:wp-content/themes/emindy/templates/single-em_exercise.html†L1-L93】
+- `single-em_video.html` – Single video view; renders breadcrumbs, title/meta, post content with embedded video (chapters auto-injected), then neutral key takeaways/transcript shells and resources.【F:wp-content/themes/emindy/templates/single-em_video.html†L1-L94】
 - `single-em_article.html` – Single article layout; displays breadcrumbs, content, newsletter and related content sections.【e52c30†L1-L120】
 - `archive-em_exercise.html` – Exercise archive with header, query loop, filters and CTA blocks.【7a29f0†L1-L120】
 - `archive-em_video.html` – Video archive template mirroring the exercise/article archive structure with query loop cards and a CTA footer.【8f46ad†L1-L120】
@@ -30,10 +30,11 @@ Key templates under `wp-content/themes/emindy/templates/` and their purposes:
 
 Main patterns under `wp-content/themes/emindy/patterns/`:
 
-- `video-hub.php` – Video library hub layout with hero, search bar, filters and grid of video cards.【60de53†L1-L120】
-- `exercise-hub.php` – Exercise library hub with search, filters and exercise grid.【c198be†L1-L120】
-- `article-hub.php` – Article library hub with featured hero, search, filters and article cards.【a03109†L1-L120】
-- `libraries-hub.php` and `archive-library.php` – Patterns that aggregate multiple content types (videos, exercises, articles, posts) into unified library sections.【87ea2e†L1-L120】【f3d95d†L1-L120】
+- `video-hub.php` – Video library hub layout with hero, search bar, filters and grid of video cards; intended for a dedicated video library page.【F:wp-content/themes/emindy/patterns/video-hub.php†L1-L30】
+- `exercise-hub.php` – Exercise library hub with search, filters and exercise grid; intended for a dedicated exercise library page.【F:wp-content/themes/emindy/patterns/exercise-hub.php†L1-L27】
+- `article-hub.php` – Article library hub with featured hero, search, filters and article cards; intended for a dedicated article library page.【F:wp-content/themes/emindy/patterns/article-hub.php†L1-L27】
+- `libraries-hub.php` – Overview pattern linking to the individual libraries and offering a global search across all content types.【F:wp-content/themes/emindy/patterns/libraries-hub.php†L1-L32】
+- `archive-library.php` – Unified archive pattern loaded by `page-archive-library.html` to list multiple content types together.【F:wp-content/themes/emindy/patterns/archive-library.php†L1-L32】
 - `front-page-emindy.php` – Front page layout featuring hero CTA, benefits, featured library sections and assessment prompts.【3b52b8†L1-L120】
 - Blueprint/modern variants (`exercise-modern.php`, `video-modern.php`, `article-modern.php`, `home-modern.php`, and page blueprints) provide alternative hero + query loop compositions.【f42f8c†L1-L120】【d5be4f†L1-L120】
 
@@ -104,20 +105,21 @@ All fields are single-value, sanitized, and exposed to the REST API.
 Shortcodes are defined in `includes/class-emindy-shortcodes.php`:
 
 - **Practice & assessment**:
-  - `[em_player]` – Interactive practice player that renders steps from `em_steps_json` with timers/controls.【526e72†L18-L56】
-  - `[em_phq9]`, `[em_gad7]` – PHQ-9 and GAD-7 self-check questionnaires with scoring (see JavaScript handling in assets).【526e72†L58-L115】
-  - `[em_assessment_result]` – Displays assessment summary based on query parameters.【526e72†L12-L19】
+  - `[em_player]` – Interactive practice player that renders steps from `em_steps_json` with timers/controls.【F:wp-content/plugins/emindy-core/includes/class-emindy-shortcodes.php†L47-L90】
+  - `[em_exercise_steps]` – Read-only steps list sourced from `em_steps_json` for single exercise templates.【F:wp-content/plugins/emindy-core/includes/class-emindy-shortcodes.php†L92-L129】
+  - `[em_phq9]`, `[em_gad7]` – PHQ-9 and GAD-7 self-check questionnaires with scoring (see JavaScript handling in assets).【F:wp-content/plugins/emindy-core/includes/class-emindy-shortcodes.php†L327-L399】
+  - `[em_assessment_result]` – Displays assessment summary based on query parameters.【F:wp-content/plugins/emindy-core/includes/class-emindy-shortcodes.php†L497-L557】
 - **Video & chapters**:
-  - `[em_video_chapters]` – Renders a chapter list for video posts based on `em_chapters_json`, optionally linking to YouTube timestamps.【526e72†L42-L57】
+  - `[em_video_chapters]` – Renders a chapter list for video posts based on `em_chapters_json`, optionally linking to YouTube timestamps.【F:wp-content/plugins/emindy-core/includes/class-emindy-shortcodes.php†L276-L307】
 - **Discovery & related content**:
   - `[em_related]` – Related content grid using shared taxonomies with language-aware queries and fallback search.【526e72†L117-L191】
   - Helpers for popular content, sitemap-like lists and report links appear alongside related logic (within the same class).
 - **Search & utility**:
-  - Search UI helpers such as filters, search bar snippets and quick filters live alongside other utility shortcodes (e.g., transcript helpers, table of contents, share links) within the class file.【526e72†L12-L19】
+  - Search UI helpers such as filters, search bar snippets and quick filters live alongside other utility shortcodes (e.g., transcript helpers, table of contents, share links) within the class file.【F:wp-content/plugins/emindy-core/includes/class-emindy-shortcodes.php†L559-L920】
 - **Newsletter**:
-  - `[em_newsletter]` wraps the newsletter form output from the newsletter component or fallback shortcodes.【526e72†L193-L228】
+  - `[em_newsletter]` wraps the newsletter form output from the newsletter component or fallback shortcodes.【F:wp-content/plugins/emindy-core/includes/class-emindy-shortcodes.php†L361-L399】
 
-The class contains two `[em_related]` definitions and a broad mix of responsibilities that could be separated in future refactors.
+Deprecated/legacy helpers such as `[em_transcript]`, `[em_video_filters]`, and `[em_video_player]` remain for backwards compatibility and are marked with `@deprecated` notices. The class still contains two `[em_related]` definitions and a broad mix of responsibilities that could be separated in future refactors.【F:wp-content/plugins/emindy-core/includes/class-emindy-shortcodes.php†L559-L920】
 
 ### 2.5 Content injection
 

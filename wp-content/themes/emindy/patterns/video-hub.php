@@ -19,7 +19,7 @@ Colours rely on CSS variables so that dark mode toggling works consistently.
   <!-- wp:group {"tagName":"header","layout":{"type":"constrained"},"style":{"spacing":{"margin":{"bottom":"1rem"}}}} -->
   <header class="wp-block-group">
     <!-- wp:heading {"level":1} -->
-    <h1><?php echo esc_html__( 'Videos', 'emindy' ); ?></h1>
+    <h1><?php echo esc_html__( 'Video library', 'emindy' ); ?></h1>
     <!-- /wp:heading -->
     <!-- wp:paragraph -->
     <p><?php echo esc_html__( 'Browse our library of mindfulness and wellbeing videos. Use search or filter by topic to find what you need.', 'emindy' ); ?></p>
@@ -55,7 +55,7 @@ Colours rely on CSS variables so that dark mode toggling works consistently.
 
   <!-- Recent videos grid -->
   <!-- wp:heading {"level":2,"style":{"spacing":{"margin":{"bottom":"0.5rem"}}}} -->
-  <h2><?php echo esc_html__( 'Recently Added Videos', 'emindy' ); ?></h2>
+  <h2><?php echo esc_html__( 'Latest videos', 'emindy' ); ?></h2>
   <!-- /wp:heading -->
   <!-- wp:query {"query":{"perPage":9,"postType":"em_video","order":"desc","orderBy":"date"},"displayLayout":{"type":"grid","columns":3},"layout":{"type":"constrained","contentSize":"1200px"}} -->
   <div class="wp-block-query">
