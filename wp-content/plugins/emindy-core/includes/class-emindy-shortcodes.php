@@ -76,8 +76,10 @@ class Shortcodes {
             $total_secs += (int) ( $s['duration'] ?? 0 );
         }
 
+        $steps_json = wp_json_encode( is_array( $steps ) ? array_values( $steps ) : [], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT );
+
         ob_start(); ?>
-        <div class="em-player" data-post="<?php echo esc_attr( $post_id ); ?>" data-steps="<?php echo esc_attr( wp_json_encode( $steps ) ); ?>">
+        <div class="em-player" data-post="<?php echo esc_attr( $post_id ); ?>" data-steps="<?php echo esc_attr( $steps_json ); ?>">
                 <h3 class="em-p__title"><?php echo esc_html__( 'Guided Practice', 'emindy-core' ); ?></h3>
 
                 <div class="em-p__header" role="group" aria-label="<?php echo esc_attr__( 'Exercise Controls', 'emindy-core' ); ?>">
@@ -144,28 +146,31 @@ class Shortcodes {
         return ob_get_clean();
     }
 
-	public static function video_chapters() : string {
-	    $post_id = get_the_ID();
-	    $chapters = json_decode_safe( get_post_meta($post_id,'em_chapters_json',true) ) ?: [];
-	    $yt = get_post_meta($post_id,'em_youtube_id',true); // اگر داری از این متا استفاده کن
-	    ob_start(); ?>
-	    <div class="em-chapters">
-		    <h3><?php echo esc_html__('Chapters','emindy-core'); ?></h3>
-		    <ol>
-			    <?php foreach ($chapters as $c):
-			    	$label = esc_html( $c['label'] ?? '' );
-			    	$sec   = (int) ($c['time'] ?? 0);
-			    	if ($yt && $sec>0){
-			    		$url = 'https://youtu.be/'.rawurlencode($yt).'?t='.$sec;
-			    		echo '<li><a target="_blank" rel="noopener" href="'.esc_url($url).'">'.$label.' — '.esc_html(gmdate('i:s',$sec)).'</a></li>';
-			    	}else{
-			    		echo '<li>'.$label.'</li>';
-			    	}
-		    	endforeach; ?>
-		    </ol>
-    	</div>
-    	<?php
-    	return ob_get_clean();
+    public static function video_chapters() : string {
+        $post_id  = get_the_ID();
+        $chapters = json_decode_safe( get_post_meta( $post_id, 'em_chapters_json', true ) ) ?: [];
+        $chapters = is_array( $chapters ) ? $chapters : [];
+        $yt       = sanitize_text_field( (string) get_post_meta( $post_id, 'em_youtube_id', true ) ); // اگر داری از این متا استفاده کن
+
+        ob_start(); ?>
+        <div class="em-chapters">
+                <h3><?php echo esc_html__( 'Chapters', 'emindy-core' ); ?></h3>
+                <ol>
+                        <?php foreach ( $chapters as $c ) :
+                                $label_raw = isset( $c['label'] ) ? sanitize_text_field( (string) $c['label'] ) : '';
+                                $label     = esc_html( $label_raw );
+                                $sec       = (int) ( $c['time'] ?? 0 );
+                                if ( $yt && $sec > 0 ) {
+                                        $url = 'https://youtu.be/' . rawurlencode( $yt ) . '?t=' . $sec;
+                                        echo '<li><a target="_blank" rel="noopener noreferrer" href="' . esc_url( $url ) . '">' . $label . ' — ' . esc_html( gmdate( 'i:s', $sec ) ) . '</a></li>';
+                                } else {
+                                        echo '<li>' . $label . '</li>';
+                                }
+                        endforeach; ?>
+                </ol>
+        </div>
+        <?php
+        return ob_get_clean();
     }
 
 	public static function phq9() : string {
@@ -731,13 +736,14 @@ public static function gad7() : string {
 // [em_blog_categories pills="1"]
 add_shortcode('em_blog_categories', function($atts){
   $a = shortcode_atts(['pills'=>'0'], $atts, 'em_blog_categories');
+  $pills = ( isset( $a['pills'] ) && '1' === $a['pills'] );
   $cats = get_categories(['hide_empty'=>true]);
   if(!$cats) return '';
   $out = '<div class="em-cat-pills" style="display:flex;flex-wrap:wrap;gap:.5rem">';
   foreach($cats as $c){
     $url = esc_url(get_category_link($c->term_id));
     $name = esc_html($c->name);
-    $out .= '<a href="'.$url.'" style="background:'.($a['pills']?'#F4D483':'none').';color:#0A2A43;padding:.4rem .8rem;border-radius:999px;text-decoration:none;font-weight:600">'.$name.'</a>';
+    $out .= '<a href="'.$url.'" style="background:'.($pills ? '#F4D483' : 'none').';color:#0A2A43;padding:.4rem .8rem;border-radius:999px;text-decoration:none;font-weight:600">'.$name.'</a>';
   }
   return $out.'</div>';
 });
@@ -795,7 +801,7 @@ add_shortcode('em_quick_filters', function(){
 
 // 2.2) [em_result_badge] — Badge نوع محتوا برای آیتم فعلی
 add_shortcode('em_result_badge', function(){
-  $pt = get_post_type();
+  $pt = sanitize_key( get_post_type() );
   $map = [
     'em_video'    => __( 'Video', 'emindy-core' ),
     'em_exercise' => __( 'Exercise', 'emindy-core' ),
@@ -812,19 +818,24 @@ add_shortcode('em_excerpt_highlight', function($atts){
   // Sanitize the search query to prevent injection and strip tags.
   $s = isset($_GET['s']) ? sanitize_text_field( (string) wp_unslash($_GET['s']) ) : '';
   $text = get_the_excerpt();
-  if (!$text) $text = wp_strip_all_tags(get_the_content('', false));
-  $text = wp_trim_words($text, (int)$a['length'], '…');
+  if ( ! $text ) {
+    $text = get_the_content('', false);
+  }
+  $text = wp_trim_words( wp_strip_all_tags( (string) $text ), (int) $a['length'], '…' );
 
   $s = trim($s);
-  if ($s === '' || mb_strlen($s, 'UTF-8') > 80) {
-    return '<p class="em-excerpt">'.esc_html($text).'</p>';
+  $highlighted = $text;
+
+  if ($s !== '' && mb_strlen($s, 'UTF-8') <= 80) {
+    $pattern = '/' . preg_quote($s, '/') . '/iu';
+    $highlighted = @preg_replace($pattern, '<mark>$0</mark>', $text);
+    if ($highlighted === null) {
+      $highlighted = $text;
+    }
   }
-  $pattern = '/' . preg_quote($s, '/') . '/iu';
-  $result  = @preg_replace($pattern, '<mark>$0</mark>', $text);
-  if ($result === null) {
-    return '<p class="em-excerpt">'.esc_html($text).'</p>';
-  }
-  return '<p class="em-excerpt">'.$result.'</p>';
+
+  $safe = wp_kses( $highlighted, [ 'mark' => [] ] );
+  return '<p class="em-excerpt">'.$safe.'</p>';
 });
 
 // 2.4) [em_result_count post_type="em_video"]
@@ -835,7 +846,7 @@ add_shortcode('em_result_count', function($atts){
 
   // Sanitize the search query to prevent injection and strip tags.
   $s = isset($_GET['s']) ? sanitize_text_field( (string) wp_unslash($_GET['s']) ) : '';
-  $q = new WP_Query([
+  $q = new \WP_Query([
     'post_type'        => $pt ?: 'post',
     's'                => $s,
     'posts_per_page'   => 1,
@@ -854,7 +865,7 @@ add_shortcode('em_search_section', function($atts){
   // Sanitize the search query to prevent injection and strip tags.
   $s  = isset($_GET['s']) ? sanitize_text_field( (string) wp_unslash($_GET['s']) ) : '';
 
-  $q = new WP_Query([
+  $q = new \WP_Query([
     'post_type'        => $pt ?: 'post',
     's'                => $s,
     'posts_per_page'   => max(1, min(6, (int)$a['per_page'])),
@@ -863,7 +874,7 @@ add_shortcode('em_search_section', function($atts){
     'no_found_rows'    => true,
     'suppress_filters' => false,
   ]);
-  if (!$q->have_posts()) return '<p class="em-muted">No matches.</p>';
+  if (!$q->have_posts()) return '<p class="em-muted">'. esc_html__( 'No matches.', 'emindy-core' ) .'</p>';
 
   ob_start();
   echo '<div class="em-search-list">';
@@ -889,7 +900,7 @@ add_shortcode('em_search_section', function($atts){
 // 2.1) Popular: latest posts (blog)
 add_shortcode('em_popular_posts', function($atts){
   $a = shortcode_atts(['limit'=>'4'], $atts, 'em_popular_posts');
-  $q = new WP_Query([
+  $q = new \WP_Query([
     'post_type' => 'post',
     'posts_per_page' => max(1,(int)$a['limit']),
     'orderby'=>'date','order'=>'DESC',
@@ -906,7 +917,7 @@ add_shortcode('em_popular_posts', function($atts){
 // 2.2) Popular videos (latest by date; replace with analytics-weighted later)
 add_shortcode('em_popular_videos', function($atts){
   $a = shortcode_atts(['limit'=>'4'], $atts, 'em_popular_videos');
-  $q = new WP_Query([
+  $q = new \WP_Query([
     'post_type'=>'em_video','posts_per_page'=>max(1,(int)$a['limit']),
     'orderby'=>'date','order'=>'DESC','no_found_rows'=>true
   ]);
@@ -921,7 +932,7 @@ add_shortcode('em_popular_videos', function($atts){
 // 2.3) Popular exercises (latest by date; can switch to meta "views" later)
 add_shortcode('em_popular_exercises', function($atts){
   $a = shortcode_atts(['limit'=>'4'], $atts, 'em_popular_exercises');
-  $q = new WP_Query([
+  $q = new \WP_Query([
     'post_type'=>'em_exercise','posts_per_page'=>max(1,(int)$a['limit']),
     'orderby'=>'date','order'=>'DESC','no_found_rows'=>true
   ]);
@@ -954,13 +965,15 @@ add_shortcode('em_sitemap_mini', function(){
 // 2.5) Report broken link (simple form -> email)
 add_shortcode('em_report_link', function($atts){
   $a = shortcode_atts(['id'=>'report'], $atts, 'em_report_link');
-  $curr = (is_ssl() ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-  $mailto = antispambot(get_option('admin_email'));
+  $host = isset( $_SERVER['HTTP_HOST'] ) ? wp_unslash( $_SERVER['HTTP_HOST'] ) : '';
+  $uri  = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
+  $curr = esc_url_raw( ( is_ssl() ? 'https://' : 'http://' ) . $host . $uri );
+  $mailto = sanitize_email( antispambot( get_option('admin_email') ) );
   $subject = rawurlencode( __( 'Broken link report on eMINDy', 'emindy-core' ) );
   $body_template = __( "Broken URL:\n%s\n\nUser note:", 'emindy-core' );
   $body = rawurlencode( sprintf( $body_template, $curr ) );
-  $href = "mailto:{$mailto}?subject={$subject}&body={$body}";
-  return '<p id="'.esc_attr($a['id']).'"><a class="em-button" href="'.$href.'">'. esc_html__( 'Report this link', 'emindy-core' ) .'</a></p>';
+  $href = 'mailto:' . rawurlencode( $mailto ) . '?subject=' . $subject . '&body=' . $body;
+  return '<p id="'.esc_attr($a['id']).'"><a class="em-button" href="'. esc_url( $href ) .'">'. esc_html__( 'Report this link', 'emindy-core' ) .'</a></p>';
 });
 
 add_shortcode('em_reading_time', function(){
@@ -974,10 +987,10 @@ add_shortcode('em_reading_time', function(){
 add_shortcode('em_toc', function(){
   $html = apply_filters('the_content', get_post_field('post_content', get_the_ID()));
   if(!$html) return '';
-  $dom = new DOMDocument(); libxml_use_internal_errors(true);
+  $dom = new \DOMDocument(); libxml_use_internal_errors(true);
   $dom->loadHTML('<?xml encoding="utf-8" ?>'.$html);
   libxml_clear_errors();
-  $xpath = new DOMXPath($dom);
+  $xpath = new \DOMXPath($dom);
   $heads = $xpath->query('//h2|//h3');
   if(!$heads || $heads->length===0) return '';
   $items = [];
@@ -1002,14 +1015,23 @@ add_shortcode('em_toc', function(){
 });
 
 add_shortcode('em_share', function(){
-  $url = urlencode(get_permalink());
-  $title = urlencode(get_the_title());
+  $permalink = get_permalink();
+  $url       = rawurlencode( $permalink );
+  $title     = rawurlencode( get_the_title() );
+
+  $links = [
+    'twitter'  => 'https://twitter.com/intent/tweet?' . http_build_query( [ 'url' => $url, 'text' => $title ] ),
+    'facebook' => 'https://www.facebook.com/sharer/sharer.php?u=' . $url,
+    'linkedin' => 'https://www.linkedin.com/shareArticle?mini=true&url=' . $url . '&title=' . $title,
+    'whatsapp' => 'https://api.whatsapp.com/send?text=' . $title . '%20' . $url,
+  ];
+
   $out = '<div class="em-share" style="display:flex;flex-wrap:wrap;gap:.5rem">'
-    .'<a class="em-button" href="https://twitter.com/intent/tweet?url='.$url.'&text='.$title.'" target="_blank" rel="noopener">'. esc_html__( 'X/Twitter', 'emindy-core' ) .'</a>'
-    .'<a class="em-button" href="https://www.facebook.com/sharer/sharer.php?u='.$url.'" target="_blank" rel="noopener">'. esc_html__( 'Facebook', 'emindy-core' ) .'</a>'
-    .'<a class="em-button" href="https://www.linkedin.com/shareArticle?mini=true&url='.$url.'&title='.$title.'" target="_blank" rel="noopener">'. esc_html__( 'LinkedIn', 'emindy-core' ) .'</a>'
-    .'<a class="em-button" href="https://api.whatsapp.com/send?text='.$title.'%20'.$url.'" target="_blank" rel="noopener">'. esc_html__( 'WhatsApp', 'emindy-core' ) .'</a>'
-    .'<button class="em-button" onclick="navigator.clipboard.writeText(\''.esc_js(get_permalink()).'\')">'. esc_html__( 'Copy link', 'emindy-core' ) .'</button>'
+    .'<a class="em-button" href="'.esc_url( $links['twitter'] ).'" target="_blank" rel="noopener noreferrer">'. esc_html__( 'X/Twitter', 'emindy-core' ) .'</a>'
+    .'<a class="em-button" href="'.esc_url( $links['facebook'] ).'" target="_blank" rel="noopener noreferrer">'. esc_html__( 'Facebook', 'emindy-core' ) .'</a>'
+    .'<a class="em-button" href="'.esc_url( $links['linkedin'] ).'" target="_blank" rel="noopener noreferrer">'. esc_html__( 'LinkedIn', 'emindy-core' ) .'</a>'
+    .'<a class="em-button" href="'.esc_url( $links['whatsapp'] ).'" target="_blank" rel="noopener noreferrer">'. esc_html__( 'WhatsApp', 'emindy-core' ) .'</a>'
+    .'<button type="button" class="em-button" data-clipboard="'. esc_attr( $permalink ) .'" onclick="navigator.clipboard.writeText(this.getAttribute(\'data-clipboard\'))">'. esc_html__( 'Copy link', 'emindy-core' ) .'</button>'
     .'</div>';
   return $out;
 });
@@ -1026,7 +1048,7 @@ add_shortcode('em_related_posts', function($atts){
     'no_found_rows'=>true
   ];
   if($cats) $args['category__in'] = $cats;
-  $q = new WP_Query($args);
+  $q = new \WP_Query($args);
   if(!$q->have_posts()) return '<p class="em-muted">'. esc_html__( 'No related posts yet.', 'emindy-core' ) .'</p>';
   ob_start();
   echo '<div class="em-related-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem">';
@@ -1077,7 +1099,8 @@ add_shortcode('em_admin_notice_missing_pages', function(){
 add_shortcode('em_topics_pills', function($atts){
   // Default to the `topic` taxonomy unless a custom taxonomy is provided.
   $a = shortcode_atts(['taxonomy'=>'topic'], $atts, 'em_topics_pills');
-  $terms = get_terms(['taxonomy'=>$a['taxonomy'], 'hide_empty'=>true]);
+  $taxonomy = sanitize_key( $a['taxonomy'] );
+  $terms = get_terms(['taxonomy'=>$taxonomy, 'hide_empty'=>true]);
   if (is_wp_error($terms) || empty($terms)) return '<span>'. esc_html__( 'No topics yet.', 'emindy-core' ) .'</span>';
 
   $out = '<div class="em-topic-pills" role="navigation" aria-label="'. esc_attr__( 'Filter by topic', 'emindy-core' ) .'">';
