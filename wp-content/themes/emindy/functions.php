@@ -1,5 +1,15 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit;
+/**
+ * Child theme bootstrap for eMINDy.
+ *
+ * Loads the child theme assets, registers supports and contains small
+ * frontend/admin helpers. The guard below prevents direct access and
+ * keeps the file from executing outside of WordPress.
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
 
 add_action( 'wp_enqueue_scripts', function () {
   wp_enqueue_style( 'emindy-child', get_stylesheet_uri(), [ 'twentytwentyfive-style' ], '0.4.0' );
@@ -65,20 +75,22 @@ add_action('pre_get_posts', function($q){
   if ( $q->is_post_type_archive('em_video') ) {
     $q->set('posts_per_page', 9);
 
-    if (!empty($_GET['topic'])) {
+    if ( ! empty( $_GET['topic'] ) ) {
+      $topic = absint( wp_unslash( $_GET['topic'] ) );
+      if ( $topic ) {
       // Use the unified `topic` taxonomy instead of the old `em_topic` slug.
-      $q->set('tax_query', [[
-        'taxonomy' => 'topic',
-        'field'    => 'term_id',
-        'terms'    => (int) $_GET['topic'],
-      ]]);
+        $q->set('tax_query', [[
+          'taxonomy' => 'topic',
+          'field'    => 'term_id',
+          'terms'    => $topic,
+        ]]);
+      }
     }
-    if ( isset($_GET['s']) ) {
-      // Sanitize the search term from the query string.  wp_unslash() is
-      // unnecessary here because WordPress handles request data and adds
-      // slashes automatically.  Using sanitize_text_field() strips tags
-      // and encodes entities to prevent injection and ensure safe output.
-      $search = sanitize_text_field( (string) $_GET['s'] );
+    if ( isset( $_GET['s'] ) ) {
+      // Sanitize the search term from the query string. wp_unslash() removes
+      // added slashes before sanitize_text_field() strips tags and entities,
+      // preventing injection and ensuring safe output.
+      $search = sanitize_text_field( wp_unslash( (string) $_GET['s'] ) );
       $q->set('s', $search);
     }
   }
@@ -176,7 +188,7 @@ add_action('save_post', function($post_id){
   if( !isset($_POST['em_primary_topic_nonce']) || !wp_verify_nonce($_POST['em_primary_topic_nonce'],'em_primary_topic_save') ) return;
   if( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
   if( isset($_POST['em_primary_topic']) ){
-    $primary = (int) $_POST['em_primary_topic'];
+    $primary = (int) wp_unslash( $_POST['em_primary_topic'] );
     update_post_meta($post_id, EMINDY_PRIMARY_TOPIC_META, $primary);
   }
 });
@@ -184,7 +196,7 @@ add_action('save_post', function($post_id){
 add_action('admin_notices', function(){
   $screen = get_current_screen();
   if ( !in_array($screen->id, ['post','page','em_video','em_exercise','em_article']) ) return;
-  $post_id = isset($_GET['post']) ? (int)$_GET['post'] : 0;
+  $post_id = isset($_GET['post']) ? absint( wp_unslash( $_GET['post'] ) ) : 0;
   if (!$post_id) return;
   $topics = wp_get_post_terms($post_id,'topic', ['fields'=>'ids']);
   if ($topics && !get_post_meta($post_id, '_em_primary_topic', true)) {
@@ -196,7 +208,7 @@ add_action('admin_notices', function(){
 add_action('pre_get_posts', function($q){
   if ( is_admin() || !$q->is_main_query() ) return;
   if ( $q->is_post_type_archive('em_video') || ($q->is_tax('topic') && $q->get('post_type')==='em_video') ) {
-    $sort = isset($_GET['sort']) ? sanitize_text_field($_GET['sort']) : '';
+    $sort = isset($_GET['sort']) ? sanitize_text_field( wp_unslash( $_GET['sort'] ) ) : '';
     if ($sort === 'alpha') {
       $q->set('orderby','title'); $q->set('order','ASC');
     } else { // default latest
