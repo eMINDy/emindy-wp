@@ -1,117 +1,279 @@
 <?php
 namespace EMINDY\Core;
+
+use WP_Post;
+
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 class Schema {
-	public static function output_jsonld() {
-		if ( is_admin() || ! is_singular() ) return;
+/**
+ * Determine language code for JSON-LD output.
+ *
+ * @return string
+ */
+protected static function language_code() {
+if ( function_exists( 'pll_current_language' ) ) {
+$slug = pll_current_language( 'slug' );
+if ( $slug ) {
+return $slug;
+}
+}
 
-		global $post;
-		$type = $post->post_type;
-		$json = null;
+$locale = get_locale();
+return $locale ? substr( $locale, 0, 2 ) : 'en';
+}
 
-		if ( $type === 'em_video' ) {
-			$json = [
-				'@context' => 'https://schema.org',
-                'inLanguage' => function_exists('pll_current_language') ? pll_current_language('slug') : get_bloginfo('language'),
-				'@type'    => 'VideoObject',
-				'name'     => get_the_title(),
-				'description' => \EMINDY\Core\safe_summary( get_the_ID(), 220 ),
-				'thumbnailUrl' => get_the_post_thumbnail_url( $post, 'large' ),
-				'uploadDate'   => get_the_date( 'c' ),
-				'url'          => get_permalink(),
-			];
-        } elseif ( $type === 'em_exercise' ) {
-            /*
-             * Build a rich HowTo schema for exercises.  Pull values from post
-             * meta if available and fall back gracefully to sensible defaults.
-             */
-            $post_id = get_the_ID();
-            $lang = function_exists('pll_current_language') ? pll_current_language('slug') : get_bloginfo('language');
-            // Compute total, prep and perform times from meta values.  Convert
-            // seconds into ISO 8601 durations using the helper defined in
-            // includes/schema.php.  If no total time is specified, fall back to
-            // the sum of step durations or omit.
-            $total_seconds   = (int) get_post_meta( $post_id, 'em_total_seconds', true );
-            $prep_seconds    = (int) get_post_meta( $post_id, 'em_prep_seconds', true );
-            $perform_seconds = (int) get_post_meta( $post_id, 'em_perform_seconds', true );
-            $steps_meta      = json_decode_safe( get_post_meta( $post_id, 'em_steps_json', true ) ) ?: [];
-            if ( ! $total_seconds && is_array( $steps_meta ) ) {
-                foreach ( $steps_meta as $st ) {
-                    $total_seconds += (int) ( $st['duration'] ?? 0 );
-                }
-            }
-            $total_iso   = $total_seconds ? emindy_iso8601_duration( $total_seconds ) : null;
-            $prep_iso    = $prep_seconds  ? emindy_iso8601_duration( $prep_seconds )  : null;
-            $perform_iso = $perform_seconds? emindy_iso8601_duration( $perform_seconds ) : null;
-            // Parse supplies and tools.  Accept JSON arrays or comma‑separated
-            // strings in the meta fields.  Always return an array of strings.
-            $parse_list = static function( $raw ) {
-                if ( ! $raw ) return [];
-                $raw = is_string( $raw ) ? trim( $raw ) : '';
-                if ( $raw === '' ) return [];
-                if ( $raw[0] === '[' ) {
-                    $arr = json_decode( $raw, true );
-                    if ( json_last_error() === JSON_ERROR_NONE && is_array( $arr ) ) {
-                        return array_filter( array_map( 'sanitize_text_field', $arr ) );
-                    }
-                }
-                // Comma separated list
-                $parts = array_map( 'trim', explode( ',', $raw ) );
-                return array_filter( array_map( 'sanitize_text_field', $parts ) );
-            };
-            $supplies_raw = get_post_meta( $post_id, 'em_supplies', true );
-            $tools_raw    = get_post_meta( $post_id, 'em_tools', true );
-            $yield_raw    = get_post_meta( $post_id, 'em_yield', true );
-            $supplies = $parse_list( $supplies_raw );
-            $tools    = $parse_list( $tools_raw );
-            // Build the HowTo schema
-            $json = [
-                '@context'    => 'https://schema.org',
-                'inLanguage'  => $lang,
-                '@type'       => 'HowTo',
-                'name'        => get_the_title(),
-                'description' => \EMINDY\Core\safe_summary( $post_id, 220 ),
-                'totalTime'   => $total_iso,
-                // Only add prepTime/performTime when provided
-                'prepTime'    => $prep_iso,
-                'performTime' => $perform_iso,
-                'supply'      => $supplies ?: null,
-                'tool'        => $tools   ?: null,
-                'yield'       => $yield_raw ? sanitize_text_field( $yield_raw ) : null,
-                'step'        => [],
-            ];
-            $position = 0;
-            foreach ( $steps_meta as $s ) {
-                $position++;
-                $step_name = isset( $s['label'] ) ? (string) $s['label'] : '';
-                $step_sec  = isset( $s['duration'] ) ? (int) $s['duration'] : 0;
-                $json['step'][] = array_filter([
-                    '@type'       => 'HowToStep',
-                    'position'    => $position,
-                    'name'        => sanitize_text_field( $step_name ),
-                    'timeRequired'=> $step_sec ? emindy_iso8601_duration( $step_sec ) : null,
-                ], function( $v ) { return $v !== null; } );
-            }
-            // Remove empty values recursively (nulls, empty arrays) to keep
-            // output compact.  Use helper from includes/schema.php if available.
-            if ( function_exists( 'emindy_array_filter_recursive' ) ) {
-                $json = emindy_array_filter_recursive( $json );
-            }
-        } elseif ( $type === 'em_article' ) {
-			$json = [
-				'@context' => 'https://schema.org',
-                'inLanguage' => function_exists('pll_current_language') ? pll_current_language('slug') : get_bloginfo('language'),
-				'@type'    => 'Article',
-				'headline' => get_the_title(),
-				'description' => \EMINDY\Core\safe_summary( get_the_ID(), 220 ),
-				'datePublished' => get_the_date('c'),
-				'url' => get_permalink(),
-			];
-		}
+/**
+ * Build HowTo schema for an exercise post.
+ *
+ * @param WP_Post $post Exercise post object.
+ * @return array|null JSON-LD array or null if not enough data.
+ */
+public static function build_exercise_howto_schema( WP_Post $post ) {
+$permalink = get_permalink( $post );
+$title     = get_the_title( $post );
+$desc_raw  = $post->post_excerpt ?: $post->post_content;
+$desc      = $desc_raw ? wp_trim_words( wp_strip_all_tags( $desc_raw ), 60, '…' ) : '';
+$image     = get_the_post_thumbnail_url( $post, 'full' );
+$in_lang   = static::language_code();
+$site_id   = home_url( '/' ) . '#website';
+$org_id    = home_url( '/' ) . '#org';
 
-		if ( $json ) {
-			echo '<script type="application/ld+json">' . wp_json_encode( $json ) . '</script>';
-		}
-	}
+$steps_meta = json_decode_safe( get_post_meta( $post->ID, 'em_steps_json', true ) );
+$steps      = [];
+
+if ( is_array( $steps_meta ) ) {
+foreach ( $steps_meta as $index => $step_value ) {
+$step_name = '';
+$duration  = null;
+
+if ( is_string( $step_value ) ) {
+$step_name = $step_value;
+} elseif ( is_array( $step_value ) ) {
+$step_name = $step_value['label'] ?? $step_value['title'] ?? '';
+$duration  = isset( $step_value['duration'] ) ? (int) $step_value['duration'] : null;
+}
+
+$step_name = sanitize_text_field( $step_name );
+if ( '' === $step_name ) {
+continue;
+}
+
+$steps[] = array_filter(
+[
+'@type'       => 'HowToStep',
+'position'    => $index + 1,
+'name'        => $step_name,
+'timeRequired'=> $duration ? emindy_iso8601_duration( $duration ) : null,
+],
+static function ( $value ) {
+return null !== $value;
+}
+);
+}
+}
+
+if ( empty( $steps ) ) {
+return null;
+}
+
+$total_seconds   = (int) get_post_meta( $post->ID, 'em_total_seconds', true );
+$prep_seconds    = (int) get_post_meta( $post->ID, 'em_prep_seconds', true );
+$perform_seconds = (int) get_post_meta( $post->ID, 'em_perform_seconds', true );
+
+$build_list = static function ( $raw ) {
+if ( ! $raw ) {
+return [];
+}
+
+$list = $raw;
+if ( is_string( $raw ) ) {
+$list = json_decode( $raw, true );
+if ( JSON_ERROR_NONE !== json_last_error() ) {
+$list = explode( ',', $raw );
+}
+}
+
+if ( ! is_array( $list ) ) {
+return [];
+}
+
+return array_values( array_filter( array_map( 'sanitize_text_field', array_map( 'trim', $list ) ) ) );
+};
+
+$supplies = $build_list( get_post_meta( $post->ID, 'em_supplies', true ) );
+$tools    = $build_list( get_post_meta( $post->ID, 'em_tools', true ) );
+$yield    = get_post_meta( $post->ID, 'em_yield', true );
+
+$schema = [
+'@type'       => 'HowTo',
+'@id'         => $permalink . '#howto',
+'name'        => $title,
+'description' => $desc,
+'inLanguage'  => $in_lang,
+'url'         => $permalink,
+'publisher'   => [ '@id' => $org_id ],
+'isPartOf'    => [ '@id' => $site_id ],
+'image'       => $image ? [ '@type' => 'ImageObject', 'url' => $image ] : null,
+'step'        => $steps,
+'totalTime'   => $total_seconds ? emindy_iso8601_duration( $total_seconds ) : null,
+'prepTime'    => $prep_seconds ? emindy_iso8601_duration( $prep_seconds ) : null,
+'performTime' => $perform_seconds ? emindy_iso8601_duration( $perform_seconds ) : null,
+'supply'      => $supplies ? array_map( static function ( $item ) {
+return [ '@type' => 'HowToSupply', 'name' => $item ];
+}, $supplies ) : null,
+'tool'        => $tools ? array_map( static function ( $item ) {
+return [ '@type' => 'HowToTool', 'name' => $item ];
+}, $tools ) : null,
+'yield'       => $yield ? sanitize_text_field( $yield ) : null,
+];
+
+return function_exists( 'emindy_array_filter_recursive' ) ? emindy_array_filter_recursive( $schema ) : $schema;
+}
+
+/**
+ * Build VideoObject schema for a video post.
+ *
+ * @param WP_Post $post Video post object.
+ * @return array|null JSON-LD array or null if not enough data.
+ */
+public static function build_video_schema( WP_Post $post ) {
+$permalink = get_permalink( $post );
+$title     = get_the_title( $post );
+$desc_raw  = $post->post_excerpt ?: $post->post_content;
+$desc      = $desc_raw ? wp_trim_words( wp_strip_all_tags( $desc_raw ), 60, '…' ) : '';
+$image     = get_the_post_thumbnail_url( $post, 'full' );
+$upload    = get_the_date( 'c', $post );
+$in_lang   = static::language_code();
+$site_id   = home_url( '/' ) . '#website';
+$org_id    = home_url( '/' ) . '#org';
+
+$embed = get_post_meta( $post->ID, '_em_embed_url', true );
+if ( ! $embed ) {
+$yt_id = get_post_meta( $post->ID, 'em_youtube_id', true );
+if ( $yt_id ) {
+$embed = 'https://www.youtube-nocookie.com/embed/' . rawurlencode( $yt_id );
+}
+}
+
+$duration_seconds = (int) get_post_meta( $post->ID, 'em_duration_sec', true );
+$duration_iso     = $duration_seconds ? emindy_iso8601_duration( $duration_seconds ) : null;
+
+$chapters = [];
+$chap_meta = get_post_meta( $post->ID, 'em_chapters_json', true );
+if ( $chap_meta ) {
+$chapters_array = json_decode( $chap_meta, true );
+if ( is_array( $chapters_array ) ) {
+$position = 1;
+foreach ( $chapters_array as $chapter ) {
+$label = isset( $chapter['label'] ) ? wp_strip_all_tags( $chapter['label'] ) : '';
+$start = isset( $chapter['t'] ) ? emindy_seconds_from_ts( $chapter['t'] ) : 0;
+
+if ( '' === $label ) {
+continue;
+}
+
+$chapters[] = [
+'@type'       => 'Clip',
+'name'        => $label,
+'position'    => $position++,
+'startOffset' => $start,
+];
+}
+}
+}
+
+$schema = [
+'@type'           => 'VideoObject',
+'@id'             => $permalink . '#video',
+'name'            => $title,
+'description'     => $desc,
+'thumbnailUrl'    => $image ?: null,
+'uploadDate'      => $upload,
+'inLanguage'      => $in_lang,
+'url'             => $permalink,
+'embedUrl'        => $embed ?: null,
+'isFamilyFriendly'=> true,
+'hasPart'         => $chapters ?: null,
+'duration'        => $duration_iso,
+'publisher'       => [ '@id' => $org_id ],
+'isPartOf'        => [ '@id' => $site_id ],
+];
+
+return function_exists( 'emindy_array_filter_recursive' ) ? emindy_array_filter_recursive( $schema ) : $schema;
+}
+
+/**
+ * Build Article/BlogPosting schema for an article post.
+ *
+ * @param WP_Post $post Article post object.
+ * @return array JSON-LD array.
+ */
+public static function build_article_schema( WP_Post $post ) {
+$permalink = get_permalink( $post );
+$title     = get_the_title( $post );
+$desc_raw  = $post->post_excerpt ?: $post->post_content;
+$desc      = $desc_raw ? wp_trim_words( wp_strip_all_tags( $desc_raw ), 60, '…' ) : '';
+$image     = get_the_post_thumbnail_url( $post, 'full' );
+$author    = get_the_author_meta( 'display_name', $post->post_author );
+$published = get_the_date( 'c', $post );
+$modified  = get_the_modified_date( 'c', $post );
+$in_lang   = static::language_code();
+$site_id   = home_url( '/' ) . '#website';
+$org_id    = home_url( '/' ) . '#org';
+
+$schema = [
+'@type'           => 'Article',
+'@id'             => $permalink . '#article',
+'headline'        => $title,
+'description'     => $desc,
+'inLanguage'      => $in_lang,
+'image'           => $image ? [ '@type' => 'ImageObject', 'url' => $image ] : null,
+'author'          => $author ? [ '@type' => 'Person', 'name' => $author ] : null,
+'datePublished'   => $published,
+'dateModified'    => $modified,
+'url'             => $permalink,
+'mainEntityOfPage'=> $permalink,
+'publisher'       => [ '@id' => $org_id ],
+'isPartOf'        => [ '@id' => $site_id ],
+];
+
+return function_exists( 'emindy_array_filter_recursive' ) ? emindy_array_filter_recursive( $schema ) : $schema;
+}
+
+/**
+ * Emit fallback JSON-LD when Rank Math is not active.
+ */
+public static function output_jsonld() {
+if ( is_admin() || ! is_singular() ) {
+return;
+}
+
+$post = get_post();
+if ( ! $post instanceof WP_Post ) {
+return;
+}
+
+$schema = null;
+switch ( $post->post_type ) {
+case 'em_video':
+$schema = static::build_video_schema( $post );
+break;
+case 'em_exercise':
+$schema = static::build_exercise_howto_schema( $post );
+break;
+case 'em_article':
+$schema = static::build_article_schema( $post );
+break;
+default:
+return;
+}
+
+if ( empty( $schema ) || ! is_array( $schema ) ) {
+return;
+}
+
+$schema = array_merge( [ '@context' => 'https://schema.org' ], $schema );
+echo '<script type="application/ld+json">' . wp_json_encode( $schema ) . '</script>';
+}
 }

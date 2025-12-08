@@ -38,7 +38,7 @@ Phases:
 - **Input sanitisation and security** — Some assessment-related shortcodes read from $_GET or trust query parameters without strong sanitisation or nonce protection. These should be reviewed and hardened.  \
   Target phase: **Phase 2**
 - **Schema duplication and consistency** — Both includes/schema.php and class-emindy-schema.php generate schema. They should be checked for overlap and kept in sync, removing outdated logic.  \
-  Target phase: **Phase 4**
+  Target phase: **Phase 4** (addressed in Phase 5 via shared builders reused by Rank Math and fallback paths)
 - **Default taxonomy terms and labels** — Inline documentation added for default term groups to aid future validation; editorial review still needed.  \
   Target phase: **Phase 3** (partially completed)
 - **Newsletter table & privacy** — The newsletter feature writes email addresses into a custom table (emindy_newsletter) without double opt-in. The data model and flows should be reviewed for privacy/compliance and possibly integrated with an external ESP.  \
@@ -47,11 +47,11 @@ Phases:
 ## SEO / SCHEMA
 
 - **Align schema with templates** — The JSON-LD emitted for HowTo, VideoObject and Article sometimes assumes data (steps, durations, chapters) that is not fully visible in templates. Either templates or schema should be updated so they always match.  \
-  Target phase: **Phase 4**
+  Target phase: **Phase 4** (addressed in Phase 5 by centralising schema builders and relying on post meta that matches rendered content)
 - **Video schema on archives** — The unified archive and hub pages list multiple videos but may not output appropriate ItemList / VideoObject schema for those lists. Investigate whether this would be beneficial and implement accordingly.  \
-  Target phase: **Phase 4**
+  Target phase: **Phase 4** (partially addressed in Phase 5 with safer archive ItemList output; further enhancement optional)
 - **Breadcrumb schema** — Visual breadcrumbs are rendered (e.g. via Rank Math), but it should be verified that breadcrumb JSON-LD is also present in the structured data output.  \
-  Target phase: **Phase 4**
+  Target phase: **Phase 4** (validated in Phase 5; Rank Math handles breadcrumb JSON-LD so no duplicate output is added)
 
 ## I18N (Internationalisation & Polylang)
 
