@@ -137,79 +137,156 @@ class Shortcodes {
 	return ob_get_clean();
 }
 
-	public static function related($atts=[]) : string {
-      // Default to the unified `topic` taxonomy.  Previously the plugin
-      // defaulted to `em_topic`, but the slug was harmonised to `topic` in
-      // the taxonomies refactor so that all content types share the same
-      // taxonomy names.  You can override this via the shortcode parameter.
-      $a = shortcode_atts([
-       'post_type' => get_post_type() ?: 'post',
-       'taxonomy'  => 'topic',
-        'count'     => 4,
-      ], $atts);
-      $post = get_post(); if(!$post) return '';
-
-      // زبان فعلی برای Polylang
-      $lang = function_exists('pll_get_post_language') ? pll_get_post_language($post->ID) : null;
-
-      // ترم‌های مشترک
-     $terms = $a['taxonomy'] ? wp_get_object_terms($post->ID, $a['taxonomy'], ['fields'=>'ids']) : [];
-      $tax_q = [];
-      if (!is_wp_error($terms) && !empty($terms)) {
-        $tax_q[] = [
-          'taxonomy' => $a['taxonomy'],
-         'field'    => 'term_id',
-         'terms'    => $terms,
-        ];
-      }
-
-     // کوئری اولیه بر اساس ترم مشترک
-      $args = [
-        'post_type'      => (array) $a['post_type'],
-        'post__not_in'   => [$post->ID],
-        'posts_per_page' => (int) $a['count'],
-        'tax_query'      => $tax_q,
-        'orderby'        => 'date',
-        'order'          => 'DESC',
-        'suppress_filters'=> false,
-      ];
-
-      // Polylang: محدود به زبان
-      if ($lang && function_exists('pll_current_language')) {
-        $args['lang'] = $lang;
-      }
-
-      $q = new \WP_Query($args);
-
-      // اگر خالی بود، fallback با شباهت متن (عنوان/خلاصه)
-      if (!$q->have_posts()) {
-        $needle = sanitize_text_field( wp_strip_all_tags( $post->post_title .' '. get_the_excerpt($post) ) );
-        $args = [
-          'post_type'      => (array) $a['post_type'],
-          'post__not_in'   => [$post->ID],
-          'posts_per_page' => (int) $a['count'],
-          's'              => $needle,
-         'orderby'        => 'relevance',
-         'suppress_filters'=> false,
-        ];
-        if ($lang && function_exists('pll_current_language')) $args['lang'] = $lang;
-        $q = new \WP_Query($args);
-      }
-
-     ob_start();
-      if ($q->have_posts()){
-       echo '<div class="em-related-grid">';
-       while($q->have_posts()){ $q->the_post();
-          echo '<article class="is-style-em-card" style="padding:12px">';
-          echo '<h4><a href="'.esc_url(get_permalink()).'">'.esc_html(get_the_title()).'</a></h4>';
-          echo '<p>'.esc_html(wp_trim_words(get_the_excerpt(),22,'…')).'</p>';
-          echo '</article>';
-        }
-        echo '</div>';
-        wp_reset_postdata();
-      }
-      return ob_get_clean();
-    }
+	/**
+	 * Render a grid of related content items for the current post.
+	 *
+	 * The shortcode matches content by shared taxonomies, prioritising the
+	 * current topic (primary topic meta or assigned topic terms) and optional
+	 * technique/format filters. Attributes mirror both legacy and refactored
+	 * implementations: `post_type`, `taxonomy`, `count`, `topic`, `technique`,
+	 * `format`, and `orderby`.
+	 *
+	 * @param array $atts Shortcode attributes controlling the related query.
+	 * @return string HTML markup for the related content grid.
+	 */
+	public static function related( $atts = [] ) : string {
+	$post = get_post();
+	if ( ! $post ) {
+	return '';
+	}
+	
+	$defaults = [
+	'post_type' => get_post_type() ?: 'post',
+	'taxonomy'  => 'topic',
+	'count'     => 4,
+	'topic'     => 'current',
+	'technique' => '',
+	'format'    => '',
+	'orderby'   => 'date',
+	];
+	$a = shortcode_atts( $defaults, $atts, 'em_related' );
+	
+	$post_types = array_filter( array_map( 'sanitize_key', (array) $a['post_type'] ) );
+	if ( empty( $post_types ) ) {
+	$post_types = [ get_post_type() ?: 'post' ];
+	}
+	
+	$taxonomy = $a['taxonomy'] ? sanitize_key( $a['taxonomy'] ) : '';
+	$count    = max( 1, (int) $a['count'] );
+	$orderby  = in_array( $a['orderby'], [ 'date', 'relevance', 'rand', 'menu_order', 'title' ], true ) ? $a['orderby'] : 'date';
+	
+	// Polylang: respect the current post language when available.
+	$lang = function_exists( 'pll_get_post_language' ) ? pll_get_post_language( $post->ID ) : null;
+	
+	$tax_query = [];
+	
+	// Primary topic resolution.
+	$topic_term_id = null;
+	if ( ! empty( $a['topic'] ) ) {
+	if ( 'current' === $a['topic'] ) {
+	$primary = (int) get_post_meta( $post->ID, EMINDY_PRIMARY_TOPIC_META, true );
+	if ( $primary ) {
+	$topic_term_id = $primary;
+	} else {
+	$terms = wp_get_post_terms( $post->ID, 'topic', [ 'fields' => 'ids' ] );
+	if ( ! is_wp_error( $terms ) && ! empty( $terms ) ) {
+	$topic_term_id = (int) $terms[0];
+	}
+	}
+	} else {
+	$topic_slug = sanitize_title( $a['topic'] );
+	$topic_term = $topic_slug ? get_term_by( 'slug', $topic_slug, 'topic' ) : false;
+	if ( $topic_term ) {
+	$topic_term_id = (int) $topic_term->term_id;
+	}
+	}
+	}
+	
+	if ( $topic_term_id ) {
+	$tax_query[] = [
+	'taxonomy' => 'topic',
+	'field'    => 'term_id',
+	'terms'    => [ $topic_term_id ],
+	];
+	} elseif ( $taxonomy ) {
+	$terms = wp_get_object_terms( $post->ID, $taxonomy, [ 'fields' => 'ids' ] );
+	if ( ! is_wp_error( $terms ) && ! empty( $terms ) ) {
+	$tax_query[] = [
+	'taxonomy' => $taxonomy,
+	'field'    => 'term_id',
+	'terms'    => $terms,
+	];
+	}
+	}
+	
+	foreach ( [ 'technique', 'format' ] as $tax_slug ) {
+	if ( empty( $a[ $tax_slug ] ) ) {
+	continue;
+	}
+	$term_slug = sanitize_title( $a[ $tax_slug ] );
+	$term      = $term_slug ? get_term_by( 'slug', $term_slug, $tax_slug ) : false;
+	if ( $term ) {
+	$tax_query[] = [
+	'taxonomy' => $tax_slug,
+	'field'    => 'term_id',
+	'terms'    => [ (int) $term->term_id ],
+	];
+	}
+	}
+	
+	if ( count( $tax_query ) > 1 ) {
+	$tax_query['relation'] = 'AND';
+	}
+	
+	$args = [
+	'post_type'        => $post_types,
+	'post__not_in'     => [ $post->ID ],
+	'posts_per_page'   => $count,
+	'tax_query'        => $tax_query,
+	'orderby'          => $orderby,
+	'order'            => 'DESC',
+	'suppress_filters' => false,
+	'no_found_rows'    => true,
+	];
+	
+	if ( $lang && function_exists( 'pll_current_language' ) ) {
+	$args['lang'] = $lang;
+	}
+	
+	$q = new \WP_Query( $args );
+	
+	if ( ! $q->have_posts() ) {
+	$needle = sanitize_text_field( wp_strip_all_tags( $post->post_title . ' ' . get_the_excerpt( $post ) ) );
+	$args   = [
+	'post_type'        => $post_types,
+	'post__not_in'     => [ $post->ID ],
+	'posts_per_page'   => $count,
+	's'                => $needle,
+	'orderby'          => 'relevance',
+	'suppress_filters' => false,
+	'no_found_rows'    => true,
+	];
+	if ( $lang && function_exists( 'pll_current_language' ) ) {
+	$args['lang'] = $lang;
+	}
+	$q = new \WP_Query( $args );
+	}
+	
+	ob_start();
+	if ( $q->have_posts() ) {
+	echo '<div class="em-related-grid">';
+	while ( $q->have_posts() ) {
+	$q->the_post();
+	echo '<article class="is-style-em-card" style="padding:12px">';
+	echo '<h4><a href="' . esc_url( get_permalink() ) . '">' . esc_html( get_the_title() ) . '</a></h4>';
+	echo '<p>' . esc_html( wp_trim_words( get_the_excerpt(), 22, '…' ) ) . '</p>';
+	echo '</article>';
+	}
+	echo '</div>';
+	wp_reset_postdata();
+	}
+	return ob_get_clean();
+	}
 
 
     /**
@@ -376,68 +453,84 @@ public static function gad7() : string {
 	return ob_get_clean();
 }
 
-public static function assessment_result() : string {
-	$type  = isset($_GET['type'])  ? sanitize_key($_GET['type']) : '';
-	$score = isset($_GET['score']) ? (int) $_GET['score'] : -1;
-	$sig   = isset($_GET['sig'])   ? sanitize_text_field($_GET['sig']) : '';
-
-	// اعتبارسنجی امضا
-	$secret = wp_salt('auth');
-	$calc = hash_hmac('sha256', $type.'|'.$score, $secret);
-	if ( ! hash_equals($calc, $sig) || $score < 0 ) {
-		return '<div class="em-phq9 is-style-em-card"><p>'.esc_html__('Invalid or missing result.','emindy-core').'</p></div>';
+	/**
+	 * Render the signed PHQ-9/GAD-7 assessment result card.
+	 *
+	 * Expects `type`, `score`, and `sig` query parameters signed with the
+	 * WordPress auth salt. Outputs a translated summary or a graceful error when
+	 * the signature is invalid.
+	 *
+	 * @return string HTML markup for the assessment result.
+	 */
+	public static function assessment_result() : string {
+	$type       = isset( $_GET['type'] ) ? sanitize_key( wp_unslash( $_GET['type'] ) ) : '';
+	$score_raw  = isset( $_GET['score'] ) ? wp_unslash( $_GET['score'] ) : null;
+	$score      = filter_var( $score_raw, FILTER_VALIDATE_INT );
+	$score      = ( false === $score || null === $score ) ? -1 : (int) $score;
+	$sig        = isset( $_GET['sig'] ) ? sanitize_text_field( wp_unslash( $_GET['sig'] ) ) : '';
+	$valid_type = [ 'phq9', 'gad7' ];
+	
+	if ( $type && ! in_array( $type, $valid_type, true ) ) {
+	$type = '';
 	}
-
-	$title = ($type==='phq9') ? __('PHQ-9 Result','emindy-core') : (($type==='gad7') ? __('GAD-7 Result','emindy-core') : __('Assessment Result','emindy-core'));
-	$max = ($type==='phq9') ? 27 : (($type==='gad7') ? 21 : 0);
-
-    // Map the numeric score to a severity band.  Use translation functions on
-    // the band names so they can be localised.  See
-    // https://developer.wordpress.org/plugins/internationalization/how-to-internationalize-your-plugin/【870389742309372†L0-L10】
-    $band = '';
-    if ( $type === 'phq9' ) {
-        if ( $score <= 4 ) {
-            $band = __( 'Minimal', 'emindy-core' );
-        } elseif ( $score <= 9 ) {
-            $band = __( 'Mild', 'emindy-core' );
-        } elseif ( $score <= 14 ) {
-            $band = __( 'Moderate', 'emindy-core' );
-        } elseif ( $score <= 19 ) {
-            $band = __( 'Moderately severe', 'emindy-core' );
-        } else {
-            $band = __( 'Severe', 'emindy-core' );
-        }
-    } elseif ( $type === 'gad7' ) {
-        if ( $score <= 4 ) {
-            $band = __( 'Minimal', 'emindy-core' );
-        } elseif ( $score <= 9 ) {
-            $band = __( 'Mild', 'emindy-core' );
-        } elseif ( $score <= 14 ) {
-            $band = __( 'Moderate', 'emindy-core' );
-        } else {
-            $band = __( 'Severe', 'emindy-core' );
-        }
-    }
-
-	ob_start(); ?>
-	<div class="em-phq9 is-style-em-card">
-		<h2><?php echo esc_html($title); ?></h2>
-        <p><?php
-            /*
-             * Wrap the score line in a translation call so that the entire
-             * sentence can be localised.  We use sprintf on the result of
-             * __() rather than on a literal string to allow translators to
-             * rearrange the placeholders as needed.
-             */
-            $score_line = sprintf( __( 'Score: %d / %d — %s', 'emindy-core' ), $score, $max, $band );
-            echo esc_html( $score_line );
-        ?></p>
-		<p><?php echo esc_html__('This check is educational, not a diagnosis. If you feel unsafe or in crisis, please visit the Emergency page.','emindy-core'); ?></p>
-		<p><a href="<?php echo esc_url( home_url('/assessments/') ); ?>">&larr; <?php echo esc_html__('Back to assessments','emindy-core'); ?></a></p>
-	</div>
-	<?php
-	return ob_get_clean();
-}
+	
+	// اعتبارسنجی امضا
+	$secret = wp_salt( 'auth' );
+	$calc   = hash_hmac( 'sha256', $type . '|' . $score, $secret );
+	if ( ! hash_equals( $calc, $sig ) || $score < 0 ) {
+	return '<div class="em-phq9 is-style-em-card"><p>' . esc_html__( 'Invalid or missing result.', 'emindy-core' ) . '</p></div>';
+	}
+	
+	$title = ( 'phq9' === $type ) ? __( 'PHQ-9 Result', 'emindy-core' ) : ( ( 'gad7' === $type ) ? __( 'GAD-7 Result', 'emindy-core' ) : __( 'Assessment Result', 'emindy-core' ) );
+	$max   = ( 'phq9' === $type ) ? 27 : ( ( 'gad7' === $type ) ? 21 : 0 );
+	
+	    // Map the numeric score to a severity band.  Use translation functions on
+	    // the band names so they can be localised.  See
+	    // https://developer.wordpress.org/plugins/internationalization/how-to-internationalize-your-plugin/【870389742309372†L0-L10】
+	    $band = '';
+	    if ( $type === 'phq9' ) {
+	        if ( $score <= 4 ) {
+	            $band = __( 'Minimal', 'emindy-core' );
+	        } elseif ( $score <= 9 ) {
+	            $band = __( 'Mild', 'emindy-core' );
+	        } elseif ( $score <= 14 ) {
+	            $band = __( 'Moderate', 'emindy-core' );
+	        } elseif ( $score <= 19 ) {
+	            $band = __( 'Moderately severe', 'emindy-core' );
+	        } else {
+	            $band = __( 'Severe', 'emindy-core' );
+	        }
+	    } elseif ( $type === 'gad7' ) {
+	        if ( $score <= 4 ) {
+	            $band = __( 'Minimal', 'emindy-core' );
+	        } elseif ( $score <= 9 ) {
+	            $band = __( 'Mild', 'emindy-core' );
+	        } elseif ( $score <= 14 ) {
+	            $band = __( 'Moderate', 'emindy-core' );
+	        } else {
+	            $band = __( 'Severe', 'emindy-core' );
+	        }
+	    }
+	
+		ob_start(); ?>
+		<div class="em-phq9 is-style-em-card">
+			<h2><?php echo esc_html($title); ?></h2>
+	        <p><?php
+	            /*
+	             * Wrap the score line in a translation call so that the entire
+	             * sentence can be localised.  We use sprintf on the result of
+	             * __() rather than on a literal string to allow translators to
+	             * rearrange the placeholders as needed.
+	             */
+	            $score_line = sprintf( __( 'Score: %d / %d — %s', 'emindy-core' ), $score, $max, $band );
+	            echo esc_html( $score_line );
+	        ?></p>
+			<p><?php echo esc_html__('This check is educational, not a diagnosis. If you feel unsafe or in crisis, please visit the Emergency page.','emindy-core'); ?></p>
+			<p><a href="<?php echo esc_url( home_url('/assessments/') ); ?>">&larr; <?php echo esc_html__('Back to assessments','emindy-core'); ?></a></p>
+		</div>
+		<?php
+		return ob_get_clean();
+	}
 
 public static function transcript() : string {
 	$post = get_post(); if (! $post) return '';
@@ -461,40 +554,48 @@ public static function transcript() : string {
 	return ob_get_clean();
 }
 
-public static function video_filters() : string {
-	$action = get_post_type_archive_link('em_video');
-	$selected = isset($_GET['topic']) ? (int) $_GET['topic'] : 0;
-	ob_start(); ?>
-	<form class="em-filters" method="get" action="<?php echo esc_url( $action ); ?>" aria-label="<?php echo esc_attr__('Filter videos','emindy-core'); ?>">
-		<label>
-			<span class="screen-reader-text"><?php echo esc_html__('Search','emindy-core'); ?></span>
-			<input type="search" name="s" value="<?php echo esc_attr( get_search_query() ); ?>" placeholder="<?php echo esc_attr__('Search videos…','emindy-core'); ?>">
-		</label>
-		<label>
-			<span class="screen-reader-text"><?php echo esc_html__('Topic','emindy-core'); ?></span>
-			<?php
-            // Use the unified `topic` taxonomy in the filters.  This dropdown
-            // displays all available topic terms for filtering the video
-            // archive.  The `taxonomy` argument should match the slug used in
-            // register_taxonomies().
-            wp_dropdown_categories([
-                'taxonomy'        => 'topic',
-                'name'            => 'topic',
-                'show_option_all' => __('All topics','emindy-core'),
-                'hide_empty'      => 0,
-                'selected'        => $selected,
-                'class'           => 'em-filter-select',
-            ]);
-			?>
-		</label>
-		<button type="submit" class="em-filter-submit"><?php echo esc_html__('Apply','emindy-core'); ?></button>
-		<?php if ( ! empty($_GET) ) : ?>
-			<a class="em-filter-reset" href="<?php echo esc_url( $action ); ?>"><?php echo esc_html__('Reset','emindy-core'); ?></a>
-		<?php endif; ?>
-	</form>
-	<?php
-	return ob_get_clean();
-}
+	/**
+	 * Render the archive filter form for video listings.
+	 *
+	 * Provides a search box and topic dropdown, respecting any existing query
+	 * parameters from the request while sanitising the selected topic ID.
+	 *
+	 * @return string HTML markup for the filter form.
+	 */
+	public static function video_filters() : string {
+	$action   = get_post_type_archive_link( 'em_video' );
+	$selected = isset( $_GET['topic'] ) ? absint( wp_unslash( $_GET['topic'] ) ) : 0;
+		ob_start(); ?>
+		<form class="em-filters" method="get" action="<?php echo esc_url( $action ); ?>" aria-label="<?php echo esc_attr__('Filter videos','emindy-core'); ?>">
+			<label>
+				<span class="screen-reader-text"><?php echo esc_html__('Search','emindy-core'); ?></span>
+				<input type="search" name="s" value="<?php echo esc_attr( get_search_query() ); ?>" placeholder="<?php echo esc_attr__('Search videos…','emindy-core'); ?>">
+			</label>
+			<label>
+				<span class="screen-reader-text"><?php echo esc_html__('Topic','emindy-core'); ?></span>
+				<?php
+	            // Use the unified `topic` taxonomy in the filters.  This dropdown
+	            // displays all available topic terms for filtering the video
+	            // archive.  The `taxonomy` argument should match the slug used in
+	            // register_taxonomies().
+	            wp_dropdown_categories([
+	                'taxonomy'        => 'topic',
+	                'name'            => 'topic',
+	                'show_option_all' => __('All topics','emindy-core'),
+	                'hide_empty'      => 0,
+	                'selected'        => $selected,
+	                'class'           => 'em-filter-select',
+	            ]);
+				?>
+			</label>
+			<button type="submit" class="em-filter-submit"><?php echo esc_html__('Apply','emindy-core'); ?></button>
+			<?php if ( ! empty($_GET) ) : ?>
+				<a class="em-filter-reset" href="<?php echo esc_url( $action ); ?>"><?php echo esc_html__('Reset','emindy-core'); ?></a>
+			<?php endif; ?>
+		</form>
+		<?php
+		return ob_get_clean();
+	}
 
 public static function video_player() : string {
 	$post = get_post(); if (! $post) return '';
@@ -832,85 +933,6 @@ add_shortcode('em_related_posts', function($atts){
         echo '<p style="margin:.35rem 0 0">'.esc_html( wp_trim_words(get_the_excerpt(), 18,'…') ).'</p>';
       echo '</div>';
     echo '</article>';
-  }
-  echo '</div>';
-  wp_reset_postdata();
-  return ob_get_clean();
-});
-
-add_shortcode('em_related', function($atts){
-  $atts = shortcode_atts([
-    'topic'    => 'current', // 'current' or slug
-    'technique'=> '',
-    'format'   => '',
-    'count'    => 4,
-    'orderby'  => 'date'
-  ], $atts, 'em_related');
-
-  $post_id = get_the_ID();
-
-  // Resolve topic
-  $topic_term_id = null;
-  if ($atts['topic'] === 'current') {
-    $primary = (int) get_post_meta($post_id, EMINDY_PRIMARY_TOPIC_META, true);
-    if ($primary) {
-      $topic_term_id = $primary;
-    } else {
-      $terms = wp_get_post_terms($post_id, 'topic', ['fields'=>'ids']);
-      if ($terms) $topic_term_id = $terms[0];
-    }
-  } else {
-    $t = get_term_by('slug', $atts['topic'], 'topic');
-    if ($t) $topic_term_id = $t->term_id;
-  }
-
-  $tax_query = ['relation' => 'AND'];
-
-  if ($topic_term_id) {
-    $tax_query[] = [
-      'taxonomy' => 'topic',
-      'field'    => 'term_id',
-      'terms'    => [$topic_term_id],
-    ];
-  }
-
-  if ($atts['technique']) {
-    $tech = get_term_by('slug', $atts['technique'], 'technique');
-    if ($tech) {
-      $tax_query[] = [
-        'taxonomy'=>'technique','field'=>'term_id','terms'=>[$tech->term_id]
-      ];
-    }
-  }
-
-  if ($atts['format']) {
-    $fmt = get_term_by('slug', $atts['format'], 'format');
-    if ($fmt) {
-      $tax_query[] = [
-        'taxonomy'=>'format','field'=>'term_id','terms'=>[$fmt->term_id]
-      ];
-    }
-  }
-
-  $q = new WP_Query([
-    'post__not_in'   => [$post_id],
-    'posts_per_page' => (int)$atts['count'],
-    'orderby'        => $atts['orderby'],
-    'tax_query'      => count($tax_query)>1 ? $tax_query : [],
-    'no_found_rows'  => true,
-  ]);
-
-  if (!$q->have_posts()) return '';
-
-  ob_start();
-  echo '<div class="em-related-grid">';
-  while ($q->have_posts()){ $q->the_post();
-    echo '<article class="em-related-card">';
-    echo '<a href="'. esc_url(get_permalink()) .'">';
-    if (has_post_thumbnail()) the_post_thumbnail('medium', ['loading'=>'lazy']);
-    echo '<h3>'. esc_html(get_the_title()) .'</h3>';
-    echo '<p>'. esc_html( wp_trim_words(get_the_excerpt(), 18) ) .'</p>';
-    echo '</a></article>';
   }
   echo '</div>';
   wp_reset_postdata();
