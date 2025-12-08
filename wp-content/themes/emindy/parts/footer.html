@@ -1,3 +1,14 @@
+<?php
+/**
+ * Footer template part.
+ *
+ * @package emindy
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+?>
 <!-- wp:group {"tagName":"footer","align":"full","style":{"spacing":{"padding":{"top":"2rem","bottom":"2rem"},"margin":{"top":"2rem"}},"border":{"top":{"color":"var(--em-border)","width":"1px","style":"solid"}}},"layout":{"type":"constrained"}} -->
 <footer class="wp-block-group alignfull" style="border-top:1px solid var(--em-border)">
   <!--
@@ -12,10 +23,15 @@
     <!-- wp:column {"verticalAlignment":"top","width":"33.33%"} -->
     <div class="wp-block-column" style="flex-basis:33.33%">
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"0.85rem"},"spacing":{"margin":{"bottom":"0.5rem"}}}} -->
-      <p style="font-size:0.85rem;margin-bottom:0.5rem">© <?php echo esc_html( date('Y') ); ?> eMINDy</p>
+      <p style="font-size:0.85rem;margin-bottom:0.5rem">
+        © <?php echo esc_html( gmdate( 'Y' ) ); ?> <?php echo esc_html( get_bloginfo( 'name' ) ); ?>
+      </p>
       <!-- /wp:paragraph -->
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"0.75rem","lineHeight":"1.6"}}} -->
-      <p style="font-size:0.75rem;line-height:1.6">Calm, friendly and accessible resources. Educational self‑help only (not medical advice). For urgent help, see <a href="/emergency/">Emergency</a>.</p>
+      <p style="font-size:0.75rem;line-height:1.6">
+        <?php esc_html_e( 'Calm, friendly and accessible resources. Educational self-help only (not medical advice). For urgent help, see', 'emindy' ); ?>
+        <a href="<?php echo esc_url( home_url( '/emergency/' ) ); ?>"><?php esc_html_e( 'Emergency', 'emindy' ); ?></a>.
+      </p>
       <!-- /wp:paragraph -->
     </div>
     <!-- /wp:column -->
