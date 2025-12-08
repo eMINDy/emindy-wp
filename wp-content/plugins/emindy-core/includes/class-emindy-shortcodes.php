@@ -722,7 +722,7 @@ public static function gad7() : string {
                 // fallback iframe (nocookie)
                 $src = 'https://www.youtube-nocookie.com/embed/'.rawurlencode($id).'?rel=0';
                 return '<div class="em-video">
-                <iframe loading="lazy" width="560" height="315" src="'.esc_url($src).'" title="YouTube video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <iframe loading="lazy" width="560" height="315" src="'.esc_url($src).'" title="'. esc_attr__( 'YouTube video', 'emindy-core' ) .'" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 </div>';
         }
 
@@ -761,9 +761,9 @@ add_shortcode('em_search_bar', function(){
   $action = esc_url( home_url('/') );
   ob_start(); ?>
   <form role="search" method="get" action="<?php echo $action; ?>" class="em-search-bar" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:.25rem 0 .75rem">
-    <label for="em-s" class="sr-only">Search</label>
-    <input id="em-s" type="search" name="s" value="<?php echo $s_attr; ?>" placeholder="Search videos, exercises, articles, blog…" style="flex:1;min-width:260px;padding:.55rem .8rem;border-radius:.75rem;border:0">
-    <button type="submit" style="padding:.6rem .95rem;border-radius:.75rem;border:0;background:#F4D483;color:#0A2A43;font-weight:600">Search</button>
+    <label for="em-s" class="sr-only"><?php echo esc_html__( 'Search', 'emindy-core' ); ?></label>
+    <input id="em-s" type="search" name="s" value="<?php echo $s_attr; ?>" placeholder="<?php echo esc_attr__( 'Search videos, exercises, articles, blog…', 'emindy-core' ); ?>" style="flex:1;min-width:260px;padding:.55rem .8rem;border-radius:.75rem;border:0">
+    <button type="submit" style="padding:.6rem .95rem;border-radius:.75rem;border:0;background:#F4D483;color:#0A2A43;font-weight:600"><?php echo esc_html__( 'Search', 'emindy-core' ); ?></button>
   </form>
   <?php
   return ob_get_clean();
@@ -776,14 +776,14 @@ add_shortcode('em_quick_filters', function(){
   $sq = rawurlencode($s);
   $home = home_url('/');
   $links = [
-    $home.'?s='.$sq                                       => 'All',
-    $home.'?s='.$sq.'&post_type=em_video'                 => 'Videos',
-    $home.'?s='.$sq.'&post_type=em_exercise'              => 'Exercises',
-    $home.'?s='.$sq.'&post_type=em_article'               => 'Articles',
-    $home.'?s='.$sq.'&post_type=post'                     => 'Blog',
+    $home.'?s='.$sq                                       => __( 'All', 'emindy-core' ),
+    $home.'?s='.$sq.'&post_type=em_video'                 => __( 'Videos', 'emindy-core' ),
+    $home.'?s='.$sq.'&post_type=em_exercise'              => __( 'Exercises', 'emindy-core' ),
+    $home.'?s='.$sq.'&post_type=em_article'               => __( 'Articles', 'emindy-core' ),
+    $home.'?s='.$sq.'&post_type=post'                     => __( 'Blog', 'emindy-core' ),
   ];
   ob_start(); ?>
-  <nav class="em-quick-filters" aria-label="Quick filters" style="display:flex;gap:.5rem;flex-wrap:wrap">
+  <nav class="em-quick-filters" aria-label="<?php echo esc_attr__( 'Quick filters', 'emindy-core' ); ?>" style="display:flex;gap:.5rem;flex-wrap:wrap">
     <?php foreach($links as $url=>$label): ?>
       <a class="pill" href="<?php echo esc_url($url); ?>"><?php echo esc_html($label); ?></a>
     <?php endforeach; ?>
@@ -797,13 +797,13 @@ add_shortcode('em_quick_filters', function(){
 add_shortcode('em_result_badge', function(){
   $pt = get_post_type();
   $map = [
-    'em_video'    => 'Video',
-    'em_exercise' => 'Exercise',
-    'em_article'  => 'Article',
-    'post'        => 'Blog',
+    'em_video'    => __( 'Video', 'emindy-core' ),
+    'em_exercise' => __( 'Exercise', 'emindy-core' ),
+    'em_article'  => __( 'Article', 'emindy-core' ),
+    'post'        => __( 'Blog', 'emindy-core' ),
   ];
   $label = isset($map[$pt]) ? $map[$pt] : ucfirst($pt);
-  return '<span class="em-badge em-badge-'.esc_attr($pt).'" aria-label="Content type">'.$label.'</span>';
+  return '<span class="em-badge em-badge-'.esc_attr($pt).'" aria-label="'. esc_attr__( 'Content type', 'emindy-core' ) .'">'.esc_html($label).'</span>';
 });
 
 // 2.3) [em_excerpt_highlight length="28"] — خلاصه با هایلایت
@@ -895,7 +895,7 @@ add_shortcode('em_popular_posts', function($atts){
     'orderby'=>'date','order'=>'DESC',
     'no_found_rows'=>true
   ]);
-  if(!$q->have_posts()) return '<p class="em-muted">No posts yet.</p>';
+  if(!$q->have_posts()) return '<p class="em-muted">'. esc_html__( 'No posts yet.', 'emindy-core' ) .'</p>';
   ob_start(); echo '<ul class="em-mini-list">';
   while($q->have_posts()){ $q->the_post();
     echo '<li><a href="'.esc_url(get_permalink()).'">'.esc_html(get_the_title()).'</a></li>';
@@ -910,7 +910,7 @@ add_shortcode('em_popular_videos', function($atts){
     'post_type'=>'em_video','posts_per_page'=>max(1,(int)$a['limit']),
     'orderby'=>'date','order'=>'DESC','no_found_rows'=>true
   ]);
-  if(!$q->have_posts()) return '<p class="em-muted">No videos yet.</p>';
+  if(!$q->have_posts()) return '<p class="em-muted">'. esc_html__( 'No videos yet.', 'emindy-core' ) .'</p>';
   ob_start(); echo '<ul class="em-mini-list">';
   while($q->have_posts()){ $q->the_post();
     echo '<li><a href="'.esc_url(get_permalink()).'">'.esc_html(get_the_title()).'</a></li>';
@@ -925,7 +925,7 @@ add_shortcode('em_popular_exercises', function($atts){
     'post_type'=>'em_exercise','posts_per_page'=>max(1,(int)$a['limit']),
     'orderby'=>'date','order'=>'DESC','no_found_rows'=>true
   ]);
-  if(!$q->have_posts()) return '<p class="em-muted">No exercises yet.</p>';
+  if(!$q->have_posts()) return '<p class="em-muted">'. esc_html__( 'No exercises yet.', 'emindy-core' ) .'</p>';
   ob_start(); echo '<ul class="em-mini-list">';
   while($q->have_posts()){ $q->the_post();
     echo '<li><a href="'.esc_url(get_permalink()).'">'.esc_html(get_the_title()).'</a></li>';
@@ -936,13 +936,13 @@ add_shortcode('em_popular_exercises', function($atts){
 // 2.4) Mini sitemap (top hubs)
 add_shortcode('em_sitemap_mini', function(){
   $links = [
-    '/start-here/' => 'Start Here — Essentials',
-    '/library/'    => 'Library (All content)',
-    '/em_video/'   => 'Videos',
-    '/em_exercise/'=> 'Exercises',
-    '/articles/'   => 'Articles Hub',
-    '/phq-9/'      => 'PHQ-9 Assessment',
-    '/ask-for-help/'=> 'Ask for Help'
+    '/start-here/'  => __( 'Start Here — Essentials', 'emindy-core' ),
+    '/library/'     => __( 'Library (All content)', 'emindy-core' ),
+    '/em_video/'    => __( 'Videos', 'emindy-core' ),
+    '/em_exercise/' => __( 'Exercises', 'emindy-core' ),
+    '/articles/'    => __( 'Articles Hub', 'emindy-core' ),
+    '/phq-9/'       => __( 'PHQ-9 Assessment', 'emindy-core' ),
+    '/ask-for-help/'=> __( 'Ask for Help', 'emindy-core' ),
   ];
   $out = '<ul class="em-mini-list">';
   foreach($links as $url=>$label){
@@ -956,17 +956,19 @@ add_shortcode('em_report_link', function($atts){
   $a = shortcode_atts(['id'=>'report'], $atts, 'em_report_link');
   $curr = (is_ssl() ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
   $mailto = antispambot(get_option('admin_email'));
-  $subject = rawurlencode('Broken link report on eMINDy');
-  $body = rawurlencode("Broken URL:\n{$curr}\n\nUser note:");
+  $subject = rawurlencode( __( 'Broken link report on eMINDy', 'emindy-core' ) );
+  $body_template = __( "Broken URL:\n%s\n\nUser note:", 'emindy-core' );
+  $body = rawurlencode( sprintf( $body_template, $curr ) );
   $href = "mailto:{$mailto}?subject={$subject}&body={$body}";
-  return '<p id="'.esc_attr($a['id']).'"><a class="em-button" href="'.$href.'">Report this link</a></p>';
+  return '<p id="'.esc_attr($a['id']).'"><a class="em-button" href="'.$href.'">'. esc_html__( 'Report this link', 'emindy-core' ) .'</a></p>';
 });
 
 add_shortcode('em_reading_time', function(){
   $content = get_post_field('post_content', get_the_ID());
   $words = str_word_count( wp_strip_all_tags( $content ) );
   $minutes = max(1, ceil($words / 200)); // 200 wpm
-  return '<span aria-label="Estimated reading time">~'.$minutes.' min read</span>';
+  $estimate = sprintf( __( '~%d min read', 'emindy-core' ), $minutes );
+  return '<span aria-label="'. esc_attr__( 'Estimated reading time', 'emindy-core' ) .'">'. esc_html( $estimate ) .'</span>';
 });
 
 add_shortcode('em_toc', function(){
@@ -990,7 +992,7 @@ add_shortcode('em_toc', function(){
     $items[] = ['id'=>$id,'text'=>$text,'level'=>strtolower($h->nodeName)];
   }
   if(!$items) return '';
-  $out = '<nav class="em-toc" aria-label="Table of contents"><ol>';
+  $out = '<nav class="em-toc" aria-label="'. esc_attr__( 'Table of contents', 'emindy-core' ) .'"><ol>';
   foreach($items as $it){
     $pad = ($it['level']==='h3') ? ' style="margin-left:1rem"' : '';
     $out .= '<li'.$pad.'><a href="#'.esc_attr($it['id']).'">'.esc_html($it['text']).'</a></li>';
@@ -1003,11 +1005,11 @@ add_shortcode('em_share', function(){
   $url = urlencode(get_permalink());
   $title = urlencode(get_the_title());
   $out = '<div class="em-share" style="display:flex;flex-wrap:wrap;gap:.5rem">'
-    .'<a class="em-button" href="https://twitter.com/intent/tweet?url='.$url.'&text='.$title.'" target="_blank" rel="noopener">X/Twitter</a>'
-    .'<a class="em-button" href="https://www.facebook.com/sharer/sharer.php?u='.$url.'" target="_blank" rel="noopener">Facebook</a>'
-    .'<a class="em-button" href="https://www.linkedin.com/shareArticle?mini=true&url='.$url.'&title='.$title.'" target="_blank" rel="noopener">LinkedIn</a>'
-    .'<a class="em-button" href="https://api.whatsapp.com/send?text='.$title.'%20'.$url.'" target="_blank" rel="noopener">WhatsApp</a>'
-    .'<button class="em-button" onclick="navigator.clipboard.writeText(\''.esc_js(get_permalink()).'\')">Copy link</button>'
+    .'<a class="em-button" href="https://twitter.com/intent/tweet?url='.$url.'&text='.$title.'" target="_blank" rel="noopener">'. esc_html__( 'X/Twitter', 'emindy-core' ) .'</a>'
+    .'<a class="em-button" href="https://www.facebook.com/sharer/sharer.php?u='.$url.'" target="_blank" rel="noopener">'. esc_html__( 'Facebook', 'emindy-core' ) .'</a>'
+    .'<a class="em-button" href="https://www.linkedin.com/shareArticle?mini=true&url='.$url.'&title='.$title.'" target="_blank" rel="noopener">'. esc_html__( 'LinkedIn', 'emindy-core' ) .'</a>'
+    .'<a class="em-button" href="https://api.whatsapp.com/send?text='.$title.'%20'.$url.'" target="_blank" rel="noopener">'. esc_html__( 'WhatsApp', 'emindy-core' ) .'</a>'
+    .'<button class="em-button" onclick="navigator.clipboard.writeText(\''.esc_js(get_permalink()).'\')">'. esc_html__( 'Copy link', 'emindy-core' ) .'</button>'
     .'</div>';
   return $out;
 });
@@ -1025,7 +1027,7 @@ add_shortcode('em_related_posts', function($atts){
   ];
   if($cats) $args['category__in'] = $cats;
   $q = new WP_Query($args);
-  if(!$q->have_posts()) return '<p class="em-muted">No related posts yet.</p>';
+  if(!$q->have_posts()) return '<p class="em-muted">'. esc_html__( 'No related posts yet.', 'emindy-core' ) .'</p>';
   ob_start();
   echo '<div class="em-related-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem">';
   while($q->have_posts()){ $q->the_post();
@@ -1057,13 +1059,17 @@ add_shortcode('em_i18n', function($atts){
 add_shortcode('em_admin_notice_missing_pages', function(){
   if( ! current_user_can('manage_options') ) return '';
   $out = [];
-  if( ! get_page_by_path('blog') )     $out[] = 'Missing page: /blog (Posts landing)';
-  if( ! get_page_by_path('library') )  $out[] = 'Missing page: /library (Library hub)';
+  if( ! get_page_by_path('blog') ) {
+    $out[] = esc_html__( 'Missing page: /blog (Posts landing)', 'emindy-core' );
+  }
+  if( ! get_page_by_path('library') ) {
+    $out[] = esc_html__( 'Missing page: /library (Library hub)', 'emindy-core' );
+  }
   if( empty($out) ) return '';
   $html = '<div class="em-admin-note" style="margin-top:1rem;padding:.8rem;border:1px solid #f5d27d;border-radius:8px;background:#fff9e8">';
-  $html .= '<strong>Admin note:</strong><ul style="margin:.4rem 0 0 .9rem">';
+  $html .= '<strong>' . esc_html__( 'Admin note:', 'emindy-core' ) . '</strong><ul style="margin:.4rem 0 0 .9rem">';
   foreach($out as $li){ $html .= '<li>'.$li.'</li>'; }
-  $html .= '</ul><p>Tip: You can create them or set a redirect (see em_redirect_missing_pages).</p></div>';
+  $html .= '</ul><p>' . esc_html__( 'Tip: You can create them or set a redirect (see em_redirect_missing_pages).', 'emindy-core' ) . '</p></div>';
   return $html;
 });
 
@@ -1072,12 +1078,12 @@ add_shortcode('em_topics_pills', function($atts){
   // Default to the `topic` taxonomy unless a custom taxonomy is provided.
   $a = shortcode_atts(['taxonomy'=>'topic'], $atts, 'em_topics_pills');
   $terms = get_terms(['taxonomy'=>$a['taxonomy'], 'hide_empty'=>true]);
-  if (is_wp_error($terms) || empty($terms)) return '<span>No topics yet.</span>';
+  if (is_wp_error($terms) || empty($terms)) return '<span>'. esc_html__( 'No topics yet.', 'emindy-core' ) .'</span>';
 
-  $out = '<div class="em-topic-pills" role="navigation" aria-label="Filter by topic">';
+  $out = '<div class="em-topic-pills" role="navigation" aria-label="'. esc_attr__( 'Filter by topic', 'emindy-core' ) .'">';
   $archive_url = get_post_type_archive_link('em_video');
   // "All" link
-  $out .= '<a class="pill" href="'.esc_url($archive_url).'">All</a>';
+  $out .= '<a class="pill" href="'.esc_url($archive_url).'">'. esc_html__( 'All', 'emindy-core' ) .'</a>';
   foreach ($terms as $t) {
     $out .= '<a class="pill" href="'.esc_url(get_term_link($t)).'">'.esc_html($t->name).'</a>';
   }
