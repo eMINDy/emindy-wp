@@ -1,31 +1,31 @@
-name: Build theme & plugin ZIPs
+name: Build eMINDy theme & plugin ZIPs
 
 on:
-  workflow_dispatch: # اجرا فقط با دکمه "Run workflow"
+  workflow_dispatch:
 
 jobs:
-  build-zips:
+  build:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Create dist folder
-        run: mkdir -p dist
+      - name: Create build directory
+        run: mkdir -p build
 
-      - name: Zip theme
-        run: |
-          cd wp-content/themes
-          zip -r ../../dist/emindy-theme.zip emindy
-
-      - name: Zip plugin
+      - name: Zip emindy-core plugin
         run: |
           cd wp-content/plugins
-          zip -r ../../dist/emindy-core.zip emindy-core
+          zip -r ../../build/emindy-core.zip emindy-core
 
-      - name: Upload artifacts
+      - name: Zip emindy child theme
+        run: |
+          cd wp-content/themes
+          zip -r ../../build/emindy-theme.zip emindy
+
+      - name: Upload ZIP artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: emindy-zips
-          path: dist/*.zip
+          name: emindy-wp-zips
+          path: build/*.zip
