@@ -55,10 +55,16 @@ function emindy_core_activate() {
         emindy_newsletter_install_table();
 
         // Create analytics table for tracking events.
-        if ( ! class_exists( '\\EMINDY\\Core\\Analytics' ) ) {
+        if ( ! class_exists( '\EMINDY\Core\Analytics' ) ) {
                 require_once EMINDY_CORE_PATH . 'includes/class-emindy-analytics.php';
         }
         \EMINDY\Core\Analytics::install_table();
+
+        // Ensure custom content types are registered before flushing rewrite rules.
+        if ( class_exists( '\EMINDY\Core\CPT' ) && class_exists( '\EMINDY\Core\Taxonomy' ) ) {
+                \EMINDY\Core\CPT::register_all();
+                \EMINDY\Core\Taxonomy::register_all();
+        }
 
         // Flush rewrite rules on plugin activation to ensure custom post type slugs and archives are registered properly.
         flush_rewrite_rules();
@@ -73,61 +79,100 @@ function emindy_core_activate() {
 function emindy_core_uninstall() {
         global $wpdb;
 
-        $table = $wpdb->prefix . 'emindy_newsletter';
-        $table = esc_sql( $table );
+        $tables = [
+                $wpdb->prefix . 'emindy_newsletter',
+                $wpdb->prefix . 'emindy_analytics',
+        ];
 
-        $wpdb->query( "DROP TABLE IF EXISTS `{$table}`" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+        foreach ( $tables as $table ) {
+                $safe_table = preg_replace( '/[^A-Za-z0-9_]/', '', $table );
+
+                if ( empty( $safe_table ) ) {
+                        continue;
+                }
+
+                $wpdb->query( "DROP TABLE IF EXISTS `{$safe_table}`" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+        }
 }
 
 register_activation_hook( __FILE__, 'emindy_core_activate' );
 register_uninstall_hook( __FILE__, 'emindy_core_uninstall' );
 
 
-add_action( 'init', function() {
+/**
+ * Register admin hooks.
+ */
+function emindy_core_register_admin() {
         \EMINDY\Core\Admin::register();
-} );
+}
 
-add_action( 'plugins_loaded', function() {
+/**
+ * Load translations and Polylang meta copy rules.
+ */
+function emindy_core_plugins_loaded() {
         load_plugin_textdomain( 'emindy-core', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 
         // Polylang: copy structured meta into new translations so editors start
         // with the same steps/chapters/timing values.
         if ( defined( 'POLYLANG_VERSION' ) || function_exists( 'pll_the_languages' ) ) {
-                add_filter( 'pll_copy_post_metas', function( array $metas ) {
-                        $extra = [
-                                'em_steps_json',
-                                'em_chapters_json',
-                                'em_total_seconds',
-                                'em_prep_seconds',
-                                'em_perform_seconds',
-                                'em_supplies',
-                                'em_tools',
-                                'em_yield',
-                        ];
-
-                        return array_values( array_unique( array_merge( $metas, $extra ) ) );
-                } );
+                add_filter( 'pll_copy_post_metas', 'emindy_core_polylang_copy_metas' );
         }
-} );
+}
 
-add_action( 'init', function() {
+/**
+ * Ensure Polylang copies structured meta fields for translations.
+ *
+ * @param array $metas Meta keys Polylang copies by default.
+ * @return array
+ */
+function emindy_core_polylang_copy_metas( array $metas ) {
+        $extra = [
+                'em_steps_json',
+                'em_chapters_json',
+                'em_total_seconds',
+                'em_prep_seconds',
+                'em_perform_seconds',
+                'em_supplies',
+                'em_tools',
+                'em_yield',
+        ];
+
+        return array_values( array_unique( array_merge( $metas, $extra ) ) );
+}
+
+/**
+ * Register custom post types and taxonomies.
+ */
+function emindy_core_register_content_types() {
         \EMINDY\Core\CPT::register_all();
         \EMINDY\Core\Taxonomy::register_all();
-} );
+}
 
-add_action( 'init', function() {
+/**
+ * Register public shortcodes.
+ */
+function emindy_core_register_shortcodes() {
         \EMINDY\Core\Shortcodes::register_all();
-}, 9 );
+}
 
-add_action( 'init', function() {
+/**
+ * Register content injection hooks.
+ */
+function emindy_core_register_content_inject() {
         \EMINDY\Core\Content_Inject::register();
-} );
+}
 
-add_action( 'init', function() {
+/**
+ * Register post meta.
+ */
+function emindy_core_register_meta() {
         \EMINDY\Core\Meta::register();
-} );
+}
 
-add_action( 'wp_enqueue_scripts', function() {
+/**
+ * Enqueue public assets and localized data.
+ */
+function emindy_core_enqueue_assets() {
         // CSS
         wp_enqueue_style( 'emindy-core', EMINDY_CORE_URL . 'assets/css/emindy-core.css', [], EMINDY_CORE_VERSION );
         wp_enqueue_style( 'emindy-player', EMINDY_CORE_URL . 'assets/css/player.css', [], EMINDY_CORE_VERSION );
@@ -150,46 +195,44 @@ add_action( 'wp_enqueue_scripts', function() {
         wp_enqueue_script( 'emindy-gad7', EMINDY_CORE_URL . 'assets/js/gad7.js', [ 'emindy-assess-core' ], EMINDY_CORE_VERSION, true );
         wp_enqueue_script( 'emindy-video-analytics', EMINDY_CORE_URL . 'assets/js/video-analytics.js', [ 'emindy-assess-core' ], EMINDY_CORE_VERSION, true );
 
-}, 20 );
+}
 
-/*
- * Output fallback JSON‑LD for single posts when the Rank Math SEO plugin is
- * not active.  Rank Math provides its own schema generator which our
- * `includes/schema.php` file extends to add VideoObject and HowTo details.
- * Emitting our own JSON‑LD in addition to Rank Math’s would result in
- * duplicate structured data, so this callback checks for the Rank Math
- * classes/functions and only runs when necessary.
+/**
+ * Output fallback JSON-LD when Rank Math is unavailable.
  */
-add_action( 'wp_head', function() {
+function emindy_core_output_schema_fallback() {
         // Skip if the Rank Math plugin is loaded (class or helper function).
-        if ( class_exists( '\\RankMath\\Plugin' ) || function_exists( 'rank_math' ) ) {
+        if ( class_exists( '\RankMath\Plugin' ) || function_exists( 'rank_math' ) ) {
                 return;
         }
+
         \EMINDY\Core\Schema::output_jsonld();
-}, 99 );
+}
 
-add_action( 'wp_enqueue_scripts', function() {
-        if ( is_singular() ) {
-                global $post;
-                wp_add_inline_script( 'emindy-assess-core', 'window.em_post_id=' . (int) ( $post->ID ?? 0 ) . ';', 'before' );
+/**
+ * Expose the current post ID to front-end scripts.
+ */
+function emindy_core_enqueue_post_id() {
+        if ( ! is_singular() ) {
+                return;
         }
-}, 30 );
 
-// قبلاً این افزونه یک فیلتر ساده برای اضافه کردن VideoObject/HowTo/Article
-// به خروجی Schema Rank Math داشت. این فیلتر اکنون حذف شده است زیرا فایل
-// includes/schema.php یک نسخهٔ کامل‌تر و غنی از داده‌های ساخت‌یافته تولید
-// می‌کند که از تکرار و تناقض جلوگیری می‌کند. اگر به هر دلیلی نیاز به
-// بازگرداندن این فیلتر ساده داشتید می‌توانید آن را مجدداً تعریف کنید، اما
-// توصیه می‌شود از نسخهٔ پیشرفته استفاده شود.
+        $post_id = absint( get_queried_object_id() );
 
-// Optional: smart redirects when certain key pages are missing
-add_action( 'template_redirect', function() {
+        wp_add_inline_script( 'emindy-assess-core', 'window.em_post_id=' . $post_id . ';', 'before' );
+}
+
+/**
+ * Handle redirects for common missing slugs.
+ */
+function emindy_core_template_redirect_fallbacks() {
         if ( ! is_404() ) {
                 return;
         }
 
-        $req = wp_parse_url( add_query_arg( [] ), PHP_URL_PATH );
-        $req = is_string( $req ) ? trim( sanitize_text_field( $req ), '/' ) : '';
+        $request_uri = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( (string) $_SERVER['REQUEST_URI'] ) : '';
+        $req         = wp_parse_url( $request_uri, PHP_URL_PATH );
+        $req         = is_string( $req ) ? trim( sanitize_text_field( $req ), '/' ) : '';
 
         // /library -> redirect to Articles Hub if library page is missing.
         if ( 'library' === $req && ! get_page_by_path( 'library' ) ) {
@@ -203,4 +246,31 @@ add_action( 'template_redirect', function() {
                 wp_safe_redirect( home_url( '/' ), 302 );
                 exit;
         }
-} );
+}
+
+/*
+ * Output fallback JSON‑LD for single posts when the Rank Math SEO plugin is
+ * not active.  Rank Math provides its own schema generator which our
+ * `includes/schema.php` file extends to add VideoObject and HowTo details.
+ * Emitting our own JSON‑LD in addition to Rank Math’s would result in
+ * duplicate structured data, so this callback checks for the Rank Math
+ * classes/functions and only runs when necessary.
+ */
+
+// قبلاً این افزونه یک فیلتر ساده برای اضافه کردن VideoObject/HowTo/Article
+// به خروجی Schema Rank Math داشت. این فیلتر اکنون حذف شده است زیرا فایل
+// includes/schema.php یک نسخهٔ کامل‌تر و غنی از داده‌های ساخت‌یافته تولید
+// می‌کند که از تکرار و تناقض جلوگیری می‌کند. اگر به هر دلیلی نیاز به
+// بازگرداندن این فیلتر ساده داشتید می‌توانید آن را مجدداً تعریف کنید، اما
+// توصیه می‌شود از نسخهٔ پیشرفته استفاده شود.
+
+add_action( 'init', 'emindy_core_register_admin' );
+add_action( 'plugins_loaded', 'emindy_core_plugins_loaded' );
+add_action( 'init', 'emindy_core_register_content_types' );
+add_action( 'init', 'emindy_core_register_shortcodes', 9 );
+add_action( 'init', 'emindy_core_register_content_inject' );
+add_action( 'init', 'emindy_core_register_meta' );
+add_action( 'wp_enqueue_scripts', 'emindy_core_enqueue_assets', 20 );
+add_action( 'wp_head', 'emindy_core_output_schema_fallback', 99 );
+add_action( 'wp_enqueue_scripts', 'emindy_core_enqueue_post_id', 30 );
+add_action( 'template_redirect', 'emindy_core_template_redirect_fallbacks' );
