@@ -67,7 +67,10 @@ function emindy_fallback_robots_meta(): void {
   }
 
   if ( is_search() || is_404() ) {
-    echo '<meta name="robots" content="' . esc_attr( 'noindex,follow' ) . '" />' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+    printf(
+      '<meta name="robots" content="%s" />' . "\n",
+      esc_attr( 'noindex,follow' )
+    );
   }
 }
 add_action( 'wp_head', 'emindy_fallback_robots_meta', 99 );
@@ -76,7 +79,11 @@ add_action( 'wp_head', 'emindy_fallback_robots_meta', 99 );
  * Output a skip link for accessibility.
  */
 function emindy_skip_link(): void {
-  echo '<a class="skip-link screen-reader-text" href="', esc_url( '#main-content' ), '">', esc_html__( 'Skip to content', 'emindy' ), '</a>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+  printf(
+    '<a class="skip-link screen-reader-text" href="%1$s">%2$s</a>',
+    esc_url( '#main-content' ),
+    esc_html__( 'Skip to content', 'emindy' )
+  );
 }
 add_action( 'wp_body_open', 'emindy_skip_link' );
 
@@ -123,9 +130,12 @@ add_action( 'pre_get_posts', 'emindy_adjust_em_video_archive' );
  */
 function emindy_highlight_search_terms( string $excerpt ): string {
   $search_query = get_search_query( false );
+
   if ( is_search() && '' !== $search_query ) {
     $quoted_query = preg_quote( $search_query, '/' );
     $excerpt      = preg_replace( '/(' . $quoted_query . ')/iu', '<mark>$1</mark>', $excerpt );
+    $allowed_html = array_merge( wp_kses_allowed_html( 'post' ), [ 'mark' => [] ] );
+    $excerpt      = (string) wp_kses( $excerpt, $allowed_html );
   }
 
   return (string) $excerpt;
@@ -199,7 +209,10 @@ function emindy_print_itemlist_jsonld( string $title, array $items ): void {
     'itemListElement' => $list,
   ];
 
-  echo '<script type="application/ld+json">', wp_json_encode( $graph, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT ), '</script>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+  printf(
+    '<script type="application/ld+json">%s</script>',
+    wp_kses_post( wp_json_encode( $graph, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT ) )
+  );
 }
 
 define( 'EMINDY_PRIMARY_TOPIC_META', '_em_primary_topic' );
@@ -221,9 +234,9 @@ function emindy_primary_topic_box( WP_Post $post ): void {
   $saved = (int) get_post_meta( $post->ID, EMINDY_PRIMARY_TOPIC_META, true );
   $terms = wp_get_post_terms( $post->ID, 'topic' );
 
-  echo '<p>', esc_html__( 'Select the primary topic (required if topics are set):', 'emindy' ), '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-  echo '<select name="em_primary_topic" style="width:100%">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-  echo '<option value="">', esc_html__( '— None —', 'emindy' ), '</option>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+  echo '<p>' . esc_html__( 'Select the primary topic (required if topics are set):', 'emindy' ) . '</p>';
+  echo '<select name="em_primary_topic" style="width:100%">';
+  echo '<option value="">' . esc_html__( '— None —', 'emindy' ) . '</option>';
 
   foreach ( $terms as $term ) {
     printf(
@@ -234,7 +247,7 @@ function emindy_primary_topic_box( WP_Post $post ): void {
     );
   }
 
-  echo '</select>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+  echo '</select>';
   wp_nonce_field( 'em_primary_topic_save', 'em_primary_topic_nonce' );
 }
 
@@ -257,7 +270,7 @@ function emindy_save_primary_topic( int $post_id ): void {
   }
 
   if ( isset( $_POST['em_primary_topic'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-    $primary = (int) wp_unslash( $_POST['em_primary_topic'] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+    $primary = absint( wp_unslash( $_POST['em_primary_topic'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
     if ( $primary > 0 ) {
       update_post_meta( $post_id, EMINDY_PRIMARY_TOPIC_META, $primary );
@@ -287,7 +300,11 @@ function emindy_primary_topic_notice(): void {
   $topics = wp_get_post_terms( $post_id, 'topic', [ 'fields' => 'ids' ] );
 
   if ( $topics && ! get_post_meta( $post_id, EMINDY_PRIMARY_TOPIC_META, true ) ) {
-    echo '<div class="notice notice-warning"><p><strong>', esc_html__( 'Primary Topic', 'emindy' ), '</strong> ', esc_html__( 'is not set. Please select one in the sidebar meta box for better recommendations & SEO.', 'emindy' ), '</p></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+    printf(
+      '<div class="notice notice-warning"><p><strong>%1$s</strong> %2$s</p></div>',
+      esc_html__( 'Primary Topic', 'emindy' ),
+      esc_html__( 'is not set. Please select one in the sidebar meta box for better recommendations & SEO.', 'emindy' )
+    );
   }
 }
 add_action( 'admin_notices', 'emindy_primary_topic_notice' );
