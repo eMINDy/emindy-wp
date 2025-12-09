@@ -12,10 +12,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 get_header();
 
 $term              = get_queried_object();
-$term_name         = single_term_title( '', false );
-$term_link         = get_term_link( $term );
+$term_name_raw     = single_term_title( '', false );
+$term_name         = wp_strip_all_tags( $term_name_raw );
+$term_link         = get_term_link( $term instanceof WP_Term ? $term : 0 );
 $term_link         = is_wp_error( $term_link ) ? '' : $term_link;
-$term_link         = $term_link ? esc_url_raw( $term_link ) : '';
+$term_link         = $term_link ? esc_url( $term_link ) : '';
 $desc              = term_description( $term ); // Optional: use as intro.
 $has_posts         = have_posts();
 
@@ -36,18 +37,19 @@ if ( $has_posts ) {
     <div class="cards-grid">
       <?php while ( have_posts() ) : the_post(); ?>
         <article <?php post_class( 'card' ); ?>>
-          <a href="<?php the_permalink(); ?>" class="card-link" aria-label="<?php the_title_attribute(); ?>">
+          <?php $card_title = get_the_title(); ?>
+          <a href="<?php the_permalink(); ?>" class="card-link" aria-label="<?php echo esc_attr( $card_title ); ?>">
             <?php if ( has_post_thumbnail() ) : ?>
               <?php the_post_thumbnail( 'large', [ 'loading' => 'lazy' ] ); ?>
             <?php endif; ?>
-            <h2 class="card-title"><?php the_title(); ?></h2>
+            <h2 class="card-title"><?php echo esc_html( $card_title ); ?></h2>
             <p class="card-excerpt"><?php echo esc_html( wp_trim_words( get_the_excerpt(), 20 ) ); ?></p>
           </a>
         </article>
       <?php endwhile; ?>
     </div>
 
-    <nav class="pagination" aria-label="<?php esc_attr_e( 'Posts navigation', 'emindy' ); ?>">
+    <nav class="pagination" aria-label="<?php echo esc_attr__( 'Posts navigation', 'emindy' ); ?>">
       <?php
       /*
        * Use the child theme text‑domain for the pagination arrows so they can
@@ -115,7 +117,7 @@ if ( $has_posts ) :
         [
           '@type'    => 'ListItem',
           'position' => 3,
-          'name'     => wp_strip_all_tags( $term_name ),
+          'name'     => $term_name,
           'item'     => $term_link,
         ],
       ],
@@ -124,9 +126,9 @@ if ( $has_posts ) :
       '@context'    => 'https://schema.org',
       '@type'       => 'CollectionPage',
       'url'         => $term_link,
-      'name'        => wp_strip_all_tags( $term_name ) . ' — eMINDy',
+      'name'        => $term_name . ' — eMINDy',
       'inLanguage'  => 'en',
-      'description' => $desc ? wp_strip_all_tags( $desc ) : sprintf( __( 'Explore content related to %s on eMINDy.', 'emindy' ), wp_strip_all_tags( $term_name ) ),
+      'description' => $desc ? wp_strip_all_tags( wp_kses_post( $desc ) ) : sprintf( __( 'Explore content related to %s on eMINDy.', 'emindy' ), $term_name ),
       'hasPart'     => [
         '@type'           => 'ItemList',
         'itemListElement' => $items,
