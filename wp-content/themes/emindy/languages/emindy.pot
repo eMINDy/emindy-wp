@@ -1,11 +1,17 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: eMINDy Child Theme\n"
-"POT-Creation-Date: 2025-11-27\n"
 "Report-Msgid-Bugs-To: https://example.com\n"
+"POT-Creation-Date: 2025-11-27 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+0000\n"
+"Last-Translator: eMINDy Team <info@example.com>\n"
+"Language-Team: eMINDy <info@example.com>\n"
+"Language: en_US\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: WP-CLI\n"
+"X-Domain: emindy\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
 ##
