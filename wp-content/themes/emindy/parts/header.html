@@ -1,4 +1,10 @@
 <?php
+/**
+ * Header template part.
+ *
+ * @package emindy
+ */
+
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
@@ -7,8 +13,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 <header class="wp-block-group alignfull" style="border-bottom:1px solid var(--em-border)">
   <!--
     Modern header layout: a flexible container with three sections.
-    1. Branding on the left: site title and tagline.  
-    2. Center navigation: WordPress navigation block styled as horizontal menu.  
+    1. Branding on the left: site title and tagline.
+    2. Center navigation: WordPress navigation block styled as horizontal menu.
     3. Actions on the right: language switcher, search, CTA button and dark‑mode toggle.
     Flexbox ensures equal spacing and responsive wrapping on smaller screens.
   -->
@@ -49,7 +55,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
       <!-- Dark mode toggle: accessible button toggled via JS -->
       <!-- wp:html -->
-      <button id="em-dark-mode-toggle" class="em-dark-mode-toggle" aria-label="<?php echo esc_attr__( 'Toggle dark mode', 'emindy' ); ?>" data-light-label="<?php echo esc_attr__( 'Enable dark mode', 'emindy' ); ?>" data-dark-label="<?php echo esc_attr__( 'Disable dark mode', 'emindy' ); ?>" style="font-size:1.2rem;line-height:1;background:transparent;border:none;color:var(--em-text);cursor:pointer" type="button">🌙</button>
+      <button id="em-dark-mode-toggle" class="em-dark-mode-toggle" aria-label="<?php echo esc_attr__( 'Toggle dark mode', 'emindy' ); ?>" aria-pressed="false" data-light-label="<?php echo esc_attr__( 'Enable dark mode', 'emindy' ); ?>" data-dark-label="<?php echo esc_attr__( 'Disable dark mode', 'emindy' ); ?>" style="font-size:1.2rem;line-height:1;background:transparent;border:none;color:var(--em-text);cursor:pointer" type="button">🌙</button>
       <!-- /wp:html -->
     </div>
     <!-- /wp:group -->
