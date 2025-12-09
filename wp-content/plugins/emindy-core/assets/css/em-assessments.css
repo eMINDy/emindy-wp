@@ -16,29 +16,36 @@
   --em-phq9-border-radius: 8px;
   --em-phq9-print-padding: 20px;
   --em-phq9-print-margin-top: 20px;
+  color-scheme: light;
+}
+
+.em-phq9__score {
+  border-left: 4px solid var(--em-phq9-border-default);
+  padding-left: var(--em-phq9-border-padding);
 }
 
 .em-phq9__score[data-severity="minimal"] {
-  border-left: 4px solid var(--em-phq9-border-minimal);
-  padding-left: var(--em-phq9-border-padding);
+  border-left-color: var(--em-phq9-border-minimal);
 }
 
 .em-phq9__score[data-severity="mild"] {
-  border-left: 4px solid var(--em-phq9-border-mild);
-  padding-left: var(--em-phq9-border-padding);
+  border-left-color: var(--em-phq9-border-mild);
 }
 
 .em-phq9__score[data-severity="moderate"] {
-  border-left: 4px solid var(--em-phq9-border-moderate);
-  padding-left: var(--em-phq9-border-padding);
+  border-left-color: var(--em-phq9-border-moderate);
 }
 
 .em-phq9__score[data-severity="severe"] {
-  border-left: 4px solid var(--em-phq9-border-severe);
-  padding-left: var(--em-phq9-border-padding);
+  border-left-color: var(--em-phq9-border-severe);
 }
 
 @media print {
+  :root {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
   body {
     color: var(--em-phq9-text-color);
     font: 14px/1.5 "Segoe UI", sans-serif;
