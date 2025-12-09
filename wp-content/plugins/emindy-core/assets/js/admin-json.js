@@ -3,6 +3,15 @@
 
   var successColor = '#1e7e34';
   var errorColor = '#c00';
+  var defaults = window.emindyAdmin || {};
+
+  function getLabel( key, fallback ) {
+    if ( defaults && defaults[ key ] ) {
+      return defaults[ key ];
+    }
+
+    return fallback || '';
+  }
 
   /**
    * Validate a JSON textarea field and update the status label.
@@ -24,9 +33,9 @@
 
     try {
       JSON.parse( value );
-      updateStatus( $status, emindyAdmin.valid, successColor );
+      updateStatus( $status, getLabel( 'valid', '' ), successColor );
     } catch ( error ) {
-      updateStatus( $status, emindyAdmin.invalid, errorColor );
+      updateStatus( $status, getLabel( 'invalid', '' ), errorColor );
     }
   }
 
@@ -52,18 +61,22 @@
    * @param {string} statusSelector Selector for the status element.
    */
   function attachValidation( fieldSelector, statusSelector ) {
-    var $field = $( fieldSelector );
+    var $fields = $( fieldSelector );
     var $status = $( statusSelector );
 
-    if ( !$field.length || !$status.length ) {
+    if ( !$fields.length || !$status.length ) {
       return;
     }
 
-    $field.on( 'input', function () {
+    $fields.each( function ( index, field ) {
+      var $field = $( field );
+
+      $field.on( 'input', function () {
+        validateField( $field, $status );
+      } );
+
       validateField( $field, $status );
     } );
-
-    validateField( $field, $status );
   }
 
   $( function () {
