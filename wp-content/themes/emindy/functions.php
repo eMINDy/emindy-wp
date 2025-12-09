@@ -173,7 +173,8 @@ add_filter( 'wp_resource_hints', 'emindy_resource_hints', 10, 2 );
  * duplicate definitions【776845342899939†L80-L84】.  The core plugin now
  * registers the `topic`, `technique`, `duration`, `format`, `use_case`,
  * `level` and `a11y_feature` taxonomies and attaches them to the custom post
- * types.  If you need to add or modify terms, do so via the plugin.
+ * types.  If you need to add or modify terms, do so via the plugin, which also
+ * seeds defaults in a single place to keep migrations predictable.
  */
 
 /**

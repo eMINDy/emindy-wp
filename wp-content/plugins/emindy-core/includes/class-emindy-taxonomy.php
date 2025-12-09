@@ -140,6 +140,8 @@ class Taxonomy {
             foreach ( $list as $term ) {
                 [ $name, $slug ] = $term;
                 $term_slug       = sanitize_title( $slug );
+                // Translating the label while keeping a sanitised slug prevents
+                // duplicates when the seed runs multiple times or across languages.
                 if ( ! term_exists( $term_slug, $tax ) ) {
                     wp_insert_term( __( $name, 'emindy-core' ), $tax, [ 'slug' => $term_slug ] );
                 }

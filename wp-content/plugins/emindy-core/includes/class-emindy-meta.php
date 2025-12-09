@@ -14,11 +14,14 @@ class Meta {
 	 *
 	 * @return void
 	 */
-	public static function register() {
-		$auth_callback = [ __CLASS__, 'can_edit_meta' ];
+        public static function register() {
+                $auth_callback = [ __CLASS__, 'can_edit_meta' ];
 
-		// Chapters for videos.
-		register_post_meta(
+                // Reuse a single auth callback so only editors can modify REST
+                // meta values across all CPT fields registered below.
+
+                // Chapters for videos.
+                register_post_meta(
 			'em_video',
 			'em_chapters_json',
 			[

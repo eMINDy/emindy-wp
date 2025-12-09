@@ -174,10 +174,18 @@ class Shortcodes {
         return ob_get_clean();
     }
 
-	public static function phq9() : string {
-	ob_start(); ?>
-	<form class="em-phq9" aria-describedby="em-phq9-desc">
-		<p id="em-phq9-desc"><?php echo esc_html__('This is an educational check-in (not a diagnosis). Your responses are private on this device.','emindy-core'); ?></p>
+        /**
+         * Render the PHQ-9 self-check form with translatable prompts.
+         *
+         * The paired JavaScript scorer keeps responses on the client only and
+         * requires each radio group to be answered before calculating totals.
+         *
+         * @return string HTML markup for the PHQ-9 form.
+         */
+        public static function phq9() : string {
+        ob_start(); ?>
+        <form class="em-phq9" aria-describedby="em-phq9-desc">
+                <p id="em-phq9-desc"><?php echo esc_html__('This is an educational check-in (not a diagnosis). Your responses are private on this device.','emindy-core'); ?></p>
 
 		<ol class="em-phq9__list">
 			<?php
@@ -353,12 +361,14 @@ class Shortcodes {
 	
 	$q = new \WP_Query( $args );
 	
-	if ( ! $q->have_posts() ) {
-	$needle = sanitize_text_field( wp_strip_all_tags( $post->post_title . ' ' . get_the_excerpt( $post ) ) );
-	$args   = [
-	'post_type'        => $post_types,
-	'post__not_in'     => [ $post->ID ],
-	'posts_per_page'   => $count,
+        if ( ! $q->have_posts() ) {
+        // No taxonomy matches; fall back to a relevance search using the
+        // current title and excerpt to avoid showing an empty block.
+        $needle = sanitize_text_field( wp_strip_all_tags( $post->post_title . ' ' . get_the_excerpt( $post ) ) );
+        $args   = [
+        'post_type'        => $post_types,
+        'post__not_in'     => [ $post->ID ],
+        'posts_per_page'   => $count,
 	's'                => $needle,
 	'orderby'          => 'relevance',
 	'suppress_filters' => false,
@@ -527,16 +537,25 @@ class Shortcodes {
 	<?php endif; ?>
 
 	// --- ضدّ <br/> و <p> ناخواسته:
-	$out = ob_get_clean();
-	$out = shortcode_unautop( $out );            // حذف <p> و <br> تزریق شده
-	$out = preg_replace( '/>\s+</', '><', $out); // جمع کردن فاصله‌ها بین تگ‌ها
-	return trim( $out );
+        $out = ob_get_clean();
+        $out = shortcode_unautop( $out );            // حذف <p> و <br> تزریق شده
+        $out = preg_replace( '/>\s+</', '><', $out); // جمع کردن فاصله‌ها بین تگ‌ها
+        return trim( $out );
 }
 
+        /**
+         * Render the GAD-7 self-check form mirroring the PHQ-9 markup.
+         *
+         * Questions mirror the official wording and are wrapped in required
+         * radio groups so the client-side scorer receives complete data without
+         * transmitting answers to the server.
+         *
+         * @return string HTML markup for the GAD-7 form.
+         */
 public static function gad7() : string {
-	ob_start(); ?>
-	<form class="em-phq9 em-gad7" aria-describedby="em-gad7-desc">
-		<p id="em-gad7-desc"><?php echo esc_html__('Educational check-in (not a diagnosis). Your responses stay on this device.','emindy-core'); ?></p>
+        ob_start(); ?>
+        <form class="em-phq9 em-gad7" aria-describedby="em-gad7-desc">
+                <p id="em-gad7-desc"><?php echo esc_html__('Educational check-in (not a diagnosis). Your responses stay on this device.','emindy-core'); ?></p>
 
 		<ol class="em-phq9__list">
 			<?php
@@ -613,9 +632,11 @@ public static function gad7() : string {
 	$type = '';
 	}
 	
-	// اعتبارسنجی امضا
-	$secret = wp_salt( 'auth' );
-	$calc   = hash_hmac( 'sha256', $type . '|' . $score, $secret );
+        // اعتبارسنجی امضا
+        // The HMAC is derived from the auth salt so tampered URLs cannot display
+        // spoofed scores even if shared publicly.
+        $secret = wp_salt( 'auth' );
+        $calc   = hash_hmac( 'sha256', $type . '|' . $score, $secret );
         if ( ! hash_equals( $calc, $sig ) || $score < 0 ) {
         return '<div class="em-phq9 is-style-em-card"><p>' . esc_html__( 'Invalid or missing result.', 'emindy-core' ) . '</p></div>';
         }
@@ -881,7 +902,13 @@ add_shortcode('em_excerpt_highlight', function($atts){
   return '<p class="em-excerpt">'.$safe.'</p>';
 });
 
-// 2.4) [em_result_count post_type="em_video"]
+/**
+ * [em_result_count] – Search results listing with sanitised query input.
+ *
+ * Accepts `post_type` to filter the query and mirrors the front-end search
+ * term from the request after stripping tags. Fetches only IDs to keep the
+ * query lightweight before rendering the cards.
+ */
 add_shortcode('em_result_count', function($atts){
   $a = shortcode_atts(['post_type'=>'post'], $atts, 'em_result_count');
   $pt = is_array($a['post_type']) ? $a['post_type'] : [$a['post_type']];
@@ -940,7 +967,12 @@ add_shortcode('em_search_section', function($atts){
   return ob_get_clean();
 });
 
-// 2.1) Popular: latest posts (blog)
+/**
+ * [em_popular_posts] – Latest blog posts for quick navigation.
+ *
+ * Uses a constrained `WP_Query` with `no_found_rows` to reduce DB load when
+ * the shortcode is embedded multiple times on a page.
+ */
 add_shortcode('em_popular_posts', function($atts){
   $a = shortcode_atts(['limit'=>'4'], $atts, 'em_popular_posts');
   $q = new \WP_Query([
@@ -957,7 +989,12 @@ add_shortcode('em_popular_posts', function($atts){
   echo '</ul>'; wp_reset_postdata(); return ob_get_clean();
 });
 
-// 2.2) Popular videos (latest by date; replace with analytics-weighted later)
+/**
+ * [em_popular_videos] – Latest videos (analytics weighting can replace date).
+ *
+ * Leans on `no_found_rows` to avoid pagination calculations while keeping the
+ * shortcode reusable in sidebars and templates.
+ */
 add_shortcode('em_popular_videos', function($atts){
   $a = shortcode_atts(['limit'=>'4'], $atts, 'em_popular_videos');
   $q = new \WP_Query([
@@ -972,7 +1009,12 @@ add_shortcode('em_popular_videos', function($atts){
   echo '</ul>'; wp_reset_postdata(); return ob_get_clean();
 });
 
-// 2.3) Popular exercises (latest by date; can switch to meta "views" later)
+/**
+ * [em_popular_exercises] – Latest exercises listing with minimal query cost.
+ *
+ * Designed to be swapped for a views-based ordering later; keeps the query
+ * intentionally light to avoid slowing archive pages.
+ */
 add_shortcode('em_popular_exercises', function($atts){
   $a = shortcode_atts(['limit'=>'4'], $atts, 'em_popular_exercises');
   $q = new \WP_Query([
