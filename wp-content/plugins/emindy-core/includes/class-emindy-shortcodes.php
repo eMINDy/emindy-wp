@@ -10,6 +10,7 @@ class Shortcodes {
         add_shortcode( 'em_video_chapters', [ __CLASS__, 'video_chapters' ] );
         add_shortcode( 'em_phq9', [ __CLASS__, 'phq9' ] );
         add_shortcode( 'em_related', [ __CLASS__, 'related' ] );
+        add_shortcode( 'em_related_posts', [ __CLASS__, 'related_posts_alias' ] );
         add_shortcode( 'em_newsletter', [ __CLASS__, 'newsletter' ] );
         add_shortcode( 'em_gad7', [ __CLASS__, 'gad7' ] );
         add_shortcode( 'em_assessment_result', [ __CLASS__, 'assessment_result' ] );
@@ -246,7 +247,7 @@ class Shortcodes {
 	 * @param array $atts Shortcode attributes controlling the related query.
 	 * @return string HTML markup for the related content grid.
 	 */
-	public static function related( $atts = [] ) : string {
+    public static function related( $atts = [] ) : string {
 	$post = get_post();
 	if ( ! $post ) {
 	return '';
@@ -382,8 +383,37 @@ class Shortcodes {
 	echo '</div>';
 	wp_reset_postdata();
 	}
-	return ob_get_clean();
-	}
+        return ob_get_clean();
+    }
+
+    /**
+     * Legacy alias for [em_related_posts] pointing to the modern [em_related].
+     *
+     * The previous shortcode supported a `limit` attribute and returned a
+     * simplified category-based grid. We map `limit` to the current `count`
+     * parameter and delegate to related() so sites using the legacy shortcode
+     * transparently receive the improved query. A deprecation notice is
+     * triggered in debug environments to encourage migration.
+     *
+     * @param array $atts Shortcode attributes (legacy: limit).
+     * @return string HTML from the unified related renderer.
+     */
+    public static function related_posts_alias( $atts = [] ) : string {
+        if ( function_exists( '_doing_it_wrong' ) ) {
+            _doing_it_wrong(
+                '[em_related_posts]',
+                __( 'Use [em_related] instead. The legacy shortcode now forwards to the new related content grid.', 'emindy-core' ),
+                '1.4.0'
+            );
+        }
+
+        $atts = is_array( $atts ) ? $atts : [];
+        if ( isset( $atts['limit'] ) && ! isset( $atts['count'] ) ) {
+            $atts['count'] = $atts['limit'];
+        }
+
+        return self::related( $atts );
+    }
 
 
     /**
@@ -1042,38 +1072,6 @@ add_shortcode('em_share', function(){
     .'<button type="button" class="em-button" data-clipboard="'. esc_attr( $permalink ) .'" onclick="navigator.clipboard.writeText(this.getAttribute(\'data-clipboard\'))">'. esc_html__( 'Copy link', 'emindy-core' ) .'</button>'
     .'</div>';
   return $out;
-});
-
-add_shortcode('em_related_posts', function($atts){
-  $a = shortcode_atts(['limit'=>'4'], $atts, 'em_related_posts');
-  $post_id = get_the_ID();
-  $cats = wp_get_post_categories($post_id);
-  $args = [
-    'post_type'=>'post',
-    'posts_per_page'=>max(1,(int)$a['limit']),
-    'post__not_in'=>[$post_id],
-    'ignore_sticky_posts'=>1,
-    'no_found_rows'=>true
-  ];
-  if($cats) $args['category__in'] = $cats;
-  $q = new \WP_Query($args);
-  if(!$q->have_posts()) return '<p class="em-muted">'. esc_html__( 'No related posts yet.', 'emindy-core' ) .'</p>';
-  ob_start();
-  echo '<div class="em-related-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem">';
-  while($q->have_posts()){ $q->the_post();
-    echo '<article class="em-related-item" style="border-radius:16px;box-shadow:var(--wp--custom--brand--shadow--card);overflow:hidden">';
-      if(has_post_thumbnail()){
-        echo '<a href="'.esc_url(get_permalink()).'">'.get_the_post_thumbnail(null,'medium',['style'=>'width:100%;height:auto']).'</a>';
-      }
-      echo '<div style="padding:.7rem">';
-        echo '<a href="'.esc_url(get_permalink()).'"><strong>'.esc_html(get_the_title()).'</strong></a>';
-        echo '<p style="margin:.35rem 0 0">'.esc_html( wp_trim_words(get_the_excerpt(), 18,'…') ).'</p>';
-      echo '</div>';
-    echo '</article>';
-  }
-  echo '</div>';
-  wp_reset_postdata();
-  return ob_get_clean();
 });
 
 // [em_i18n key="help_title" default="We couldn’t find that page."]
