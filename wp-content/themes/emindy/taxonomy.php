@@ -1,5 +1,9 @@
 <?php
-/** Generic taxonomy archive template for eMINDy */
+/**
+ * Generic taxonomy archive template for eMINDy.
+ *
+ * @package emindy
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
@@ -7,12 +11,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 get_header();
 
-$term          = get_queried_object();
-$term_name     = single_term_title( '', false );
-$term_link     = get_term_link( $term );
-$term_link     = is_wp_error( $term_link ) ? '' : $term_link;
-$desc          = term_description( $term ); // Optional: use as intro
-$has_posts     = have_posts();
+$term              = get_queried_object();
+$term_name         = single_term_title( '', false );
+$term_link         = get_term_link( $term );
+$term_link         = is_wp_error( $term_link ) ? '' : $term_link;
+$term_link         = $term_link ? esc_url_raw( $term_link ) : '';
+$desc              = term_description( $term ); // Optional: use as intro.
+$has_posts         = have_posts();
 
 if ( $has_posts ) {
     rewind_posts();
@@ -60,7 +65,7 @@ if ( $has_posts ) {
       ?>
     </nav>
   <?php else : ?>
-    <p><?php _e( 'No content found yet.', 'emindy' ); ?></p>
+    <p><?php esc_html_e( 'No content found yet.', 'emindy' ); ?></p>
   <?php endif; ?>
 </main>
 
@@ -75,13 +80,14 @@ if ( $has_posts ) :
 
   while ( have_posts() ) : the_post();
     $position++;
+    $item_url = esc_url_raw( get_permalink() );
     $items[] = [
       '@type'    => 'ListItem',
       'position' => $position,
       'item'     => [
         '@type' => 'WebPage',
         'name'  => wp_strip_all_tags( get_the_title() ),
-        'url'   => get_permalink(),
+        'url'   => $item_url,
       ],
     ];
   endwhile;
@@ -98,13 +104,13 @@ if ( $has_posts ) :
           '@type'    => 'ListItem',
           'position' => 1,
           'name'     => wp_strip_all_tags( __( 'Home', 'emindy' ) ),
-          'item'     => home_url( '/' ),
+          'item'     => esc_url_raw( home_url( '/' ) ),
         ],
         [
           '@type'    => 'ListItem',
           'position' => 2,
           'name'     => wp_strip_all_tags( __( 'Archive', 'emindy' ) ),
-          'item'     => home_url( '/' ),
+          'item'     => esc_url_raw( home_url( '/' ) ),
         ],
         [
           '@type'    => 'ListItem',
@@ -128,7 +134,11 @@ if ( $has_posts ) :
     ],
   ];
 
-  echo '<script type="application/ld+json">' . wp_json_encode( $graph, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>';
+  $graph_output = wp_json_encode( $graph, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+
+  if ( $graph_output ) {
+    echo '<script type="application/ld+json">' . $graph_output . '</script>';
+  }
 endif;
 
 get_footer();
