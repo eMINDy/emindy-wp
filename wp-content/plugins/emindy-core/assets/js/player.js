@@ -32,10 +32,24 @@
     return `${m}:${s.toString().padStart(2,'0')}`;
   }
 
+  function sanitizeStep(step){
+    if (!step || typeof step !== 'object'){
+      return { label: '', duration: 0, tip: '' };
+    }
+
+    const durationValue = Number(step.duration);
+    return {
+      label: typeof step.label === 'string' ? step.label : '',
+      duration: Number.isFinite(durationValue) && durationValue > 0 ? durationValue : 0,
+      tip: typeof step.tip === 'string' ? step.tip : '',
+    };
+  }
+
   function parseSteps(raw){
     try {
       const parsed = JSON.parse(raw || '[]');
-      return Array.isArray(parsed) ? parsed : [];
+      if (!Array.isArray(parsed)) return [];
+      return parsed.map(sanitizeStep);
     } catch (e) {
       return [];
     }
@@ -57,12 +71,12 @@
 
     const label = document.createElement('span');
     label.className = 'em-p__item-label';
-    label.textContent = typeof step.label === 'string' ? step.label : '';
+    label.textContent = step.label;
 
     const duration = document.createElement('span');
     duration.className = 'em-p__item-dur';
     duration.setAttribute('aria-label', i18n.stepTime);
-    duration.textContent = fmtTime(Number(step.duration||0));
+    duration.textContent = fmtTime(step.duration);
 
     top.append(stepIndex, label, duration);
     li.appendChild(top);
@@ -70,7 +84,7 @@
     if (step.tip){
       const tip = document.createElement('div');
       tip.className = 'em-p__item-tip';
-      tip.textContent = String(step.tip);
+      tip.textContent = step.tip;
       li.appendChild(tip);
     }
 
@@ -79,7 +93,7 @@
 
   function initPlayer(root){
     if (!root || typeof emindyPlayer === 'undefined') return;
-    const postId = root.getAttribute('data-post');
+    const postId = String(root.getAttribute('data-post') || '').trim();
     const steps = parseSteps(root.getAttribute('data-steps'));
     if (!postId || steps.length===0) return;
 
@@ -203,7 +217,7 @@
       announce(emindyPlayer.i18n.reset);
     }
     function persist(){
-      writeProgress(postId, { idx, remain, playing:false }); // همیشه در pause ذخیره می‌شود
+      writeProgress(postId, { idx, remain: Math.max(0, Math.floor(remain||0)), playing:false }); // همیشه در pause ذخیره می‌شود
     }
 
     // events
@@ -213,13 +227,17 @@
     if (ui.btnReset) ui.btnReset.addEventListener('click', reset);
 
     ui.list.addEventListener('click', e=>{
-      const li = e.target.closest('.em-p__item');
+      const target = e.target;
+      if (!(target instanceof Element)) return;
+      const li = target.closest('.em-p__item');
       if (!li) return;
       pause(); select(Number(li.getAttribute('data-index')||'0'));
     });
     ui.list.addEventListener('keydown', e=>{
       if (e.key==='Enter' || e.key===' '){
-        const li = e.target.closest('.em-p__item');
+        const target = e.target;
+        if (!(target instanceof Element)) return;
+        const li = target.closest('.em-p__item');
         if (li){ e.preventDefault(); pause(); select(Number(li.getAttribute('data-index')||'0')); }
       }
     });
