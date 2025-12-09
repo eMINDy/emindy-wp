@@ -48,7 +48,7 @@ add_action( 'after_setup_theme', 'emindy_setup_theme' );
  * @param array $robots Robots directives.
  * @return array
  */
-function emindy_rank_math_robots( $robots ): array {
+function emindy_rank_math_robots( array $robots ): array {
   if ( is_search() || is_404() ) {
     $robots['index']  = 'noindex';
     $robots['follow'] = 'follow';
@@ -133,7 +133,12 @@ function emindy_highlight_search_terms( string $excerpt ): string {
 
   if ( is_search() && '' !== $search_query ) {
     $quoted_query = preg_quote( $search_query, '/' );
-    $excerpt      = preg_replace( '/(' . $quoted_query . ')/iu', '<mark>$1</mark>', $excerpt );
+    $highlighted  = preg_replace( '/(' . $quoted_query . ')/iu', '<mark>$1</mark>', $excerpt );
+
+    if ( null !== $highlighted ) {
+      $excerpt = $highlighted;
+    }
+
     $allowed_html = array_merge( wp_kses_allowed_html( 'post' ), [ 'mark' => [] ] );
     $excerpt      = (string) wp_kses( $excerpt, $allowed_html );
   }
@@ -182,7 +187,7 @@ function emindy_print_itemlist_jsonld( string $title, array $items ): void {
   $pos  = 0;
 
   foreach ( $items as $item ) {
-    if ( empty( $item['name'] ) || empty( $item['url'] ) ) {
+    if ( ! is_array( $item ) || empty( $item['name'] ) || empty( $item['url'] ) ) {
       continue;
     }
 
@@ -234,6 +239,10 @@ function emindy_primary_topic_box( WP_Post $post ): void {
   $saved = (int) get_post_meta( $post->ID, EMINDY_PRIMARY_TOPIC_META, true );
   $terms = wp_get_post_terms( $post->ID, 'topic' );
 
+  if ( is_wp_error( $terms ) ) {
+    return;
+  }
+
   echo '<p>' . esc_html__( 'Select the primary topic (required if topics are set):', 'emindy' ) . '</p>';
   echo '<select name="em_primary_topic" style="width:100%">';
   echo '<option value="">' . esc_html__( '— None —', 'emindy' ) . '</option>';
@@ -273,7 +282,11 @@ function emindy_save_primary_topic( int $post_id ): void {
     $primary = absint( wp_unslash( $_POST['em_primary_topic'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
     if ( $primary > 0 ) {
-      update_post_meta( $post_id, EMINDY_PRIMARY_TOPIC_META, $primary );
+      $term_assigned = has_term( $primary, 'topic', $post_id );
+
+      if ( ! is_wp_error( $term_assigned ) && $term_assigned ) {
+        update_post_meta( $post_id, EMINDY_PRIMARY_TOPIC_META, $primary );
+      }
     } else {
       delete_post_meta( $post_id, EMINDY_PRIMARY_TOPIC_META );
     }
@@ -298,6 +311,10 @@ function emindy_primary_topic_notice(): void {
   }
 
   $topics = wp_get_post_terms( $post_id, 'topic', [ 'fields' => 'ids' ] );
+
+  if ( is_wp_error( $topics ) ) {
+    return;
+  }
 
   if ( $topics && ! get_post_meta( $post_id, EMINDY_PRIMARY_TOPIC_META, true ) ) {
     printf(
