@@ -5,6 +5,9 @@
  * Description: Hub page layout for videos – includes search, topic filters, and recent videos grid.
  * Categories: emindy
  */
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
 ?>
 
 <!--
@@ -32,10 +35,10 @@ Colours rely on CSS variables so that dark mode toggling works consistently.
   <div class="wp-block-group is-style-em-card" style="padding:.75rem;margin-bottom:1rem">
     <!-- Search form scoped to video post type -->
     <!-- wp:html -->
-    <form role="search" method="get" action="/" class="em-video-search" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:.25rem 0 .75rem">
-      <label for="emvideo-hub-s" class="sr-only">Search videos</label>
+    <form role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>" class="em-video-search" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:.25rem 0 .75rem">
+      <label for="emvideo-hub-s" class="sr-only"><?php esc_html_e( 'Search videos', 'emindy' ); ?></label>
       <input id="emvideo-hub-s" type="search" name="s" placeholder="<?php echo esc_attr__( 'Search videos…', 'emindy' ); ?>" style="flex:1;min-width:220px;padding:.5rem .75rem;border-radius:.75rem;border:1px solid var(--em-border);background:var(--em-card);color:var(--em-text)">
-      <input type="hidden" name="post_type" value="em_video">
+      <input type="hidden" name="post_type" value="<?php echo esc_attr( 'em_video' ); ?>">
       <button type="submit" style="padding:.55rem .9rem;border-radius:.75rem;border:0;background:var(--em-gold);color:var(--em-bg);font-weight:600">
         <?php echo esc_html__( 'Search', 'emindy' ); ?>
       </button>
@@ -96,7 +99,7 @@ Colours rely on CSS variables so that dark mode toggling works consistently.
 
   <!-- Link to full archive -->
   <!-- wp:paragraph {"style":{"spacing":{"margin":{"top":"0.75rem"}}}} -->
-  <p style="margin-top:.75rem"><a href="/video-library/" class="em-button" style="background:var(--em-gold);color:var(--em-bg);padding:.55rem .9rem;border-radius:999px;font-weight:600;text-decoration:none"><?php echo esc_html__( 'Browse all videos', 'emindy' ); ?> →</a></p>
+  <p style="margin-top:.75rem"><a href="<?php echo esc_url( home_url( '/video-library/' ) ); ?>" class="em-button" style="background:var(--em-gold);color:var(--em-bg);padding:.55rem .9rem;border-radius:999px;font-weight:600;text-decoration:none"><?php echo esc_html__( 'Browse all videos', 'emindy' ); ?> →</a></p>
   <!-- /wp:paragraph -->
 
 </main>
