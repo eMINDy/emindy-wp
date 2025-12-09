@@ -63,6 +63,23 @@ a {
   color: var(--em-teal);
 }
 
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+.em-dark-mode-toggle:focus-visible,
+.skip-link:focus-visible,
+.em-button:focus-visible,
+.em-topic-pills .pill:focus-visible,
+.em-tabs .em-tab:focus-visible,
+.em-quick-filters .pill:focus-visible,
+.wp-block-navigation .wp-block-navigation__submenu-container .wp-block-navigation-item__content:focus-visible,
+.menu-item-language .sub-menu a:focus-visible,
+.pll-parent-menu-item .sub-menu a:focus-visible,
+.lang-item .sub-menu a:focus-visible {
+  outline: 3px solid rgba(244, 212, 131, 0.65);
+  outline-offset: 2px;
+}
+
 /* Cards */
 .em-player,
 .em-chapters,
@@ -163,7 +180,8 @@ html[dir="rtl"] .wp-block-list {
 }
 
 .wp-block-navigation .wp-block-navigation__submenu-container .wp-block-navigation-item__content:hover,
-.wp-block-navigation .wp-block-navigation__submenu-container .wp-block-navigation-item__content:focus {
+.wp-block-navigation .wp-block-navigation__submenu-container .wp-block-navigation-item__content:focus,
+.wp-block-navigation .wp-block-navigation__submenu-container .wp-block-navigation-item__content:focus-visible {
   background: var(--menu-hover);
   outline: none;
 }
@@ -201,10 +219,13 @@ html[dir="rtl"] .wp-block-list {
 
 .menu-item-language .sub-menu a:hover,
 .menu-item-language .sub-menu a:focus,
+.menu-item-language .sub-menu a:focus-visible,
 .pll-parent-menu-item .sub-menu a:hover,
 .pll-parent-menu-item .sub-menu a:focus,
+.pll-parent-menu-item .sub-menu a:focus-visible,
 .lang-item .sub-menu a:hover,
-.lang-item .sub-menu a:focus {
+.lang-item .sub-menu a:focus,
+.lang-item .sub-menu a:focus-visible {
   background: var(--menu-hover);
   outline: none;
 }
@@ -305,6 +326,24 @@ img[fetchpriority="high"] {
   color: #0A2A43;
   border-radius: .5rem;
   box-shadow: 0 0 0 3px rgba(244, 212, 131, .4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .wp-block-navigation .wp-block-navigation__submenu-container .wp-block-navigation-item__content,
+  .menu-item-language .sub-menu a,
+  .pll-parent-menu-item .sub-menu a,
+  .lang-item .sub-menu a {
+    transition: none;
+  }
 }
 
 /* Transcript details */
