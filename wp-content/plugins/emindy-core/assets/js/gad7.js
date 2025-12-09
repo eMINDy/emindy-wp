@@ -1,32 +1,61 @@
 (function(){
   'use strict';
 
+  const KIND = 'gad7';
+
   /**
    * Shorthand query helpers.
    * @param {string} sel
    * @param {Document|Element} [root=document]
-   * @returns {Element|null|Element[]}
+   * @returns {Element|null}
    */
-  function $(sel, root = document){ return root.querySelector(sel); }
-  function $all(sel, root = document){ return Array.prototype.slice.call(root.querySelectorAll(sel)); }
-
-  // 0–4 minimal, 5–9 mild, 10–14 moderate, 15–21 severe
-  function scoreToBand(x){
-    if (x <= 4)  return {band:'Minimal',  advice:'Light routines may help.'};
-    if (x <= 9)  return {band:'Mild',     advice:'Simple practices may help.'};
-    if (x <= 14) return {band:'Moderate', advice:'Regular practices can support you.'};
-    return            {band:'Severe',     advice:'Consider professional support; reach out if needed.'};
+  function $(sel, root = document){
+    return root.querySelector(sel);
   }
 
+  /**
+   * Return an array of elements matching the selector.
+   * @param {string} sel
+   * @param {Document|Element} [root=document]
+   * @returns {Element[]}
+   */
+  function $all(sel, root = document){
+    return Array.prototype.slice.call(root.querySelectorAll(sel));
+  }
+
+  /**
+   * Map score to severity band.
+   * @param {number} score
+   * @returns {{band:string, advice:string, severity:'minimal'|'mild'|'moderate'|'severe'}}
+   */
+  function scoreToBand(score){
+    if (score <= 4)  return {band:'Minimal',  advice:'Light routines may help.', severity:'minimal'};
+    if (score <= 9)  return {band:'Mild',     advice:'Simple practices may help.', severity:'mild'};
+    if (score <= 14) return {band:'Moderate', advice:'Regular practices can support you.', severity:'moderate'};
+    return            {band:'Severe',     advice:'Consider professional support; reach out if needed.', severity:'severe'};
+  }
+
+  /**
+   * Calculate the total GAD-7 score from the form.
+   * @param {HTMLFormElement} form
+   * @returns {number}
+   */
   function calcSum(form){
     let sum = 0;
     $all('input[name^="gad7_q"]:checked', form).forEach(function(el){
-      const v = Number(el.value);
-      if (!Number.isNaN(v)) sum += v;
+      const value = Number(el.value);
+      if (!Number.isNaN(value)){
+        sum += value;
+      }
     });
     return sum;
   }
 
+  /**
+   * Render the computed score and accompanying messaging.
+   * @param {HTMLFormElement} form
+   * @param {number} sum
+   */
   function render(form, sum){
     const band    = scoreToBand(sum);
     const result  = $('.em-phq9__result', form);
@@ -35,17 +64,28 @@
     form._lastScore   = sum;
     form._lastSummary = 'GAD-7 Score: ' + sum + ' / 21 — ' + band.band + '. ' + band.advice;
 
-    if (scoreEl){ scoreEl.textContent = form._lastSummary; }
+    if (scoreEl){
+      scoreEl.textContent = form._lastSummary;
+      scoreEl.setAttribute('data-severity', band.severity);
+    }
     if (result){
       result.hidden = false;
       // اسکرول ملایم؛ اگر بلاک وجود دارد
       if (typeof result.scrollIntoView === 'function'){
-        try{ result.scrollIntoView({behavior:'smooth', block:'start'}); }catch(e){}
+        try{
+          result.scrollIntoView({behavior:'smooth', block:'start'});
+        }catch(e){}
       }
     }
-    try{ emindyAssess && emindyAssess.helpers && emindyAssess.helpers.track('assessment_submit','gad7', String(sum), (window.em_post_id||0)); }catch(e){}
+    try{
+      (typeof emindyAssess === 'object') && emindyAssess?.helpers?.track?.('assessment_submit', KIND, String(sum), (window.em_post_id||0));
+    }catch(e){}
   }
 
+  /**
+   * Bind behaviors to a GAD-7 form.
+   * @param {HTMLFormElement} form
+   */
   function bindForm(form){
     if (!form || form._emBound) return;
     form._emBound = true;
@@ -64,12 +104,13 @@
       e.preventDefault();
       // اگر کاربر همه را تیک نزده باشد، required خود مرورگر مانع submit واقعی می‌شود
       // اما ما هم یک چک محافظتی می‌کنیم:
-      const answered = $all('fieldset', form).every(function(fs){
+      const fieldsets = $all('fieldset', form);
+      const answered = fieldsets.every(function(fs){
         return $all('input[type="radio"]:checked', fs).length === 1;
       });
       if (!answered){
         // اجازه بدهید خود مرورگر پیام required را مدیریت کند:
-        const firstUnanswered = $all('fieldset', form).find(function(fs){
+        const firstUnanswered = fieldsets.find(function(fs){
           return $all('input[type="radio"]:checked', fs).length === 0;
         });
         if (firstUnanswered){
@@ -105,6 +146,11 @@
       if (result) result.hidden = true;
       form._lastScore = null;
       form._lastSummary = '';
+      const scoreEl = $('.em-phq9__score', form);
+      if (scoreEl){
+        scoreEl.textContent = '';
+        scoreEl.removeAttribute('data-severity');
+      }
     });
     btnPrint && btnPrint.addEventListener('click', function(){ window.print(); });
     btnCopy && btnCopy.addEventListener('click', function(){
@@ -122,14 +168,14 @@
         alert('Share link service unavailable.');
         return;
       }
-      emindyAssess.helpers.signURL('gad7', form._lastScore).then(function(url){
+      emindyAssess.helpers.signURL(KIND, form._lastScore).then(function(url){
         if (navigator.clipboard && navigator.clipboard.writeText){
           return navigator.clipboard.writeText(url);
         }
         return Promise.reject();
       }).then(function(){
         alert('Link copied');
-        try{ emindyAssess.helpers.track('assessment_sharelink','gad7', String(form._lastScore), (window.em_post_id||0)); }catch(e){}
+        try{ emindyAssess.helpers.track('assessment_sharelink',KIND, String(form._lastScore), (window.em_post_id||0)); }catch(e){}
       }).catch(function(){ alert('Failed to create link'); });
     });
     btnEmail && btnEmail.addEventListener('click', function(){
@@ -138,8 +184,8 @@
         alert('Email service unavailable.');
         return;
       }
-      emindyAssess.helpers.emailSummary('gad7', form._lastSummary)
-        .then(function(){ try{ emindyAssess.helpers.track('assessment_email','gad7','1',(window.em_post_id||0)); }catch(e){} });
+      emindyAssess.helpers.emailSummary(KIND, form._lastSummary)
+        .then(function(){ try{ emindyAssess.helpers.track('assessment_email',KIND,'1',(window.em_post_id||0)); }catch(e){} });
     });
   }
 
