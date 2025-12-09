@@ -29,8 +29,10 @@ If you are a developer setting up eMINDy for the first time on a local or stagin
 A. Clone or Download the Repository
 
 Clone the eMINDy repository from GitHub into your WordPress setup’s wp-content directory. For example:
+
 cd path/to/your/wp-content
 git clone https://github.com/eMINDy/emindy-wp.git emindy-wp
+
 
 This will create an emindy-wp folder containing wp-content/themes/emindy and wp-content/plugins/emindy-core subfolders.
 
@@ -65,12 +67,18 @@ WP Mail SMTP or equivalent: In a dev environment, outbound emails (for the newsl
 E. Developer Configuration
 
 Turn on debug mode in WordPress while developing. In your wp-config.php, ensure:
+
 define( 'WP_DEBUG', true );
 define( 'WP_DEBUG_LOG', true );
+
+
 This will log any PHP errors/notices to wp-content/debug.log. It’s very useful for catching issues early. The eMINDy codebase strives to have no PHP warnings or notices.
 
 (Optional) Increase PHP memory limit if your environment is low by default. eMINDy itself is not very heavy, but if you import media or have many plugins, memory might need to be bumped. For example:
+
 define( 'WP_MEMORY_LIMIT', '256M' );
+
+
 If using Polylang, set up the basics: go to Languages in the admin, add English and Persian (for example). You can choose one as default. Polylang will add a language switcher to the admin bar. No further config needed for now.
 
 If using Rank Math, after activating it, you might want to disable its other modules not needed for dev (e.g., you can skip connecting an account, etc.). Just ensure Rank Math > Titles & Meta settings for post types and taxonomies are as you like (the defaults usually fine). eMINDy will inject additional schema regardless of those settings.
