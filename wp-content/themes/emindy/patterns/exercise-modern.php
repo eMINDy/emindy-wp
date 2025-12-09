@@ -5,6 +5,9 @@
  * Description: A clean and accessible layout for exercise pages with clear instructions and player shortcode.
  * Categories: emindy
  */
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
 ?>
 
 <!--
@@ -47,9 +50,9 @@ Buttons and links are used appropriately【159373308617029†L256-L263】.
     <!-- /wp:paragraph -->
     <!-- wp:list {"ordered":true} -->
     <ol>
-      <li>Step one of the exercise.</li>
-      <li>Step two of the exercise.</li>
-      <li>Step three of the exercise.</li>
+      <li><?php echo esc_html__( 'Step one of the exercise.', 'emindy' ); ?></li>
+      <li><?php echo esc_html__( 'Step two of the exercise.', 'emindy' ); ?></li>
+      <li><?php echo esc_html__( 'Step three of the exercise.', 'emindy' ); ?></li>
     </ol>
     <!-- /wp:list -->
   </section>
