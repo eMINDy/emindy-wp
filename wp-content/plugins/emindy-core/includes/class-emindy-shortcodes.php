@@ -1215,16 +1215,26 @@ add_shortcode('em_admin_notice_missing_pages', function(){
   return $html;
 });
 
-// [em_topics_pills taxonomy="topic"]
+// [em_topics_pills taxonomy="topic" post_type="em_video"]
 add_shortcode('em_topics_pills', function($atts){
   // Default to the `topic` taxonomy unless a custom taxonomy is provided.
-  $a = shortcode_atts(['taxonomy'=>'topic'], $atts, 'em_topics_pills');
+  // `post_type` is optional and defaults to the video archive, but if an empty
+  // value is explicitly passed we fall back to the current post type context
+  // to maintain backward compatibility for existing shortcode usage.
+  $a = shortcode_atts(['taxonomy'=>'topic', 'post_type'=>'em_video'], $atts, 'em_topics_pills');
+
   $taxonomy = sanitize_key( $a['taxonomy'] );
   $terms = get_terms(['taxonomy'=>$taxonomy, 'hide_empty'=>true]);
   if (is_wp_error($terms) || empty($terms)) return '<span>'. esc_html__( 'No topics yet.', 'emindy-core' ) .'</span>';
 
+  $requested_post_type = array_key_exists('post_type', $atts) ? $atts['post_type'] : 'em_video';
+  $post_type = sanitize_key( $requested_post_type );
+  if ('' === $post_type) {
+    $post_type = get_post_type() ?: 'em_video';
+  }
+
   $out = '<div class="em-topic-pills" role="navigation" aria-label="'. esc_attr__( 'Filter by topic', 'emindy-core' ) .'">';
-  $archive_url = get_post_type_archive_link('em_video');
+  $archive_url = get_post_type_archive_link( $post_type );
   // "All" link
   $out .= '<a class="pill" href="'.esc_url($archive_url).'">'. esc_html__( 'All', 'emindy-core' ) .'</a>';
   foreach ($terms as $t) {
