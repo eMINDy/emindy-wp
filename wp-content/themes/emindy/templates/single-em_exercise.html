@@ -4,12 +4,12 @@
 <main class="wp-block-group alignfull" id="main-content" style="padding-top:1.5rem;padding-bottom:2.5rem">
 
   <!-- Breadcrumbs -->
-  <!-- wp:group {"style":{"spacing":{"margin":{"bottom":"0.75rem"}}}} -->
-  <div class="wp-block-group" style="margin-bottom:0.75rem">
+  <!-- wp:group {"tagName":"nav","ariaLabel":"Breadcrumbs","style":{"spacing":{"margin":{"bottom":"0.75rem"}}}} -->
+  <nav class="wp-block-group" aria-label="Breadcrumbs" style="margin-bottom:0.75rem">
     <!-- wp:shortcode -->
     [rank_math_breadcrumb]
     <!-- /wp:shortcode -->
-  </div>
+  </nav>
   <!-- /wp:group -->
 
   <!-- Title (H1) -->
@@ -34,8 +34,8 @@
   <!-- /wp:separator -->
 
   <!-- Steps Section -->
-  <!-- wp:group {"style":{"spacing":{"margin":{"top":"1rem","bottom":"1rem"},"padding":{"top":"1rem","bottom":"1rem","left":"1rem","right":"1rem"}},"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"shadow":"var(--wp--custom--brand--shadow--card)"},"layout":{"type":"constrained"}} -->
-  <div class="wp-block-group" style="border-radius:var(--wp--custom--brand--radius--xl);box-shadow:var(--wp--custom--brand--shadow--card);padding:1rem;margin-top:1rem;margin-bottom:1rem">
+  <!-- wp:group {"tagName":"section","ariaLabel":"Exercise steps","style":{"spacing":{"margin":{"top":"1rem","bottom":"1rem"},"padding":{"top":"1rem","bottom":"1rem","left":"1rem","right":"1rem"}},"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"shadow":"var(--wp--custom--brand--shadow--card)"},"layout":{"type":"constrained"}} -->
+  <section class="wp-block-group" aria-label="Exercise steps" style="border-radius:var(--wp--custom--brand--radius--xl);box-shadow:var(--wp--custom--brand--shadow--card);padding:1rem;margin-top:1rem;margin-bottom:1rem">
     <!-- wp:heading {"level":2} -->
     <h2>Steps</h2>
     <!-- /wp:heading -->
@@ -43,48 +43,48 @@
     <!-- wp:shortcode -->
     [em_exercise_steps]
     <!-- /wp:shortcode -->
-  </div>
+  </section>
   <!-- /wp:group -->
 
   <!-- Tips / Variations -->
-  <!-- wp:group {"style":{"spacing":{"margin":{"top":"1rem","bottom":"1rem"},"padding":{"top":"1rem","bottom":"1rem","left":"1rem","right":"1rem"}},"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"shadow":"var(--wp--custom--brand--shadow--card)"},"layout":{"type":"constrained"}} -->
-  <div class="wp-block-group" style="border-radius:var(--wp--custom--brand--radius--xl);box-shadow:var(--wp--custom--brand--shadow--card);padding:1rem;margin-top:1rem;margin-bottom:1rem">
+  <!-- wp:group {"tagName":"section","ariaLabel":"Tips and variations","style":{"spacing":{"margin":{"top":"1rem","bottom":"1rem"},"padding":{"top":"1rem","bottom":"1rem","left":"1rem","right":"1rem"}},"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"shadow":"var(--wp--custom--brand--shadow--card)"},"layout":{"type":"constrained"}} -->
+  <section class="wp-block-group" aria-label="Tips and variations" style="border-radius:var(--wp--custom--brand--radius--xl);box-shadow:var(--wp--custom--brand--shadow--card);padding:1rem;margin-top:1rem;margin-bottom:1rem">
     <!-- wp:heading {"level":2} -->
     <h2>Tips &amp; variations</h2>
     <!-- /wp:heading -->
     <!-- wp:paragraph -->
     <p>Use this space for any tips, pacing suggestions, or variations that fit the exercise.</p>
     <!-- /wp:paragraph -->
-  </div>
+  </section>
   <!-- /wp:group -->
 
   <!-- Resources -->
-  <!-- wp:group {"style":{"spacing":{"margin":{"top":"1rem","bottom":"1rem"},"padding":{"top":"1rem","bottom":"1rem","left":"1rem","right":"1rem"}},"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"shadow":"var(--wp--custom--brand--shadow--card)"},"layout":{"type":"constrained"}} -->
-  <div class="wp-block-group" style="border-radius:var(--wp--custom--brand--radius--xl);box-shadow:var(--wp--custom--brand--shadow--card);padding:1rem;margin-top:1rem;margin-bottom:1rem">
+  <!-- wp:group {"tagName":"section","ariaLabel":"Further resources","style":{"spacing":{"margin":{"top":"1rem","bottom":"1rem"},"padding":{"top":"1rem","bottom":"1rem","left":"1rem","right":"1rem"}},"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"shadow":"var(--wp--custom--brand--shadow--card)"},"layout":{"type":"constrained"}} -->
+  <section class="wp-block-group" aria-label="Further resources" style="border-radius:var(--wp--custom--brand--radius--xl);box-shadow:var(--wp--custom--brand--shadow--card);padding:1rem;margin-top:1rem;margin-bottom:1rem">
     <!-- wp:heading {"level":2} -->
     <h2>Further resources</h2>
     <!-- /wp:heading -->
     <!-- wp:shortcode -->
     [zotpress collection="YOUR_COLLECTION_ID"]
     <!-- /wp:shortcode -->
-  </div>
+  </section>
   <!-- /wp:group -->
 
   <!-- Related / Newsletter -->
-  <!-- wp:group {"style":{"spacing":{"margin":{"top":"1rem"}}},"layout":{"type":"constrained"}} -->
-  <div class="wp-block-group" style="margin-top:1rem">
+  <!-- wp:group {"tagName":"section","ariaLabel":"Related content","style":{"spacing":{"margin":{"top":"1rem"}}},"layout":{"type":"constrained"}} -->
+  <section class="wp-block-group" aria-label="Related content" style="margin-top:1rem">
     <!-- wp:shortcode -->
     [em_related]
     <!-- /wp:shortcode -->
-  </div>
+  </section>
   <!-- /wp:group -->
 
-  <!-- wp:group {"style":{"spacing":{"margin":{"top":"1.25rem"},"padding":{"top":"1rem","bottom":"1rem"}},"color":{"background":"#0b2d49"},"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"elements":{"link":{"color":{"text":"var(--wp--preset--color--white)"}}}},"textColor":"white","layout":{"type":"constrained"}} -->
-  <div class="wp-block-group has-white-color has-text-color has-background" style="border-radius:var(--wp--custom--brand--radius--xl);background-color:#0b2d49;padding-top:1rem;padding-bottom:1rem">
+  <!-- wp:group {"tagName":"section","ariaLabel":"Newsletter signup","style":{"spacing":{"margin":{"top":"1.25rem"},"padding":{"top":"1rem","bottom":"1rem"}},"color":{"background":"#0b2d49"},"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"elements":{"link":{"color":{"text":"var(--wp--preset--color--white)"}}}},"textColor":"white","layout":{"type":"constrained"}} -->
+  <section class="wp-block-group has-white-color has-text-color has-background" aria-label="Newsletter signup" style="border-radius:var(--wp--custom--brand--radius--xl);background-color:#0b2d49;padding-top:1rem;padding-bottom:1rem;margin-top:1.25rem">
     <h3>Stay in practice</h3>
     <p>Get weekly mini-exercises and new videos.</p>
     [em_newsletter]
-  </div>
+  </section>
   <!-- /wp:group -->
 
 </main>
