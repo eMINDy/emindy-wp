@@ -64,7 +64,7 @@
     },
     "elements": {
       "button": {
-        "border": { "radius": "1.25rem" },
+        "border": { "radius": "var(--wp--custom--brand--radius--xl)" },
         "color": {
           "background": "var(--wp--preset--color--deep-blue)",
           "text": "var(--wp--preset--color--white)"
