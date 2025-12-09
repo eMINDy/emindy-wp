@@ -5,6 +5,10 @@
  * Description: A structured, accessible layout for single video pages with clear sections and SEO‑friendly markup.
  * Categories: emindy
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+  exit;
+}
 ?>
 
 <!--
@@ -43,9 +47,9 @@ Structured data should be added separately via your SEO plugin; avoid duplicate 
     <!-- /wp:heading -->
     <!-- wp:list {"ordered":false} -->
     <ul>
-      <li>Point 1</li>
-      <li>Point 2</li>
-      <li>Point 3</li>
+      <li><?php echo esc_html__( 'Point 1', 'emindy' ); ?></li>
+      <li><?php echo esc_html__( 'Point 2', 'emindy' ); ?></li>
+      <li><?php echo esc_html__( 'Point 3', 'emindy' ); ?></li>
     </ul>
     <!-- /wp:list -->
   </section>
