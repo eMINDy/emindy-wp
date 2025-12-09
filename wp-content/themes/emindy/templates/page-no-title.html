@@ -4,7 +4,11 @@
 <main id="main-content" class="wp-block-group alignfull" style="padding-top:1.25rem;padding-bottom:2rem">
 
   <!-- Optional breadcrumbs -->
-  <!-- wp:shortcode -->[rank_math_breadcrumb]<!-- /wp:shortcode -->
+  <!-- wp:group {"tagName":"nav","className":"emindy-breadcrumbs","ariaLabel":"Breadcrumbs"} -->
+  <nav class="wp-block-group emindy-breadcrumbs" aria-label="Breadcrumbs">
+    <!-- wp:shortcode -->[rank_math_breadcrumb]<!-- /wp:shortcode -->
+  </nav>
+  <!-- /wp:group -->
 
   <!-- Post Content (no post-title block here) -->
   <!-- wp:post-content {"layout":{"type":"constrained","contentSize":"900px"},"style":{"typography":{"lineHeight":"1.7"}}} /-->
