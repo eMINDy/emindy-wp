@@ -17,7 +17,7 @@
           "2xl": "1.5rem"
         },
         "shadow": {
-          "card": "0 10px 30px rgba(0,0,0,.12)"
+          "card": "var(--wp--preset--shadow--card)"
         }
       }
     },
@@ -45,6 +45,18 @@
       "lineHeight": "1.6",
       "dropCap": false
     },
+    "shadow": [
+      {
+        "name": "Card",
+        "slug": "card",
+        "shadow": "0 10px 30px rgba(0,0,0,.12)"
+      },
+      {
+        "name": "Focus Outline",
+        "slug": "focus",
+        "shadow": "0 0 0 3px rgba(0,163,163,0.25)"
+      }
+    ],
     "spacing": {
       "units": ["px","rem","%","vh","vw"],
       "spacingScale": {"steps": 8}
@@ -64,13 +76,33 @@
     },
     "elements": {
       "button": {
-        "border": { "radius": "var(--wp--custom--brand--radius--xl)" },
+        "border": {
+          "color": "transparent",
+          "radius": "var(--wp--custom--brand--radius--xl)",
+          "style": "solid",
+          "width": "2px"
+        },
         "color": {
           "background": "var(--wp--preset--color--deep-blue)",
           "text": "var(--wp--preset--color--white)"
         },
+        "shadow": "var(--wp--preset--shadow--card)",
         "typography": {
           "fontWeight": "700"
+        },
+        "states": {
+          "hover": {
+            "color": {
+              "background": "var(--wp--preset--color--teal)",
+              "text": "var(--wp--preset--color--white)"
+            }
+          },
+          "focus": {
+            "border": {
+              "color": "var(--wp--preset--color--teal)"
+            },
+            "shadow": "var(--wp--preset--shadow--focus)"
+          }
         }
       },
       "link": {
@@ -79,6 +111,22 @@
         },
         "typography": {
           "textDecoration": "underline"
+        },
+        "states": {
+          "hover": {
+            "color": {
+              "text": "var(--wp--preset--color--teal)"
+            }
+          },
+          "focus": {
+            "color": {
+              "background": "rgba(0,163,163,0.1)",
+              "text": "var(--wp--preset--color--deep-blue)"
+            },
+            "typography": {
+              "textDecoration": "underline"
+            }
+          }
         }
       }
     }
