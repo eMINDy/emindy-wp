@@ -14,13 +14,17 @@ class Meta {
 	 *
 	 * @return void
 	 */
-	public static function register() {
-		$auth_callback = [ __CLASS__, 'can_edit_meta' ];
+        public static function register() {
+                $auth_callback = [ __CLASS__, 'can_edit_meta' ];
 
-		// Chapters for videos.
-		register_post_meta(
-			'em_video',
-			'em_chapters_json',
+                // All meta is exposed to REST so the block editor and API
+                // clients can edit structured fields. The shared auth callback
+                // keeps capability checks consistent across the meta surface.
+
+                // Chapters for videos.
+                register_post_meta(
+                        'em_video',
+                        'em_chapters_json',
 			[
 				'type'              => 'string',
 				'single'            => true,
@@ -149,20 +153,23 @@ class Meta {
 			return '';
 		}
 
-		$sanitized = map_deep(
-			$data,
-			static function ( $item ) {
-				if ( is_string( $item ) ) {
-					return sanitize_text_field( $item );
-				}
+                $sanitized = map_deep(
+                        $data,
+                        static function ( $item ) {
+                                if ( is_string( $item ) ) {
+                                        return sanitize_text_field( $item );
+                                }
 
-				if ( is_numeric( $item ) ) {
-					return $item + 0;
-				}
+                                if ( is_numeric( $item ) ) {
+                                        return $item + 0;
+                                }
 
-				return $item;
-			}
-		);
+                                // Preserve nested array structure while
+                                // stripping tags and coercing scalars so JSON
+                                // consumers cannot inject markup.
+                                return $item;
+                        }
+                );
 
 		return wp_json_encode( $sanitized );
 	}

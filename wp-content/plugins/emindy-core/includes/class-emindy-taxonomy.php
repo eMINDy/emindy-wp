@@ -49,6 +49,10 @@ class Taxonomy {
                 'singular_name' => __( $singular, 'emindy-core' ),
             ];
 
+            // Register once per request with REST exposure so the block editor
+            // and API clients can consume the same taxonomy definitions. The
+            // sanitised slug prevents accidental collisions if a slug is
+            // altered upstream.
             register_taxonomy( $taxonomy_slug, [ 'em_exercise', 'em_video', 'em_article' ], [
                 'labels'       => [
                     'name'          => $taxonomy_label['name'],
@@ -140,6 +144,8 @@ class Taxonomy {
             foreach ( $list as $term ) {
                 [ $name, $slug ] = $term;
                 $term_slug       = sanitize_title( $slug );
+                // `term_exists` keeps this idempotent so the defaults can be
+                // reseeded during deployments without duplicating rows.
                 if ( ! term_exists( $term_slug, $tax ) ) {
                     wp_insert_term( __( $name, 'emindy-core' ), $tax, [ 'slug' => $term_slug ] );
                 }
