@@ -19,9 +19,10 @@
   <!-- wp:group {"style":{"spacing":{"padding":{"top":"0.75rem","bottom":"0.75rem","left":"0.75rem","right":"0.75rem"},"margin":{"bottom":"1rem"}},"color":{"background":"#0e3252"},"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"elements":{"link":{"color":{"text":"var(--wp--preset--color--white)"}}}},"textColor":"white"} -->
   <div class="wp-block-group has-white-color has-text-color has-background" style="background-color:#0e3252;border-radius:var(--wp--custom--brand--radius--xl);padding:.75rem;margin-bottom:1rem">
     <!-- wp:html -->
-    <form role="search" method="get" action="/" class="em-index-search" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
+    <form role="search" method="get" action="/" class="em-index-search" aria-label="Search eMINDy content" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
       <label for="idx-s" class="sr-only">Search eMINDy</label>
-      <input id="idx-s" type="search" name="s" placeholder="Search videos, exercises, articles, blog…" style="flex:1;min-width:260px;padding:.55rem .8rem;border-radius:.75rem;border:0">
+      <input id="idx-s" type="search" name="s" placeholder="Search videos, exercises, articles, blog…" aria-describedby="idx-s-desc" style="flex:1;min-width:260px;padding:.55rem .8rem;border-radius:.75rem;border:0">
+      <span id="idx-s-desc" class="sr-only">Enter a keyword to search videos, exercises, articles, and blog posts.</span>
       <input type="hidden" name="post_type[]" value="em_video">
       <input type="hidden" name="post_type[]" value="em_exercise">
       <input type="hidden" name="post_type[]" value="em_article">
