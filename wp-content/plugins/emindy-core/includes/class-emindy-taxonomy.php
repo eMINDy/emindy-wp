@@ -144,6 +144,8 @@ class Taxonomy {
             foreach ( $list as $term ) {
                 [ $name, $slug ] = $term;
                 $term_slug       = sanitize_title( $slug );
+                // Translating the label while keeping a sanitised slug prevents
+                // duplicates when the seed runs multiple times or across languages.
                 // `term_exists` keeps this idempotent so the defaults can be
                 // reseeded during deployments without duplicating rows.
                 if ( ! term_exists( $term_slug, $tax ) ) {
