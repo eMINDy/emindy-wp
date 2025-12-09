@@ -101,6 +101,8 @@ function emindy_adjust_em_video_archive( WP_Query $query ): void {
     $query->set( 'posts_per_page', 9 );
 
     $topic = filter_input( INPUT_GET, 'topic', FILTER_VALIDATE_INT );
+    // Use filter_input to keep the taxonomy filter numeric even when the
+    // request is manipulated; non-numeric values are ignored.
     if ( $topic ) {
       $query->set(
         'tax_query',

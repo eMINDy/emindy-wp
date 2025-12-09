@@ -261,36 +261,38 @@ class Shortcodes {
 	return '';
 	}
 	
-	$defaults = [
-	'post_type' => get_post_type() ?: 'post',
-	'taxonomy'  => 'topic',
-	'count'     => 4,
-	'topic'     => 'current',
+        $defaults = [
+        'post_type' => get_post_type() ?: 'post',
+        'taxonomy'  => 'topic',
+        'count'     => 4,
+        'topic'     => 'current',
 	'technique' => '',
 	'format'    => '',
 	'orderby'   => 'date',
 	];
-	$a = shortcode_atts( $defaults, $atts, 'em_related' );
-	
-	$post_types = array_filter( array_map( 'sanitize_key', (array) $a['post_type'] ) );
-	if ( empty( $post_types ) ) {
-	$post_types = [ get_post_type() ?: 'post' ];
-	}
-	
-	$taxonomy = $a['taxonomy'] ? sanitize_key( $a['taxonomy'] ) : '';
-	$count    = max( 1, (int) $a['count'] );
-	$orderby  = in_array( $a['orderby'], [ 'date', 'relevance', 'rand', 'menu_order', 'title' ], true ) ? $a['orderby'] : 'date';
-	
-	// Polylang: respect the current post language when available.
-	$lang = function_exists( 'pll_get_post_language' ) ? pll_get_post_language( $post->ID ) : null;
-	
-	$tax_query = [];
-	
-	// Primary topic resolution.
-	$topic_term_id = null;
-	if ( ! empty( $a['topic'] ) ) {
-	if ( 'current' === $a['topic'] ) {
-	$primary = (int) get_post_meta( $post->ID, EMINDY_PRIMARY_TOPIC_META, true );
+        $a = shortcode_atts( $defaults, $atts, 'em_related' );
+
+        $post_types = array_filter( array_map( 'sanitize_key', (array) $a['post_type'] ) );
+        if ( empty( $post_types ) ) {
+        $post_types = [ get_post_type() ?: 'post' ];
+        }
+
+        $taxonomy = $a['taxonomy'] ? sanitize_key( $a['taxonomy'] ) : '';
+        $count    = max( 1, (int) $a['count'] );
+        $orderby  = in_array( $a['orderby'], [ 'date', 'relevance', 'rand', 'menu_order', 'title' ], true ) ? $a['orderby'] : 'date';
+
+        // Polylang: respect the current post language when available.
+        $lang = function_exists( 'pll_get_post_language' ) ? pll_get_post_language( $post->ID ) : null;
+
+        $tax_query = [];
+
+        // Resolve the topic filter. Prefer the primary topic meta if present
+        // to avoid cross-linking unrelated content when multiple topics exist.
+        // Primary topic resolution.
+        $topic_term_id = null;
+        if ( ! empty( $a['topic'] ) ) {
+        if ( 'current' === $a['topic'] ) {
+        $primary = (int) get_post_meta( $post->ID, EMINDY_PRIMARY_TOPIC_META, true );
 	if ( $primary ) {
 	$topic_term_id = $primary;
 	} else {
@@ -340,11 +342,11 @@ class Shortcodes {
 	}
 	}
 	
-	if ( count( $tax_query ) > 1 ) {
-	$tax_query['relation'] = 'AND';
-	}
-	
-	$args = [
+        if ( count( $tax_query ) > 1 ) {
+        $tax_query['relation'] = 'AND';
+        }
+
+        $args = [
 	'post_type'        => $post_types,
 	'post__not_in'     => [ $post->ID ],
 	'posts_per_page'   => $count,
@@ -364,6 +366,13 @@ class Shortcodes {
         if ( ! $q->have_posts() ) {
         // No taxonomy matches; fall back to a relevance search using the
         // current title and excerpt to avoid showing an empty block.
+
+        $q = new \WP_Query( $args );
+
+        if ( ! $q->have_posts() ) {
+        // Fallback: use the current post title/excerpt as a relevance needle
+        // instead of re-querying the original request variables, keeping the
+        // search deterministic and avoiding user-controlled input here.
         $needle = sanitize_text_field( wp_strip_all_tags( $post->post_title . ' ' . get_the_excerpt( $post ) ) );
         $args   = [
         'post_type'        => $post_types,
@@ -637,6 +646,12 @@ public static function gad7() : string {
         // spoofed scores even if shared publicly.
         $secret = wp_salt( 'auth' );
         $calc   = hash_hmac( 'sha256', $type . '|' . $score, $secret );
+	// اعتبارسنجی امضا
+        $secret = wp_salt( 'auth' );
+        $calc   = hash_hmac( 'sha256', $type . '|' . $score, $secret );
+        // The signed URL prevents tampering with the score/type when users
+        // share links. If the HMAC fails, present a generic error instead of
+        // exposing which part was invalid to avoid leaking verification rules.
         if ( ! hash_equals( $calc, $sig ) || $score < 0 ) {
         return '<div class="em-phq9 is-style-em-card"><p>' . esc_html__( 'Invalid or missing result.', 'emindy-core' ) . '</p></div>';
         }
