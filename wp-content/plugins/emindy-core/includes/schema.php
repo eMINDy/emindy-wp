@@ -29,56 +29,9 @@ function emindy_filter_rank_math_json_ld( $data, $jsonld ) {
   $lang_code  = substr( $locale, 0, 2 );                      // e.g. en, fa.
   $inLanguage = $lang_code ? $lang_code : 'en';
 
-  // 0) Ensure Organization + WebSite with SearchAction.
-  // Remove duplicates if present.
-  foreach ( array( 'Organization', 'WebSite' ) as $k ) {
-    if ( isset( $data[ $k ] ) && is_array( $data[ $k ] ) && empty( $data[ $k ]['@id'] ) ) {
-      unset( $data[ $k ] ); // Avoid duplicate anonymous nodes.
-    }
-  }
-
-  // Organization.
-  // logo: prefer your custom logo from customizer if set.
-  $logo_id  = get_theme_mod( 'custom_logo' );
-  $logo_url = $logo_id ? wp_get_attachment_image_url( $logo_id, 'full' ) : '';
-  $same_as  = array_values(
-    array_filter(
-      array(
-        'https://www.youtube.com/@emindy_official',
-        // Add when ready:
-        // 'https://www.instagram.com/emindy_official',
-        // 'https://www.tiktok.com/@emindy_official',
-        // 'https://twitter.com/emindy_official',
-      )
-    )
-  );
-
-  $data['Organization'] = array(
-    '@type'  => 'Organization',
-    '@id'    => $site_url . '#org',
-    'name'   => $site_name,
-    'url'    => $site_url,
-    'logo'   => $logo_url ? array(
-      '@type' => 'ImageObject',
-      'url'   => $logo_url,
-    ) : null,
-    'sameAs' => $same_as ? $same_as : null,
-  );
-
-  // WebSite + SearchAction.
-  $data['WebSite'] = array(
-    '@type'           => 'WebSite',
-    '@id'             => $site_url . '#website',
-    'url'             => $site_url,
-    'name'            => $site_name,
-    'inLanguage'      => $inLanguage,
-    'publisher'       => array( '@id' => $site_url . '#org' ),
-    'potentialAction' => array(
-      '@type'       => 'SearchAction',
-      'target'      => $site_url . '?s={search_term_string}',
-      'query-input' => 'required name=search_term_string',
-    ),
-  );
+  $data = emindy_schema_remove_anonymous_root_nodes( $data );
+  $data = emindy_schema_add_organization( $data, $site_url, $site_name );
+  $data = emindy_schema_add_search_action( $data, $site_url, $site_name, $inLanguage );
 
   // 1) Search Results Page.
   if ( is_search() ) {
@@ -95,46 +48,7 @@ function emindy_filter_rank_math_json_ld( $data, $jsonld ) {
 
   // 2) Archives: CollectionPage + ItemList (avoid duplicates Rank Math may add).
   if ( is_archive() && ! is_search() ) {
-    $archive_url = home_url( add_query_arg( array() ) );
-
-    if ( empty( $data['WebPage'] ) ) {
-      $data['WebPage'] = array(
-        '@type'      => 'CollectionPage',
-        '@id'        => trailingslashit( $archive_url ) . '#collection',
-        'name'       => wp_strip_all_tags( get_the_archive_title() ),
-        'inLanguage' => $inLanguage,
-        'isPartOf'   => array( '@id' => $site_url . '#website' ),
-      );
-    }
-
-    // Build ItemList based on current loop (first page only for brevity).
-    if ( empty( $data['ItemList'] ) ) {
-      global $wp_query;
-
-      if ( isset( $wp_query->posts ) && is_array( $wp_query->posts ) && ! empty( $wp_query->posts ) ) {
-        $position = 1;
-        $items    = array();
-
-        foreach ( $wp_query->posts as $p ) {
-          $items[] = array(
-            '@type'    => 'ListItem',
-            'position' => $position++,
-            'url'      => get_permalink( $p ),
-          );
-
-          if ( $position > 11 ) {
-            break; // Keep compact.
-          }
-        }
-
-        $data['ItemList'] = array(
-          '@type'           => 'ItemList',
-          'itemListOrder'   => 'https://schema.org/ItemListOrderAscending',
-          'numberOfItems'   => count( $items ),
-          'itemListElement' => $items,
-        );
-      }
-    }
+    $data = emindy_schema_handle_archives( $data, $site_url, $inLanguage );
   }
 
   // 3) Single CPTs → merge schema from central builders.
@@ -142,27 +56,15 @@ function emindy_filter_rank_math_json_ld( $data, $jsonld ) {
     $post_obj = get_post();
 
     if ( $post_obj && is_singular( 'em_video' ) ) {
-      $video_schema = \EMINDY\Core\Schema::build_video_schema( $post_obj );
-
-      if ( $video_schema ) {
-        $data['VideoObject'] = $video_schema;
-      }
+      $data = emindy_schema_add_em_video( $data, $post_obj );
     }
 
     if ( $post_obj && is_singular( 'em_exercise' ) ) {
-      $howto_schema = \EMINDY\Core\Schema::build_exercise_howto_schema( $post_obj );
-
-      if ( $howto_schema ) {
-        $data['HowTo'] = $howto_schema;
-      }
+      $data = emindy_schema_add_em_exercise( $data, $post_obj );
     }
 
     if ( $post_obj && is_singular( 'em_article' ) ) {
-      $article_schema = \EMINDY\Core\Schema::build_article_schema( $post_obj );
-
-      if ( $article_schema ) {
-        $data['Article'] = $article_schema;
-      }
+      $data = emindy_schema_add_em_article( $data, $post_obj );
     }
   }
 
@@ -195,6 +97,190 @@ function emindy_filter_rank_math_json_ld( $data, $jsonld ) {
     if ( is_array( $node ) ) {
       $data[ $k ] = emindy_array_filter_recursive( $node );
     }
+  }
+
+  return $data;
+}
+
+/**
+ * Remove anonymous Organization and WebSite nodes to prevent duplicates.
+ *
+ * @param array $data Existing JSON-LD data.
+ * @return array
+ */
+function emindy_schema_remove_anonymous_root_nodes( $data ) {
+  foreach ( array( 'Organization', 'WebSite' ) as $k ) {
+    if ( isset( $data[ $k ] ) && is_array( $data[ $k ] ) && empty( $data[ $k ]['@id'] ) ) {
+      unset( $data[ $k ] ); // Avoid duplicate anonymous nodes.
+    }
+  }
+
+  return $data;
+}
+
+/**
+ * Populate Organization schema using site details and theme logo preferences.
+ *
+ * @param array  $data      Existing JSON-LD data.
+ * @param string $site_url  Site home URL.
+ * @param string $site_name Site name.
+ * @return array
+ */
+function emindy_schema_add_organization( $data, $site_url, $site_name ) {
+  $logo_id  = get_theme_mod( 'custom_logo' );
+  $logo_url = $logo_id ? wp_get_attachment_image_url( $logo_id, 'full' ) : '';
+  $same_as  = array_values(
+    array_filter(
+      array(
+        'https://www.youtube.com/@emindy_official',
+        // Add when ready:
+        // 'https://www.instagram.com/emindy_official',
+        // 'https://www.tiktok.com/@emindy_official',
+        // 'https://twitter.com/emindy_official',
+      )
+    )
+  );
+
+  $data['Organization'] = array(
+    '@type'  => 'Organization',
+    '@id'    => $site_url . '#org',
+    'name'   => $site_name,
+    'url'    => $site_url,
+    'logo'   => $logo_url ? array(
+      '@type' => 'ImageObject',
+      'url'   => $logo_url,
+    ) : null,
+    'sameAs' => $same_as ? $same_as : null,
+  );
+
+  return $data;
+}
+
+/**
+ * Add WebSite schema enriched with a SearchAction for on-site search.
+ *
+ * @param array  $data       Existing JSON-LD data.
+ * @param string $site_url   Site home URL.
+ * @param string $site_name  Site name.
+ * @param string $inLanguage Two-letter language code for schema output.
+ * @return array
+ */
+function emindy_schema_add_search_action( $data, $site_url, $site_name, $inLanguage ) {
+  $data['WebSite'] = array(
+    '@type'           => 'WebSite',
+    '@id'             => $site_url . '#website',
+    'url'             => $site_url,
+    'name'            => $site_name,
+    'inLanguage'      => $inLanguage,
+    'publisher'       => array( '@id' => $site_url . '#org' ),
+    'potentialAction' => array(
+      '@type'       => 'SearchAction',
+      'target'      => $site_url . '?s={search_term_string}',
+      'query-input' => 'required name=search_term_string',
+    ),
+  );
+
+  return $data;
+}
+
+/**
+ * Build archive CollectionPage and ItemList schema without duplicating Rank Math output.
+ *
+ * @param array  $data       Existing JSON-LD data.
+ * @param string $site_url   Site home URL.
+ * @param string $inLanguage Two-letter language code for schema output.
+ * @return array
+ */
+function emindy_schema_handle_archives( $data, $site_url, $inLanguage ) {
+  $archive_url = home_url( add_query_arg( array() ) );
+
+  if ( empty( $data['WebPage'] ) ) {
+    $data['WebPage'] = array(
+      '@type'      => 'CollectionPage',
+      '@id'        => trailingslashit( $archive_url ) . '#collection',
+      'name'       => wp_strip_all_tags( get_the_archive_title() ),
+      'inLanguage' => $inLanguage,
+      'isPartOf'   => array( '@id' => $site_url . '#website' ),
+    );
+  }
+
+  if ( empty( $data['ItemList'] ) ) {
+    global $wp_query;
+
+    if ( isset( $wp_query->posts ) && is_array( $wp_query->posts ) && ! empty( $wp_query->posts ) ) {
+      $position = 1;
+      $items    = array();
+
+      foreach ( $wp_query->posts as $p ) {
+        $items[] = array(
+          '@type'    => 'ListItem',
+          'position' => $position++,
+          'url'      => get_permalink( $p ),
+        );
+
+        if ( $position > 11 ) {
+          break; // Keep compact.
+        }
+      }
+
+      $data['ItemList'] = array(
+        '@type'           => 'ItemList',
+        'itemListOrder'   => 'https://schema.org/ItemListOrderAscending',
+        'numberOfItems'   => count( $items ),
+        'itemListElement' => $items,
+      );
+    }
+  }
+
+  return $data;
+}
+
+/**
+ * Add VideoObject schema for em_video posts using the central builder.
+ *
+ * @param array   $data     Existing JSON-LD data.
+ * @param WP_Post $post_obj Post object for the current singular.
+ * @return array
+ */
+function emindy_schema_add_em_video( $data, $post_obj ) {
+  $video_schema = \EMINDY\Core\Schema::build_video_schema( $post_obj );
+
+  if ( $video_schema ) {
+    $data['VideoObject'] = $video_schema;
+  }
+
+  return $data;
+}
+
+/**
+ * Add HowTo schema for em_exercise posts using the central builder.
+ *
+ * @param array   $data     Existing JSON-LD data.
+ * @param WP_Post $post_obj Post object for the current singular.
+ * @return array
+ */
+function emindy_schema_add_em_exercise( $data, $post_obj ) {
+  $howto_schema = \EMINDY\Core\Schema::build_exercise_howto_schema( $post_obj );
+
+  if ( $howto_schema ) {
+    $data['HowTo'] = $howto_schema;
+  }
+
+  return $data;
+}
+
+/**
+ * Add Article schema for em_article posts using the central builder.
+ *
+ * @param array   $data     Existing JSON-LD data.
+ * @param WP_Post $post_obj Post object for the current singular.
+ * @return array
+ */
+function emindy_schema_add_em_article( $data, $post_obj ) {
+  $article_schema = \EMINDY\Core\Schema::build_article_schema( $post_obj );
+
+  if ( $article_schema ) {
+    $data['Article'] = $article_schema;
   }
 
   return $data;
