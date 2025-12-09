@@ -256,25 +256,25 @@ class Shortcodes {
 	 * @return string HTML markup for the related content grid.
 	 */
     public static function related( $atts = [] ) : string {
-	$post = get_post();
-	if ( ! $post ) {
-	return '';
-	}
-	
+        $post = get_post();
+        if ( ! $post ) {
+            return '';
+        }
+
         $defaults = [
-        'post_type' => get_post_type() ?: 'post',
-        'taxonomy'  => 'topic',
-        'count'     => 4,
-        'topic'     => 'current',
-	'technique' => '',
-	'format'    => '',
-	'orderby'   => 'date',
-	];
+            'post_type' => get_post_type() ?: 'post',
+            'taxonomy'  => 'topic',
+            'count'     => 4,
+            'topic'     => 'current',
+            'technique' => '',
+            'format'    => '',
+            'orderby'   => 'date',
+        ];
         $a = shortcode_atts( $defaults, $atts, 'em_related' );
 
         $post_types = array_filter( array_map( 'sanitize_key', (array) $a['post_type'] ) );
         if ( empty( $post_types ) ) {
-        $post_types = [ get_post_type() ?: 'post' ];
+            $post_types = [ get_post_type() ?: 'post' ];
         }
 
         $taxonomy = $a['taxonomy'] ? sanitize_key( $a['taxonomy'] ) : '';
@@ -284,124 +284,122 @@ class Shortcodes {
         // Polylang: respect the current post language when available.
         $lang = function_exists( 'pll_get_post_language' ) ? pll_get_post_language( $post->ID ) : null;
 
-        $tax_query = [];
-
-        // Resolve the topic filter. Prefer the primary topic meta if present
-        // to avoid cross-linking unrelated content when multiple topics exist.
-        // Primary topic resolution.
+        $tax_query     = [];
         $topic_term_id = null;
+
+        // Resolve the topic filter. Prefer the primary topic meta if present to avoid
+        // cross-linking unrelated content when multiple topics exist.
         if ( ! empty( $a['topic'] ) ) {
-        if ( 'current' === $a['topic'] ) {
-        $primary = (int) get_post_meta( $post->ID, EMINDY_PRIMARY_TOPIC_META, true );
-	if ( $primary ) {
-	$topic_term_id = $primary;
-	} else {
-	$terms = wp_get_post_terms( $post->ID, 'topic', [ 'fields' => 'ids' ] );
-	if ( ! is_wp_error( $terms ) && ! empty( $terms ) ) {
-	$topic_term_id = (int) $terms[0];
-	}
-	}
-	} else {
-	$topic_slug = sanitize_title( $a['topic'] );
-	$topic_term = $topic_slug ? get_term_by( 'slug', $topic_slug, 'topic' ) : false;
-	if ( $topic_term ) {
-	$topic_term_id = (int) $topic_term->term_id;
-	}
-	}
-	}
-	
-	if ( $topic_term_id ) {
-	$tax_query[] = [
-	'taxonomy' => 'topic',
-	'field'    => 'term_id',
-	'terms'    => [ $topic_term_id ],
-	];
-	} elseif ( $taxonomy ) {
-	$terms = wp_get_object_terms( $post->ID, $taxonomy, [ 'fields' => 'ids' ] );
-	if ( ! is_wp_error( $terms ) && ! empty( $terms ) ) {
-	$tax_query[] = [
-	'taxonomy' => $taxonomy,
-	'field'    => 'term_id',
-	'terms'    => $terms,
-	];
-	}
-	}
-	
-	foreach ( [ 'technique', 'format' ] as $tax_slug ) {
-	if ( empty( $a[ $tax_slug ] ) ) {
-	continue;
-	}
-	$term_slug = sanitize_title( $a[ $tax_slug ] );
-	$term      = $term_slug ? get_term_by( 'slug', $term_slug, $tax_slug ) : false;
-	if ( $term ) {
-	$tax_query[] = [
-	'taxonomy' => $tax_slug,
-	'field'    => 'term_id',
-	'terms'    => [ (int) $term->term_id ],
-	];
-	}
-	}
-	
-        if ( count( $tax_query ) > 1 ) {
-        $tax_query['relation'] = 'AND';
+            if ( 'current' === $a['topic'] ) {
+                $primary = (int) get_post_meta( $post->ID, EMINDY_PRIMARY_TOPIC_META, true );
+                if ( $primary ) {
+                    $topic_term_id = $primary;
+                } else {
+                    $terms = wp_get_post_terms( $post->ID, 'topic', [ 'fields' => 'ids' ] );
+                    if ( ! is_wp_error( $terms ) && ! empty( $terms ) ) {
+                        $topic_term_id = (int) $terms[0];
+                    }
+                }
+            } else {
+                $topic_slug = sanitize_title( $a['topic'] );
+                $topic_term = $topic_slug ? get_term_by( 'slug', $topic_slug, 'topic' ) : false;
+                if ( $topic_term ) {
+                    $topic_term_id = (int) $topic_term->term_id;
+                }
+            }
         }
 
-        $args = [
-	'post_type'        => $post_types,
-	'post__not_in'     => [ $post->ID ],
-	'posts_per_page'   => $count,
-	'tax_query'        => $tax_query,
-	'orderby'          => $orderby,
-	'order'            => 'DESC',
-	'suppress_filters' => false,
-	'no_found_rows'    => true,
-	];
-	
-	if ( $lang && function_exists( 'pll_current_language' ) ) {
-	$args['lang'] = $lang;
-	}
-	
-	$q = new \WP_Query( $args );
-	
-        if ( ! $q->have_posts() ) {
-        // No taxonomy matches; fall back to a relevance search using the
-        // current title and excerpt to avoid showing an empty block.
+        if ( $topic_term_id ) {
+            $tax_query[] = [
+                'taxonomy' => 'topic',
+                'field'    => 'term_id',
+                'terms'    => [ $topic_term_id ],
+            ];
+        } elseif ( $taxonomy ) {
+            $terms = wp_get_object_terms( $post->ID, $taxonomy, [ 'fields' => 'ids' ] );
+            if ( ! is_wp_error( $terms ) && ! empty( $terms ) ) {
+                $tax_query[] = [
+                    'taxonomy' => $taxonomy,
+                    'field'    => 'term_id',
+                    'terms'    => $terms,
+                ];
+            }
+        }
 
-        $q = new \WP_Query( $args );
+        foreach ( [ 'technique', 'format' ] as $tax_slug ) {
+            if ( empty( $a[ $tax_slug ] ) ) {
+                continue;
+            }
+            $term_slug = sanitize_title( $a[ $tax_slug ] );
+            $term      = $term_slug ? get_term_by( 'slug', $term_slug, $tax_slug ) : false;
+            if ( $term ) {
+                $tax_query[] = [
+                    'taxonomy' => $tax_slug,
+                    'field'    => 'term_id',
+                    'terms'    => [ (int) $term->term_id ],
+                ];
+            }
+        }
 
-        if ( ! $q->have_posts() ) {
-        // Fallback: use the current post title/excerpt as a relevance needle
-        // instead of re-querying the original request variables, keeping the
-        // search deterministic and avoiding user-controlled input here.
+        if ( count( $tax_query ) > 1 ) {
+            $tax_query['relation'] = 'AND';
+        }
+
+        $base_args = [
+            'post_type'        => $post_types,
+            'post__not_in'     => [ $post->ID ],
+            'posts_per_page'   => $count,
+            'orderby'          => $orderby,
+            'order'            => 'DESC',
+            'suppress_filters' => false,
+            'no_found_rows'    => true,
+        ];
+
+        if ( ! empty( $tax_query ) ) {
+            $base_args['tax_query'] = $tax_query;
+        }
+
+        if ( $lang && function_exists( 'pll_current_language' ) ) {
+            $base_args['lang'] = $lang;
+        }
+
+        $candidates = [ $base_args ];
+
+        // Deterministic fallback: search by the current title/excerpt to avoid relying on
+        // user-supplied query vars or showing an empty block when taxonomy matches fail.
         $needle = sanitize_text_field( wp_strip_all_tags( $post->post_title . ' ' . get_the_excerpt( $post ) ) );
-        $args   = [
-        'post_type'        => $post_types,
-        'post__not_in'     => [ $post->ID ],
-        'posts_per_page'   => $count,
-	's'                => $needle,
-	'orderby'          => 'relevance',
-	'suppress_filters' => false,
-	'no_found_rows'    => true,
-	];
-	if ( $lang && function_exists( 'pll_current_language' ) ) {
-	$args['lang'] = $lang;
-	}
-	$q = new \WP_Query( $args );
-	}
-	
-	ob_start();
-	if ( $q->have_posts() ) {
-	echo '<div class="em-related-grid">';
-	while ( $q->have_posts() ) {
-	$q->the_post();
-	echo '<article class="is-style-em-card" style="padding:12px">';
-	echo '<h4><a href="' . esc_url( get_permalink() ) . '">' . esc_html( get_the_title() ) . '</a></h4>';
-	echo '<p>' . esc_html( wp_trim_words( get_the_excerpt(), 22, '…' ) ) . '</p>';
-	echo '</article>';
-	}
-	echo '</div>';
-	wp_reset_postdata();
-	}
+        if ( '' !== $needle ) {
+            $search_args = $base_args;
+            unset( $search_args['tax_query'] );
+            $search_args['s']       = $needle;
+            $search_args['orderby'] = 'relevance';
+            $candidates[]           = $search_args;
+        }
+
+        $query = null;
+        foreach ( $candidates as $args ) {
+            $query = new \WP_Query( $args );
+            if ( $query->have_posts() ) {
+                break;
+            }
+        }
+
+        if ( ! $query || ! $query->have_posts() ) {
+            return '';
+        }
+
+        ob_start();
+        echo '<div class="em-related-grid">';
+        while ( $query->have_posts() ) {
+            $query->the_post();
+            echo '<article class="is-style-em-card" style="padding:12px">';
+            echo '<h4><a href="' . esc_url( get_permalink() ) . '">' . esc_html( get_the_title() ) . '</a></h4>';
+            echo '<p>' . esc_html( wp_trim_words( get_the_excerpt(), 22, '…' ) ) . '</p>';
+            echo '</article>';
+        }
+        echo '</div>';
+        wp_reset_postdata();
+
         return ob_get_clean();
     }
 
@@ -629,83 +627,85 @@ public static function gad7() : string {
 	 *
 	 * @return string HTML markup for the assessment result.
 	 */
-	public static function assessment_result() : string {
-        $type      = isset( $_GET['type'] ) ? sanitize_key( wp_unslash( $_GET['type'] ) ) : '';
-        $score_raw = isset( $_GET['score'] ) ? wp_unslash( $_GET['score'] ) : null;
-        $score     = filter_var( $score_raw, FILTER_VALIDATE_INT );
-        $score     = ( false === $score || null === $score ) ? -1 : absint( $score );
-        $sig       = isset( $_GET['sig'] ) ? sanitize_text_field( wp_unslash( $_GET['sig'] ) ) : '';
-	$valid_type = [ 'phq9', 'gad7' ];
-	
-	if ( $type && ! in_array( $type, $valid_type, true ) ) {
-	$type = '';
-	}
-	
-        // اعتبارسنجی امضا
-        // The HMAC is derived from the auth salt so tampered URLs cannot display
-        // spoofed scores even if shared publicly.
-        $secret = wp_salt( 'auth' );
-        $calc   = hash_hmac( 'sha256', $type . '|' . $score, $secret );
-	// اعتبارسنجی امضا
-        $secret = wp_salt( 'auth' );
-        $calc   = hash_hmac( 'sha256', $type . '|' . $score, $secret );
-        // The signed URL prevents tampering with the score/type when users
-        // share links. If the HMAC fails, present a generic error instead of
-        // exposing which part was invalid to avoid leaking verification rules.
-        if ( ! hash_equals( $calc, $sig ) || $score < 0 ) {
-        return '<div class="em-phq9 is-style-em-card"><p>' . esc_html__( 'Invalid or missing result.', 'emindy-core' ) . '</p></div>';
+        public static function assessment_result() : string {
+            $type_raw  = isset( $_GET['type'] ) ? wp_unslash( $_GET['type'] ) : '';
+            $score_raw = isset( $_GET['score'] ) ? wp_unslash( $_GET['score'] ) : null;
+            $sig_raw   = isset( $_GET['sig'] ) ? wp_unslash( $_GET['sig'] ) : '';
+
+            $type       = sanitize_key( $type_raw );
+            $score_val  = filter_var( $score_raw, FILTER_VALIDATE_INT );
+            $score      = ( false === $score_val || null === $score_val ) ? -1 : absint( $score_val );
+            $sig        = is_string( $sig_raw ) ? trim( $sig_raw ) : '';
+            $valid_type = [ 'phq9' => 27, 'gad7' => 21 ];
+
+            if ( '' === $type || ! isset( $valid_type[ $type ] ) ) {
+                $type = '';
+            }
+
+            // Ensure the signature looks like a SHA-256 hex digest before comparing.
+            if ( ! preg_match( '/^[a-f0-9]{64}$/i', $sig ) ) {
+                $sig = '';
+            }
+
+            $max_score = $type ? $valid_type[ $type ] : 0;
+
+            // The signed URL prevents tampering with the score/type when users share links.
+            $secret = wp_salt( 'auth' );
+            $calc   = $type ? hash_hmac( 'sha256', $type . '|' . $score, $secret ) : '';
+
+            if ( ! $type || $score < 0 || $score > $max_score || ! $sig || ! hash_equals( $calc, $sig ) ) {
+                return '<div class="em-phq9 is-style-em-card"><p>' . esc_html__( 'Invalid or missing result.', 'emindy-core' ) . '</p></div>';
+            }
+
+            $title = ( 'phq9' === $type ) ? __( 'PHQ-9 Result', 'emindy-core' ) : __( 'GAD-7 Result', 'emindy-core' );
+
+            // Map the numeric score to a severity band.  Use translation functions on
+            // the band names so they can be localised.  See
+            // https://developer.wordpress.org/plugins/internationalization/how-to-internationalize-your-plugin/【870389742309372†L0-L10】
+            $band = '';
+            if ( 'phq9' === $type ) {
+                if ( $score <= 4 ) {
+                    $band = __( 'Minimal', 'emindy-core' );
+                } elseif ( $score <= 9 ) {
+                    $band = __( 'Mild', 'emindy-core' );
+                } elseif ( $score <= 14 ) {
+                    $band = __( 'Moderate', 'emindy-core' );
+                } elseif ( $score <= 19 ) {
+                    $band = __( 'Moderately severe', 'emindy-core' );
+                } else {
+                    $band = __( 'Severe', 'emindy-core' );
+                }
+            } elseif ( 'gad7' === $type ) {
+                if ( $score <= 4 ) {
+                    $band = __( 'Minimal', 'emindy-core' );
+                } elseif ( $score <= 9 ) {
+                    $band = __( 'Mild', 'emindy-core' );
+                } elseif ( $score <= 14 ) {
+                    $band = __( 'Moderate', 'emindy-core' );
+                } else {
+                    $band = __( 'Severe', 'emindy-core' );
+                }
+            }
+
+            ob_start(); ?>
+                <div class="em-phq9 is-style-em-card">
+                        <h2><?php echo esc_html( $title ); ?></h2>
+                <p><?php
+                    /*
+                     * Wrap the score line in a translation call so that the entire
+                     * sentence can be localised.  We use sprintf on the result of
+                     * __() rather than on a literal string to allow translators to
+                     * rearrange the placeholders as needed.
+                     */
+                    $score_line = sprintf( __( 'Score: %d / %d — %s', 'emindy-core' ), $score, $max_score, $band );
+                    echo esc_html( $score_line );
+                ?></p>
+                        <p><?php echo esc_html__( 'This check is educational, not a diagnosis. If you feel unsafe or in crisis, please visit the Emergency page.', 'emindy-core' ); ?></p>
+                        <p><a href="<?php echo esc_url( home_url( '/assessments/' ) ); ?>">&larr; <?php echo esc_html__( 'Back to assessments', 'emindy-core' ); ?></a></p>
+                </div>
+                <?php
+                return ob_get_clean();
         }
-	
-	$title = ( 'phq9' === $type ) ? __( 'PHQ-9 Result', 'emindy-core' ) : ( ( 'gad7' === $type ) ? __( 'GAD-7 Result', 'emindy-core' ) : __( 'Assessment Result', 'emindy-core' ) );
-	$max   = ( 'phq9' === $type ) ? 27 : ( ( 'gad7' === $type ) ? 21 : 0 );
-	
-	    // Map the numeric score to a severity band.  Use translation functions on
-	    // the band names so they can be localised.  See
-	    // https://developer.wordpress.org/plugins/internationalization/how-to-internationalize-your-plugin/【870389742309372†L0-L10】
-	    $band = '';
-	    if ( $type === 'phq9' ) {
-	        if ( $score <= 4 ) {
-	            $band = __( 'Minimal', 'emindy-core' );
-	        } elseif ( $score <= 9 ) {
-	            $band = __( 'Mild', 'emindy-core' );
-	        } elseif ( $score <= 14 ) {
-	            $band = __( 'Moderate', 'emindy-core' );
-	        } elseif ( $score <= 19 ) {
-	            $band = __( 'Moderately severe', 'emindy-core' );
-	        } else {
-	            $band = __( 'Severe', 'emindy-core' );
-	        }
-	    } elseif ( $type === 'gad7' ) {
-	        if ( $score <= 4 ) {
-	            $band = __( 'Minimal', 'emindy-core' );
-	        } elseif ( $score <= 9 ) {
-	            $band = __( 'Mild', 'emindy-core' );
-	        } elseif ( $score <= 14 ) {
-	            $band = __( 'Moderate', 'emindy-core' );
-	        } else {
-	            $band = __( 'Severe', 'emindy-core' );
-	        }
-	    }
-	
-		ob_start(); ?>
-		<div class="em-phq9 is-style-em-card">
-			<h2><?php echo esc_html($title); ?></h2>
-	        <p><?php
-	            /*
-	             * Wrap the score line in a translation call so that the entire
-	             * sentence can be localised.  We use sprintf on the result of
-	             * __() rather than on a literal string to allow translators to
-	             * rearrange the placeholders as needed.
-	             */
-	            $score_line = sprintf( __( 'Score: %d / %d — %s', 'emindy-core' ), $score, $max, $band );
-	            echo esc_html( $score_line );
-	        ?></p>
-			<p><?php echo esc_html__('This check is educational, not a diagnosis. If you feel unsafe or in crisis, please visit the Emergency page.','emindy-core'); ?></p>
-			<p><a href="<?php echo esc_url( home_url('/assessments/') ); ?>">&larr; <?php echo esc_html__('Back to assessments','emindy-core'); ?></a></p>
-		</div>
-		<?php
-		return ob_get_clean();
-	}
 
 	/**
 	 * @deprecated Not used by the emindy theme as of 2025-12; retained for legacy content and future transcript refactors.
