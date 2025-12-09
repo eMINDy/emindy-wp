@@ -5,6 +5,10 @@
  * Description: Hub page layout for exercises – includes search, topic filters, and recent exercises grid.
  * Categories: emindy
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
 ?>
 
 <!--
@@ -31,10 +35,10 @@ Colours rely on CSS variables so they adapt to dark mode.
   <!-- wp:group {"className":"is-style-em-card","layout":{"type":"constrained"},"style":{"spacing":{"padding":{"top":"0.75rem","bottom":"0.75rem","left":"0.75rem","right":"0.75rem"},"margin":{"bottom":"1rem"}}}} -->
   <div class="wp-block-group is-style-em-card" style="padding:.75rem;margin-bottom:1rem">
     <!-- wp:html -->
-    <form role="search" method="get" action="/" class="em-exercise-search" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:.25rem 0 .75rem">
-      <label for="emexercise-hub-s" class="sr-only">Search exercises</label>
+    <form role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>" class="em-exercise-search" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:.25rem 0 .75rem">
+      <label for="emexercise-hub-s" class="sr-only"><?php echo esc_html__( 'Search exercises', 'emindy' ); ?></label>
       <input id="emexercise-hub-s" type="search" name="s" placeholder="<?php echo esc_attr__( 'Search exercises…', 'emindy' ); ?>" style="flex:1;min-width:220px;padding:.5rem .75rem;border-radius:.75rem;border:1px solid var(--em-border);background:var(--em-card);color:var(--em-text)">
-      <input type="hidden" name="post_type" value="em_exercise">
+      <input type="hidden" name="post_type" value="<?php echo esc_attr( 'em_exercise' ); ?>">
       <button type="submit" style="padding:.55rem .9rem;border-radius:.75rem;border:0;background:var(--em-gold);color:var(--em-bg);font-weight:600">
         <?php echo esc_html__( 'Search', 'emindy' ); ?>
       </button>
