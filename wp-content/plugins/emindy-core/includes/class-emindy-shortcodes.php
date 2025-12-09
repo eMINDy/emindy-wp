@@ -414,16 +414,23 @@ class Shortcodes {
      *
      * @param array $atts Shortcode attributes (legacy: limit).
      * @return string HTML from the unified related renderer.
+     * @deprecated 1.4.0 Use [em_related] instead.
      */
     public static function related_posts_alias( $atts = [] ) : string {
-        if ( function_exists( '_doing_it_wrong' ) ) {
-            _doing_it_wrong(
-                '[em_related_posts]',
-                __( 'Use [em_related] instead. The legacy shortcode now forwards to the new related content grid.', 'emindy-core' ),
-                '1.4.0'
-            );
+        if ( function_exists( '_deprecated_function' ) ) {
+            _deprecated_function( '[em_related_posts]', '1.4.0', '[em_related]' );
         }
 
+        return self::forward_related_posts_alias( $atts );
+    }
+
+    /**
+     * Map legacy related attributes and call the canonical renderer.
+     *
+     * @param array $atts Shortcode attributes (legacy: limit).
+     * @return string HTML from the unified related renderer.
+     */
+    protected static function forward_related_posts_alias( $atts = [] ) : string {
         $atts = is_array( $atts ) ? $atts : [];
         if ( isset( $atts['limit'] ) && ! isset( $atts['count'] ) ) {
             $atts['count'] = $atts['limit'];
@@ -707,41 +714,71 @@ public static function gad7() : string {
                 return ob_get_clean();
         }
 
-	/**
-	 * @deprecated Not used by the emindy theme as of 2025-12; retained for legacy content and future transcript refactors.
-	 */
-	public static function transcript() : string {
-		$post = get_post(); if (! $post) return "";
-		$txt = wpautop( wp_kses_post( $post->post_content ) );
-		ob_start(); ?>
-	<details class="em-transcript">
-		<summary><?php echo esc_html__('Transcript','emindy-core'); ?></summary>
-		<div class="em-transcript__body"><?php echo $txt; ?></div>
-		<button type="button" class="em-transcript__copy"><?php echo esc_html__('Copy transcript','emindy-core'); ?></button>
-	</details>
-	<script>
-	(function(){
-	  document.currentScript.previousElementSibling?.nextElementSibling?.addEventListener?.('click', async function(e){
-	    if(!e.target.matches('.em-transcript__copy')) return;
-	    const body = e.target.previousElementSibling;
-	    try{ await navigator.clipboard.writeText(body.innerText.trim()); e.target.textContent='Copied ✔'; setTimeout(()=>e.target.textContent='Copy transcript',1200);}catch(err){}
-	  });
-	})();
-	</script>
-	<?php
-	return ob_get_clean();
-}
+    /**
+     * Legacy transcript shortcode preserved for historic content.
+     *
+     * @deprecated 1.4.0 Use theme templates or blocks for transcripts instead of [em_transcript].
+     */
+    public static function transcript() : string {
+        if ( function_exists( '_deprecated_function' ) ) {
+            _deprecated_function( __METHOD__, '1.4.0' );
+        }
 
-/**
- * Render the archive filter form for video listings.
- *
- * Provides a search box and topic dropdown, respecting any existing query
- * parameters from the request while sanitising the selected topic ID.
- *
- * @deprecated Not used by the emindy theme as of 2025-12; retained for legacy/experimental archive filters.
- * @return string HTML markup for the filter form.
- */
-	public static function video_filters() : string {
+        return self::render_transcript();
+    }
+
+    /**
+     * Render the transcript disclosure and copy helper.
+     */
+    protected static function render_transcript() : string {
+        $post = get_post();
+        if ( ! $post ) {
+            return '';
+        }
+
+        $txt = wpautop( wp_kses_post( $post->post_content ) );
+        ob_start(); ?>
+        <details class="em-transcript">
+                <summary><?php echo esc_html__('Transcript','emindy-core'); ?></summary>
+                <div class="em-transcript__body"><?php echo $txt; ?></div>
+                <button type="button" class="em-transcript__copy"><?php echo esc_html__('Copy transcript','emindy-core'); ?></button>
+        </details>
+        <script>
+        (function(){
+          document.currentScript.previousElementSibling?.nextElementSibling?.addEventListener?.('click', async function(e){
+            if(!e.target.matches('.em-transcript__copy')) return;
+            const body = e.target.previousElementSibling;
+            try{ await navigator.clipboard.writeText(body.innerText.trim()); e.target.textContent='Copied ✔'; setTimeout(()=>e.target.textContent='Copy transcript',1200);}catch(err){}
+          });
+        })();
+        </script>
+        <?php
+        return ob_get_clean();
+    }
+
+    /**
+     * Render the archive filter form for video listings.
+     *
+     * Provides a search box and topic dropdown, respecting any existing query
+     * parameters from the request while sanitising the selected topic ID.
+     *
+     * @deprecated 1.4.0 Use template-level archive filters instead of [em_video_filters].
+     * @return string HTML markup for the filter form.
+     */
+    public static function video_filters() : string {
+        if ( function_exists( '_deprecated_function' ) ) {
+            _deprecated_function( __METHOD__, '1.4.0' );
+        }
+
+        return self::render_video_filters();
+    }
+
+    /**
+     * Render the archive filter form for video listings.
+     *
+     * @return string HTML markup for the filter form.
+     */
+    protected static function render_video_filters() : string {
         $action       = get_post_type_archive_link( 'em_video' );
         $nonce_action = 'em_video_filters';
         $nonce_name   = 'em_video_filters_nonce';
@@ -779,14 +816,27 @@ public static function gad7() : string {
                                 <a class="em-filter-reset" href="<?php echo esc_url( $action ); ?>"><?php echo esc_html__('Reset','emindy-core'); ?></a>
                         <?php endif; ?>
                 </form>
-		<?php
-		return ob_get_clean();
-	}
+                <?php
+                return ob_get_clean();
+        }
 
         /**
-         * @deprecated Not used by the emindy theme as of 2025-12; retained for legacy embeds.
+         * Legacy YouTube embed helper preserved for historic posts.
+         *
+         * @deprecated 1.4.0 Use core YouTube embeds or dedicated blocks instead of [em_video_player].
          */
         public static function video_player() : string {
+                if ( function_exists( '_deprecated_function' ) ) {
+                        _deprecated_function( __METHOD__, '1.4.0' );
+                }
+
+                return self::render_video_player();
+        }
+
+        /**
+         * Render a YouTube video player.
+         */
+        protected static function render_video_player() : string {
                 $post = get_post(); if (! $post) return '';
                 $id = sanitize_text_field( trim( (string) get_post_meta($post->ID,'em_youtube_id',true) ) );
                 if ( ! $id ) {
