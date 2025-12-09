@@ -602,11 +602,11 @@ public static function gad7() : string {
 	 * @return string HTML markup for the assessment result.
 	 */
 	public static function assessment_result() : string {
-	$type       = isset( $_GET['type'] ) ? sanitize_key( wp_unslash( $_GET['type'] ) ) : '';
-	$score_raw  = isset( $_GET['score'] ) ? wp_unslash( $_GET['score'] ) : null;
-	$score      = filter_var( $score_raw, FILTER_VALIDATE_INT );
-	$score      = ( false === $score || null === $score ) ? -1 : (int) $score;
-	$sig        = isset( $_GET['sig'] ) ? sanitize_text_field( wp_unslash( $_GET['sig'] ) ) : '';
+        $type      = isset( $_GET['type'] ) ? sanitize_key( wp_unslash( $_GET['type'] ) ) : '';
+        $score_raw = isset( $_GET['score'] ) ? wp_unslash( $_GET['score'] ) : null;
+        $score     = filter_var( $score_raw, FILTER_VALIDATE_INT );
+        $score     = ( false === $score || null === $score ) ? -1 : absint( $score );
+        $sig       = isset( $_GET['sig'] ) ? sanitize_text_field( wp_unslash( $_GET['sig'] ) ) : '';
 	$valid_type = [ 'phq9', 'gad7' ];
 	
 	if ( $type && ! in_array( $type, $valid_type, true ) ) {
@@ -616,9 +616,9 @@ public static function gad7() : string {
 	// اعتبارسنجی امضا
 	$secret = wp_salt( 'auth' );
 	$calc   = hash_hmac( 'sha256', $type . '|' . $score, $secret );
-	if ( ! hash_equals( $calc, $sig ) || $score < 0 ) {
-	return '<div class="em-phq9 is-style-em-card"><p>' . esc_html__( 'Invalid or missing result.', 'emindy-core' ) . '</p></div>';
-	}
+        if ( ! hash_equals( $calc, $sig ) || $score < 0 ) {
+        return '<div class="em-phq9 is-style-em-card"><p>' . esc_html__( 'Invalid or missing result.', 'emindy-core' ) . '</p></div>';
+        }
 	
 	$title = ( 'phq9' === $type ) ? __( 'PHQ-9 Result', 'emindy-core' ) : ( ( 'gad7' === $type ) ? __( 'GAD-7 Result', 'emindy-core' ) : __( 'Assessment Result', 'emindy-core' ) );
 	$max   = ( 'phq9' === $type ) ? 27 : ( ( 'gad7' === $type ) ? 21 : 0 );
@@ -706,18 +706,24 @@ public static function gad7() : string {
  * @return string HTML markup for the filter form.
  */
 	public static function video_filters() : string {
-	$action   = get_post_type_archive_link( 'em_video' );
-	$selected = isset( $_GET['topic'] ) ? absint( wp_unslash( $_GET['topic'] ) ) : 0;
-		ob_start(); ?>
-		<form class="em-filters" method="get" action="<?php echo esc_url( $action ); ?>" aria-label="<?php echo esc_attr__('Filter videos','emindy-core'); ?>">
-			<label>
-				<span class="screen-reader-text"><?php echo esc_html__('Search','emindy-core'); ?></span>
-				<input type="search" name="s" value="<?php echo esc_attr( get_search_query() ); ?>" placeholder="<?php echo esc_attr__('Search videos…','emindy-core'); ?>">
-			</label>
-			<label>
-				<span class="screen-reader-text"><?php echo esc_html__('Topic','emindy-core'); ?></span>
-				<?php
-	            // Use the unified `topic` taxonomy in the filters.  This dropdown
+        $action       = get_post_type_archive_link( 'em_video' );
+        $nonce_action = 'em_video_filters';
+        $nonce_name   = 'em_video_filters_nonce';
+
+        $nonce_value = isset( $_GET[ $nonce_name ] ) ? sanitize_text_field( wp_unslash( $_GET[ $nonce_name ] ) ) : '';
+        $has_nonce   = $nonce_value && wp_verify_nonce( $nonce_value, $nonce_action );
+
+        $selected = ( $has_nonce && isset( $_GET['topic'] ) ) ? absint( wp_unslash( $_GET['topic'] ) ) : 0;
+                ob_start(); ?>
+                <form class="em-filters" method="get" action="<?php echo esc_url( $action ); ?>" aria-label="<?php echo esc_attr__('Filter videos','emindy-core'); ?>">
+                        <label>
+                                <span class="screen-reader-text"><?php echo esc_html__('Search','emindy-core'); ?></span>
+                                <input type="search" name="s" value="<?php echo esc_attr( get_search_query() ); ?>" placeholder="<?php echo esc_attr__('Search videos…','emindy-core'); ?>">
+                        </label>
+                        <label>
+                                <span class="screen-reader-text"><?php echo esc_html__('Topic','emindy-core'); ?></span>
+                                <?php
+                    // Use the unified `topic` taxonomy in the filters.  This dropdown
 	            // displays all available topic terms for filtering the video
 	            // archive.  The `taxonomy` argument should match the slug used in
 	            // register_taxonomies().
@@ -730,12 +736,13 @@ public static function gad7() : string {
 	                'class'           => 'em-filter-select',
 	            ]);
 				?>
-			</label>
-			<button type="submit" class="em-filter-submit"><?php echo esc_html__('Apply','emindy-core'); ?></button>
-			<?php if ( ! empty($_GET) ) : ?>
-				<a class="em-filter-reset" href="<?php echo esc_url( $action ); ?>"><?php echo esc_html__('Reset','emindy-core'); ?></a>
-			<?php endif; ?>
-		</form>
+                        </label>
+                        <?php wp_nonce_field( $nonce_action, $nonce_name ); ?>
+                        <button type="submit" class="em-filter-submit"><?php echo esc_html__('Apply','emindy-core'); ?></button>
+                        <?php if ( ! empty($_GET) ) : ?>
+                                <a class="em-filter-reset" href="<?php echo esc_url( $action ); ?>"><?php echo esc_html__('Reset','emindy-core'); ?></a>
+                        <?php endif; ?>
+                </form>
 		<?php
 		return ob_get_clean();
 	}
