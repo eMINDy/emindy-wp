@@ -17,6 +17,9 @@
     src:
         local("Inter var"),
         local("InterVariable"),
+        local("InterVariable-Roman"),
+        local("Inter Regular"),
+        local("Inter-Regular"),
         local("Inter"),
         url("inter-var-latin.woff2") format("woff2-variations"),
         url("inter-var-latin.woff2") format("woff2");
@@ -74,6 +77,8 @@
         local("Vazirmatn"),
         local("Vazirmatn Variable"),
         local("Vazirmatn[wght]"),
+        local("Vazirmatn-Regular"),
+        local("Vazirmatn Regular"),
         url("vazirmatn-var-arabic.woff2") format("woff2-variations"),
         url("vazirmatn-var-arabic.woff2") format("woff2");
     unicode-range:
