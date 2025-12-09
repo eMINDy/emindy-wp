@@ -417,8 +417,14 @@ class Shortcodes {
         // something is misconfigured.  Use esc_html__ to allow translation.
         return '<div class="em-newsletter">'. esc_html__( 'Newsletter form unavailable. Please ensure the eMINDy Core plugin is active.', 'emindy-core' ) .'</div>';
     }
+    /**
+     * Render the Polylang language switcher as a dropdown or chip list.
+     *
+     * @param array $atts Shortcode attributes controlling the display.
+     * @return string HTML markup or empty string when Polylang is unavailable.
+     */
     public static function lang_switcher( $atts = [] ) : string {
-	if ( ! function_exists( 'pll_the_languages' ) ) return '';
+        if ( ! function_exists( 'pll_the_languages' ) ) return '';
 
 	$defaults = [
 		'show_flags'   => '1',
@@ -709,12 +715,12 @@ public static function gad7() : string {
          */
         public static function video_player() : string {
                 $post = get_post(); if (! $post) return '';
-                $id = trim( (string) get_post_meta($post->ID,'em_youtube_id',true) );
+                $id = sanitize_text_field( trim( (string) get_post_meta($post->ID,'em_youtube_id',true) ) );
                 if ( ! $id ) {
                         // کشف آیدی از اولین لینک یوتیوب در محتوا
                         $c = $post->post_content;
                         if ( preg_match('~(?:youtu\.be/|youtube\.com/(?:watch\?v=|embed/))([A-Za-z0-9_-]{6,})~', $c, $m) ) {
-                                $id = $m[1];
+                                $id = sanitize_text_field( $m[1] );
                         }
                 }
                 if ( ! $id ) return '<div class="is-style-em-card"><p>'.esc_html__('No video ID found.','emindy-core').'</p></div>';
@@ -778,15 +784,15 @@ add_shortcode('em_search_bar', function(){
 // 2.3) Quick filters
 add_shortcode('em_quick_filters', function(){
   // Sanitize the search query to prevent injection and strip tags.
-  $s = isset($_GET['s']) ? sanitize_text_field( (string) wp_unslash($_GET['s']) ) : '';
-  $sq = rawurlencode($s);
+  $s    = isset($_GET['s']) ? sanitize_text_field( (string) wp_unslash($_GET['s']) ) : '';
   $home = home_url('/');
+
   $links = [
-    $home.'?s='.$sq                                       => __( 'All', 'emindy-core' ),
-    $home.'?s='.$sq.'&post_type=em_video'                 => __( 'Videos', 'emindy-core' ),
-    $home.'?s='.$sq.'&post_type=em_exercise'              => __( 'Exercises', 'emindy-core' ),
-    $home.'?s='.$sq.'&post_type=em_article'               => __( 'Articles', 'emindy-core' ),
-    $home.'?s='.$sq.'&post_type=post'                     => __( 'Blog', 'emindy-core' ),
+    add_query_arg( 's', $s, $home )                                                 => __( 'All', 'emindy-core' ),
+    add_query_arg( [ 's' => $s, 'post_type' => 'em_video' ], $home )                => __( 'Videos', 'emindy-core' ),
+    add_query_arg( [ 's' => $s, 'post_type' => 'em_exercise' ], $home )             => __( 'Exercises', 'emindy-core' ),
+    add_query_arg( [ 's' => $s, 'post_type' => 'em_article' ], $home )              => __( 'Articles', 'emindy-core' ),
+    add_query_arg( [ 's' => $s, 'post_type' => 'post' ], $home )                    => __( 'Blog', 'emindy-core' ),
   ];
   ob_start(); ?>
   <nav class="em-quick-filters" aria-label="<?php echo esc_attr__( 'Quick filters', 'emindy-core' ); ?>" style="display:flex;gap:.5rem;flex-wrap:wrap">
@@ -965,9 +971,8 @@ add_shortcode('em_sitemap_mini', function(){
 // 2.5) Report broken link (simple form -> email)
 add_shortcode('em_report_link', function($atts){
   $a = shortcode_atts(['id'=>'report'], $atts, 'em_report_link');
-  $host = isset( $_SERVER['HTTP_HOST'] ) ? wp_unslash( $_SERVER['HTTP_HOST'] ) : '';
   $uri  = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
-  $curr = esc_url_raw( ( is_ssl() ? 'https://' : 'http://' ) . $host . $uri );
+  $curr = esc_url_raw( home_url( $uri ) );
   $mailto = sanitize_email( antispambot( get_option('admin_email') ) );
   $subject = rawurlencode( __( 'Broken link report on eMINDy', 'emindy-core' ) );
   $body_template = __( "Broken URL:\n%s\n\nUser note:", 'emindy-core' );
@@ -1016,14 +1021,17 @@ add_shortcode('em_toc', function(){
 
 add_shortcode('em_share', function(){
   $permalink = get_permalink();
-  $url       = rawurlencode( $permalink );
-  $title     = rawurlencode( get_the_title() );
+  if ( ! $permalink ) {
+    return '';
+  }
+
+  $title = get_the_title() ?: '';
 
   $links = [
-    'twitter'  => 'https://twitter.com/intent/tweet?' . http_build_query( [ 'url' => $url, 'text' => $title ] ),
-    'facebook' => 'https://www.facebook.com/sharer/sharer.php?u=' . $url,
-    'linkedin' => 'https://www.linkedin.com/shareArticle?mini=true&url=' . $url . '&title=' . $title,
-    'whatsapp' => 'https://api.whatsapp.com/send?text=' . $title . '%20' . $url,
+    'twitter'  => 'https://twitter.com/intent/tweet?' . http_build_query( [ 'url' => $permalink, 'text' => $title ] ),
+    'facebook' => 'https://www.facebook.com/sharer/sharer.php?' . http_build_query( [ 'u' => $permalink ] ),
+    'linkedin' => 'https://www.linkedin.com/shareArticle?' . http_build_query( [ 'mini' => 'true', 'url' => $permalink, 'title' => $title ] ),
+    'whatsapp' => 'https://api.whatsapp.com/send?' . http_build_query( [ 'text' => trim( $title . ' ' . $permalink ) ] ),
   ];
 
   $out = '<div class="em-share" style="display:flex;flex-wrap:wrap;gap:.5rem">'
