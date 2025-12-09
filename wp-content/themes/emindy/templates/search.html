@@ -1,14 +1,14 @@
 <!-- wp:template-part {"slug":"header","tagName":"header","align":"full"} /-->
 
 <!-- wp:group {"metadata":{"name":"Search Results"},"tagName":"main","align":"full","style":{"spacing":{"padding":{"top":"1.25rem","bottom":"2.5rem"}}},"layout":{"type":"constrained","contentSize":"1100px"}} -->
-<main id="main-content" class="wp-block-group alignfull" style="padding-top:1.25rem;padding-bottom:2.5rem">
+<main id="main-content" class="wp-block-group alignfull" aria-labelledby="search-results-heading" style="padding-top:1.25rem;padding-bottom:2.5rem">
 
   <!-- Header -->
   <!-- wp:group {"layout":{"type":"constrained","contentSize":"900px"},"style":{"spacing":{"margin":{"bottom":"1rem"}}}} -->
   <div class="wp-block-group" style="margin-bottom:1rem">
     <!-- wp:shortcode -->[rank_math_breadcrumb]<!-- /wp:shortcode -->
     <!-- wp:heading {"level":1,"style":{"typography":{"fontSize":"clamp(1.9rem,3vw,2.5rem)","lineHeight":"1.15"},"spacing":{"margin":{"top":"0.25rem","bottom":"0.25rem"}}}} -->
-    <h1>Search results</h1>
+    <h1 id="search-results-heading">Search results</h1>
     <!-- /wp:heading -->
     <!-- wp:paragraph -->
     <p>Showing results for: <strong>[em_search_query]</strong></p>
@@ -35,7 +35,7 @@
     <!-- wp:heading {"level":2} --><h2>Top matches</h2><!-- /wp:heading -->
 
     <!-- wp:query {"queryId":601,"query":{"perPage":6,"inherit":true},"displayLayout":{"type":"list"},"layout":{"type":"constrained","contentSize":"1000px"}} -->
-    <div class="wp-block-query">
+    <div class="wp-block-query" aria-live="polite">
       <!-- wp:post-template -->
       <!-- card -->
       <!-- wp:group {"style":{"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"shadow":"var(--wp--custom--brand--shadow--card)","spacing":{"margin":{"bottom":"1rem"},"padding":{"top":"0.85rem","bottom":"0.85rem","left":"0.9rem","right":"0.9rem"}}},"layout":{"type":"flex","flexWrap":"wrap","verticalAlignment":"center"}} -->
