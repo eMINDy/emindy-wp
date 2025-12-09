@@ -19,7 +19,7 @@
   <div class="wp-block-group has-white-color has-text-color has-background" style="background-color:#0e3252;border-radius:var(--wp--custom--brand--radius--xl);padding:.8rem;margin-bottom:1rem">
     <!-- wp:html -->
     <form role="search" method="get" action="/" class="em-help-search" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
-      <label for="help-s" class="sr-only">Search eMINDy</label>
+      <label for="help-s" class="screen-reader-text">Search eMINDy</label>
       <input id="help-s" type="search" name="s" placeholder="Search videos, exercises, articles, blog…" style="flex:1;min-width:260px;padding:.55rem .8rem;border-radius:.75rem;border:0">
       <input type="hidden" name="post_type[]" value="em_video">
       <input type="hidden" name="post_type[]" value="em_exercise">
@@ -92,14 +92,14 @@
   <div class="wp-block-columns" style="margin-top:1rem">
     <div class="wp-block-column">
       <h2>Popular</h2>
-      [em_popular_videos limit="4"]
-      [em_popular_exercises limit="4"]
+      <!-- wp:shortcode -->[em_popular_videos limit="4"]<!-- /wp:shortcode -->
+      <!-- wp:shortcode -->[em_popular_exercises limit="4"]<!-- /wp:shortcode -->
     </div>
     <div class="wp-block-column">
       <h2>Latest from blog</h2>
-      [em_popular_posts limit="4"]
+      <!-- wp:shortcode -->[em_popular_posts limit="4"]<!-- /wp:shortcode -->
       <h2 style="margin-top:1rem">Mini sitemap</h2>
-      [em_sitemap_mini]
+      <!-- wp:shortcode -->[em_sitemap_mini]<!-- /wp:shortcode -->
     </div>
   </div>
   <!-- /wp:columns -->
@@ -108,7 +108,7 @@
   <!-- wp:group {"style":{"spacing":{"margin":{"top":"1.5rem"},"padding":{"top":"1rem","bottom":"1rem","left":"1rem","right":"1rem"}},"color":{"background":"#0e3252"},"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"elements":{"link":{"color":{"text":"var(--wp--preset--color--white)"}}}},"textColor":"white"} -->
   <div class="wp-block-group has-white-color has-text-color has-background" style="background-color:#0e3252;border-radius:var(--wp--custom--brand--radius--xl);padding:1rem">
     <p>Found a broken link? <a href="#report">Tell us and we’ll fix it.</a></p>
-    [em_report_link id="report"]
+    <!-- wp:shortcode -->[em_report_link id="report"]<!-- /wp:shortcode -->
   </div>
   <!-- /wp:group -->
 
