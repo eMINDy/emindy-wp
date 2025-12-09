@@ -5,6 +5,9 @@
  * Description: A starter layout for articles with clear headings, content area, citations, and related links.
  * Categories: emindy
  */
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
 ?>
 
 <!--
