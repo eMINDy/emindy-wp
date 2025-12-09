@@ -18,11 +18,11 @@
 
     <!-- Search -->
     <!-- wp:html -->
-    <form role="search" method="get" action="/" class="em-archive-search" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:.25rem 0 .75rem">
+    <form role="search" method="get" action="/" class="em-archive-search" aria-label="Search em_exercise posts" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:.25rem 0 .75rem">
       <label for="emexercise-s" class="sr-only">Search exercises</label>
-      <input id="emexercise-s" type="search" name="s" placeholder="Search exercises…" style="flex:1;min-width:220px;padding:.5rem .75rem;border-radius:.75rem;border:0">
+      <input id="emexercise-s" type="search" name="s" placeholder="Search exercises…" inputmode="search" aria-label="Search exercises" style="flex:1;min-width:220px;padding:.5rem .75rem;border-radius:.75rem;border:0">
       <input type="hidden" name="post_type" value="em_exercise">
-      <button type="submit" style="padding:.55rem .9rem;border-radius:.75rem;border:0;background:#F4D483;color:#0A2A43;font-weight:600">Search</button>
+      <button type="submit" aria-label="Submit exercise search" style="padding:.55rem .9rem;border-radius:.75rem;border:0;background:#F4D483;color:#0A2A43;font-weight:600">Search</button>
     </form>
     <!-- /wp:html -->
 
@@ -48,7 +48,7 @@
         <!-- wp:group {"layout":{"type":"flex","flexWrap":"wrap"},"style":{"spacing":{"blockGap":"0.4rem"},"typography":{"fontSize":"0.9rem"}}} -->
         <div class="wp-block-group" style="font-size:.9rem">
           <!-- wp:post-date {"format":"M j, Y"} /-->
-          <!-- wp:paragraph --><p>·</p><!-- /wp:paragraph -->
+          <!-- wp:paragraph --><p aria-hidden="true">·</p><!-- /wp:paragraph -->
           <!-- wp:terms {"term":"topic"} /-->
         </div>
         <!-- /wp:group -->
@@ -66,7 +66,7 @@
 
     <!-- Pagination -->
     <!-- wp:query-pagination {"layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"margin":{"top":"0.5rem"}}}} -->
-    <div class="wp-block-query-pagination" style="margin-top:.5rem">
+    <div class="wp-block-query-pagination" style="margin-top:.5rem" aria-label="Exercise navigation">
       <!-- wp:query-pagination-previous /-->
       <!-- wp:query-pagination-numbers /-->
       <!-- wp:query-pagination-next /-->
