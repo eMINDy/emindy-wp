@@ -8,8 +8,8 @@ works even if the editor content is empty.
 
 <!-- wp:template-part {"slug":"header","tagName":"header","align":"full"} /-->
 
-<!-- wp:group {"metadata":{"name":"Assessment Result"},"tagName":"main","align":"full","style":{"spacing":{"padding":{"top":"2rem","bottom":"2.5rem"}}},"layout":{"type":"constrained","contentSize":"900px"}} -->
-<main id="main-content" class="wp-block-group alignfull" style="padding-top:2rem;padding-bottom:2.5rem">
+<!-- wp:group {"metadata":{"name":"Assessment Result"},"tagName":"main","align":"full","style":{"spacing":{"padding":{"top":"2rem","bottom":"2.5rem"}}},"layout":{"type":"constrained","contentSize":"900px"},"ariaLabel":"Assessment result content"} -->
+<main id="main-content" class="wp-block-group alignfull" style="padding-top:2rem;padding-bottom:2.5rem" role="main">
   <!-- wp:group {"className":"em-assessment-result-hero","style":{"spacing":{"blockGap":"0.75rem","margin":{"bottom":"1.5rem"}}},"layout":{"type":"constrained","contentSize":"780px"}} -->
   <div class="wp-block-group em-assessment-result-hero" style="margin-bottom:1.5rem">
     <!-- wp:post-title {"level":1,"fontSize":"x-large"} /-->
@@ -19,9 +19,7 @@ works even if the editor content is empty.
   </div>
   <!-- /wp:group -->
 
-  <!-- wp:shortcode -->
-  [em_assessment_result]
-  <!-- /wp:shortcode -->
+  <!-- wp:shortcode {"text":"[em_assessment_result]"} /-->
 
   <!-- wp:post-content {"layout":{"type":"constrained","contentSize":"780px"},"style":{"typography":{"lineHeight":"1.7"},"spacing":{"margin":{"top":"1.5rem"}}}} /-->
 </main>
