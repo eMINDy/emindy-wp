@@ -48,8 +48,8 @@
   <!-- wp:post-featured-image {"align":"wide","style":{"spacing":{"margin":{"bottom":"1.25rem"}},"border":{"radius":"var(--wp--custom--brand--radius--2xl)"},"shadow":"var(--wp--custom--brand--shadow--card)"}} /-->
 
   <!-- Optional: Table of contents (if using a TOC block/plugin) -->
-  <!-- wp:group {"className":"em-toc","style":{"spacing":{"margin":{"bottom":"1rem"},"padding":{"top":"0.75rem","bottom":"0.75rem","left":"1rem","right":"1rem"}},"border":{"radius":"var(--wp--custom--brand--radius--xl)},"color":{"background":"#0b2d49"},"elements":{"link":{"color":{"text":"var(--wp--preset--color--white)"}}}},"textColor":"white"} -->
-  <div class="wp-block-group em-toc has-white-color has-text-color has-background" style="border-radius:var(--wp--custom--brand--radius--xl);background-color:#0b2d49;padding-top:0.75rem;padding-bottom:0.75rem;padding-left:1rem;padding-right:1rem;margin-bottom:1rem">
+  <!-- wp:group {"tagName":"nav","className":"em-toc","style":{"spacing":{"margin":{"bottom":"1rem"},"padding":{"top":"0.75rem","bottom":"0.75rem","left":"1rem","right":"1rem"}},"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"color":{"background":"#0b2d49"},"elements":{"link":{"color":{"text":"var(--wp--preset--color--white)"}}}},"textColor":"white","ariaLabel":"Table of contents"} -->
+  <nav class="wp-block-group em-toc has-white-color has-text-color has-background" aria-label="Table of contents" style="border-radius:var(--wp--custom--brand--radius--xl);background-color:#0b2d49;padding-top:0.75rem;padding-bottom:0.75rem;padding-left:1rem;padding-right:1rem;margin-bottom:1rem">
     <!-- قرار دادن یک بلوک TOC افزونه یا لیست دستی هدینگ‌ها -->
     <!-- wp:paragraph --><p><strong>On this page</strong></p><!-- /wp:paragraph -->
     <!-- wp:list -->
@@ -59,7 +59,7 @@
       <li><a href="#section-3">Section 3</a></li>
     </ul>
     <!-- /wp:list -->
-  </div>
+  </nav>
   <!-- /wp:group -->
 
   <!-- Post content -->
