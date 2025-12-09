@@ -39,7 +39,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     <!-- Column 2: footer navigation -->
     <!-- wp:column {"verticalAlignment":"top","width":"33.33%"} -->
     <div class="wp-block-column" style="flex-basis:33.33%">
-      <!-- wp:navigation {"overlayMenu":"never","layout":{"type":"flex","flexWrap":"wrap","justifyContent":"center"},"style":{"spacing":{"blockGap":"0.75rem"}},"fontSize":"small","className":"em-footer-nav"} /-->
+      <!-- wp:navigation {"overlayMenu":"never","ariaLabel":"<?php echo esc_attr_x( 'Footer navigation', 'aria-label for footer navigation block', 'emindy' ); ?>","layout":{"type":"flex","flexWrap":"wrap","justifyContent":"center"},"style":{"spacing":{"blockGap":"0.75rem"}},"fontSize":"small","className":"em-footer-nav"} /-->
     </div>
     <!-- /wp:column -->
 
@@ -47,7 +47,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     <!-- wp:column {"verticalAlignment":"top","width":"33.33%"} -->
     <div class="wp-block-column" style="flex-basis:33.33%;text-align:right">
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"0.8rem"}}} -->
-      <p style="font-size:0.8rem;margin-top:0">Made with calm <span aria-hidden="true">🌿</span></p>
+      <p style="font-size:0.8rem;margin-top:0"><?php esc_html_e( 'Made with calm', 'emindy' ); ?> <span aria-hidden="true">🌿</span></p>
       <!-- /wp:paragraph -->
       <!-- Optionally include simple social links via shortcode or custom HTML; leave empty if not configured. -->
       <!-- wp:shortcode -->
