@@ -51,20 +51,20 @@ require_once EMINDY_CORE_PATH . 'includes/class-emindy-analytics.php';
 function emindy_core_activate() {
         if ( ! function_exists( 'emindy_newsletter_install_table' ) ) {
                 require_once EMINDY_CORE_PATH . 'includes/newsletter.php';
-        }
+	}
         emindy_newsletter_install_table();
 
         // Create analytics table for tracking events.
         if ( ! class_exists( '\EMINDY\Core\Analytics' ) ) {
                 require_once EMINDY_CORE_PATH . 'includes/class-emindy-analytics.php';
-        }
+	}
         \EMINDY\Core\Analytics::install_table();
 
         // Ensure custom content types are registered before flushing rewrite rules.
         if ( class_exists( '\EMINDY\Core\CPT' ) && class_exists( '\EMINDY\Core\Taxonomy' ) ) {
                 \EMINDY\Core\CPT::register_all();
                 \EMINDY\Core\Taxonomy::register_all();
-        }
+	}
 
         // Flush rewrite rules on plugin activation to ensure custom post type slugs and archives are registered properly.
         flush_rewrite_rules();
@@ -77,22 +77,23 @@ function emindy_core_activate() {
  * comment out or remove the DROP TABLE query below.
  */
 function emindy_core_uninstall() {
-        global $wpdb;
+	global $wpdb;
 
-        $tables = [
-                $wpdb->prefix . 'emindy_newsletter',
-                $wpdb->prefix . 'emindy_analytics',
-        ];
+	$tables = [
+		$wpdb->prefix . 'emindy_newsletter',
+		$wpdb->prefix . 'emindy_analytics',
+	];
 
-        foreach ( $tables as $table ) {
-                $safe_table = preg_replace( '/[^A-Za-z0-9_]/', '', $table );
+	foreach ( $tables as $table ) {
+		$safe_table = preg_replace( '/[^A-Za-z0-9_]/', '', $table );
 
-                if ( empty( $safe_table ) ) {
-                        continue;
-                }
+		if ( empty( $safe_table ) ) {
+			continue;
+		}
 
-                $wpdb->query( "DROP TABLE IF EXISTS `{$safe_table}`" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-        }
+		$table_sql = sprintf( 'DROP TABLE IF EXISTS `%s`', esc_sql( $safe_table ) );
+		$wpdb->query( $table_sql );
+	}
 }
 
 register_activation_hook( __FILE__, 'emindy_core_activate' );
@@ -116,7 +117,7 @@ function emindy_core_plugins_loaded() {
         // with the same steps/chapters/timing values.
         if ( defined( 'POLYLANG_VERSION' ) || function_exists( 'pll_the_languages' ) ) {
                 add_filter( 'pll_copy_post_metas', 'emindy_core_polylang_copy_metas' );
-        }
+	}
 }
 
 /**
@@ -204,7 +205,7 @@ function emindy_core_output_schema_fallback() {
         // Skip if the Rank Math plugin is loaded (class or helper function).
         if ( class_exists( '\RankMath\Plugin' ) || function_exists( 'rank_math' ) ) {
                 return;
-        }
+	}
 
         \EMINDY\Core\Schema::output_jsonld();
 }
@@ -213,13 +214,17 @@ function emindy_core_output_schema_fallback() {
  * Expose the current post ID to front-end scripts.
  */
 function emindy_core_enqueue_post_id() {
-        if ( ! is_singular() ) {
-                return;
-        }
+	if ( ! is_singular() ) {
+		return;
+	}
 
-        $post_id = absint( get_queried_object_id() );
+	if ( ! wp_script_is( 'emindy-assess-core', 'enqueued' ) && ! wp_script_is( 'emindy-assess-core', 'registered' ) ) {
+		return;
+	}
 
-        wp_add_inline_script( 'emindy-assess-core', 'window.em_post_id=' . $post_id . ';', 'before' );
+	$post_id = absint( get_queried_object_id() );
+
+	wp_add_inline_script( 'emindy-assess-core', 'window.em_post_id=' . wp_json_encode( $post_id ) . ';', 'before' );
 }
 
 /**
@@ -228,7 +233,7 @@ function emindy_core_enqueue_post_id() {
 function emindy_core_template_redirect_fallbacks() {
         if ( ! is_404() ) {
                 return;
-        }
+	}
 
         $request_uri = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( (string) $_SERVER['REQUEST_URI'] ) : '';
         $req         = wp_parse_url( $request_uri, PHP_URL_PATH );
@@ -238,14 +243,14 @@ function emindy_core_template_redirect_fallbacks() {
         if ( 'library' === $req && ! get_page_by_path( 'library' ) ) {
                 wp_safe_redirect( home_url( '/articles/' ), 301 );
                 exit;
-        }
+	}
 
         // /blog -> if blog page missing, redirect to latest posts (home for posts).
         if ( 'blog' === $req && ! get_page_by_path( 'blog' ) ) {
                 // If home template exists for posts, send there; else root.
                 wp_safe_redirect( home_url( '/' ), 302 );
                 exit;
-        }
+	}
 }
 
 /*
