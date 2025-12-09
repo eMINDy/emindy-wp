@@ -45,6 +45,11 @@
   padding: 6px 0;
 }
 
+.em-phq9__opt input:focus-visible {
+  outline: 2px solid var(--em-border, rgba(0, 0, 0, 0.35));
+  outline-offset: 3px;
+}
+
 .em-phq9__actions {
   display: flex;
   gap: 10px;
@@ -90,6 +95,10 @@
 
   .em-phq9__actions button:hover,
   .em-phq9__actions button:focus-visible {
+    outline-color: var(--em-border, rgba(255, 255, 255, 0.45));
+  }
+
+  .em-phq9__opt input:focus-visible {
     outline-color: var(--em-border, rgba(255, 255, 255, 0.45));
   }
 }
