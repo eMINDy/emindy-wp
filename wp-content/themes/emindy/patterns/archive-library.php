@@ -5,13 +5,17 @@
  * Description: A comprehensive archive page listing all videos, exercises, articles and blog posts, with search and topic filtering.
  * Categories: emindy
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
 ?>
 
 <!--
-This pattern creates a single page that aggregates all content types on the site.  
+This pattern creates a single page that aggregates all content types on the site.
 It features a global search form and topic pills for quick filtering. Each section
 has its own query loop and heading so visitors can easily navigate through
-videos, exercises, articles and blog posts.  
+videos, exercises, articles and blog posts.
 The design relies on CSS variables for colours so dark mode works properly.
 -->
 
@@ -34,13 +38,13 @@ The design relies on CSS variables for colours so dark mode works properly.
   <div class="wp-block-group is-style-em-card" style="padding:.75rem;margin-bottom:1rem">
     <!-- Global search form -->
     <!-- wp:html -->
-    <form role="search" method="get" action="/" class="em-full-archive-search" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:.25rem 0 .75rem">
-      <label for="emarchive-hub-s" class="sr-only">Search the archive</label>
+    <form role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>" class="em-full-archive-search" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:.25rem 0 .75rem">
+      <label for="emarchive-hub-s" class="sr-only"><?php echo esc_html__( 'Search the archive', 'emindy' ); ?></label>
       <input id="emarchive-hub-s" type="search" name="s" placeholder="<?php echo esc_attr__( 'Search videos, exercises, articles, blog…', 'emindy' ); ?>" style="flex:1;min-width:220px;padding:.5rem .75rem;border-radius:.75rem;border:1px solid var(--em-border);background:var(--em-card);color:var(--em-text)">
-      <input type="hidden" name="post_type[]" value="em_video">
-      <input type="hidden" name="post_type[]" value="em_exercise">
-      <input type="hidden" name="post_type[]" value="em_article">
-      <input type="hidden" name="post_type[]" value="post">
+      <input type="hidden" name="post_type[]" value="<?php echo esc_attr( 'em_video' ); ?>">
+      <input type="hidden" name="post_type[]" value="<?php echo esc_attr( 'em_exercise' ); ?>">
+      <input type="hidden" name="post_type[]" value="<?php echo esc_attr( 'em_article' ); ?>">
+      <input type="hidden" name="post_type[]" value="<?php echo esc_attr( 'post' ); ?>">
       <button type="submit" style="padding:.55rem .9rem;border-radius:.75rem;border:0;background:var(--em-gold);color:var(--em-bg);font-weight:600">
         <?php echo esc_html__( 'Search', 'emindy' ); ?>
       </button>
@@ -90,7 +94,7 @@ The design relies on CSS variables for colours so dark mode works properly.
     <!-- /wp:query -->
     <!-- Link to full video archive -->
     <!-- wp:paragraph {"style":{"spacing":{"margin":{"top":"0.4rem"}}}} -->
-    <p style="margin-top:.4rem"><a href="/video-library/" class="em-button" style="background:var(--em-gold);color:var(--em-bg);padding:.5rem .9rem;border-radius:999px;font-weight:600;text-decoration:none"><?php echo esc_html__( 'More videos', 'emindy' ); ?> →</a></p>
+    <p style="margin-top:.4rem"><a href="<?php echo esc_url( home_url( '/video-library/' ) ); ?>" class="em-button" style="background:var(--em-gold);color:var(--em-bg);padding:.5rem .9rem;border-radius:999px;font-weight:600;text-decoration:none"><?php echo esc_html__( 'More videos', 'emindy' ); ?> →</a></p>
     <!-- /wp:paragraph -->
   </div>
   <!-- /Videos section -->
@@ -127,7 +131,7 @@ The design relies on CSS variables for colours so dark mode works properly.
     <!-- /wp:query -->
     <!-- Link to full exercise archive -->
     <!-- wp:paragraph {"style":{"spacing":{"margin":{"top":"0.4rem"}}}} -->
-    <p style="margin-top:.4rem"><a href="/exercise-library/" class="em-button" style="background:var(--em-gold);color:var(--em-bg);padding:.5rem .9rem;border-radius:999px;font-weight:600;text-decoration:none"><?php echo esc_html__( 'More exercises', 'emindy' ); ?> →</a></p>
+    <p style="margin-top:.4rem"><a href="<?php echo esc_url( home_url( '/exercise-library/' ) ); ?>" class="em-button" style="background:var(--em-gold);color:var(--em-bg);padding:.5rem .9rem;border-radius:999px;font-weight:600;text-decoration:none"><?php echo esc_html__( 'More exercises', 'emindy' ); ?> →</a></p>
     <!-- /wp:paragraph -->
   </div>
   <!-- /Exercises section -->
@@ -164,7 +168,7 @@ The design relies on CSS variables for colours so dark mode works properly.
     <!-- /wp:query -->
     <!-- Link to full article archive -->
     <!-- wp:paragraph {"style":{"spacing":{"margin":{"top":"0.4rem"}}}} -->
-    <p style="margin-top:.4rem"><a href="/article-library/" class="em-button" style="background:var(--em-gold);color:var(--em-bg);padding:.5rem .9rem;border-radius:999px;font-weight:600;text-decoration:none"><?php echo esc_html__( 'More articles', 'emindy' ); ?> →</a></p>
+    <p style="margin-top:.4rem"><a href="<?php echo esc_url( home_url( '/article-library/' ) ); ?>" class="em-button" style="background:var(--em-gold);color:var(--em-bg);padding:.5rem .9rem;border-radius:999px;font-weight:600;text-decoration:none"><?php echo esc_html__( 'More articles', 'emindy' ); ?> →</a></p>
     <!-- /wp:paragraph -->
   </div>
   <!-- /Articles section -->
@@ -201,7 +205,7 @@ The design relies on CSS variables for colours so dark mode works properly.
     <!-- /wp:query -->
     <!-- Link to blog archive -->
     <!-- wp:paragraph {"style":{"spacing":{"margin":{"top":"0.4rem"}}}} -->
-    <p style="margin-top:.4rem"><a href="/blog/" class="em-button" style="background:var(--em-gold);color:var(--em-bg);padding:.5rem .9rem;border-radius:999px;font-weight:600;text-decoration:none"><?php echo esc_html__( 'More posts', 'emindy' ); ?> →</a></p>
+    <p style="margin-top:.4rem"><a href="<?php echo esc_url( home_url( '/blog/' ) ); ?>" class="em-button" style="background:var(--em-gold);color:var(--em-bg);padding:.5rem .9rem;border-radius:999px;font-weight:600;text-decoration:none"><?php echo esc_html__( 'More posts', 'emindy' ); ?> →</a></p>
     <!-- /wp:paragraph -->
   </div>
   <!-- /Blog posts section -->
