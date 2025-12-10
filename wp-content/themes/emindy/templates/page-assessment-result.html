@@ -9,18 +9,98 @@ works even if the editor content is empty.
 <!-- wp:template-part {"slug":"header","tagName":"header","align":"full"} /-->
 
 <!-- wp:group {"metadata":{"name":"Assessment Result"},"tagName":"main","align":"full","style":{"spacing":{"padding":{"top":"2rem","bottom":"2.5rem"}}},"layout":{"type":"constrained","contentSize":"900px"},"ariaLabel":"Assessment result content"} -->
-<main id="main-content" class="wp-block-group alignfull" style="padding-top:2rem;padding-bottom:2.5rem" role="main">
+<main
+  id="main-content"
+  class="wp-block-group alignfull"
+  style="padding-top:2rem;padding-bottom:2.5rem"
+  aria-label="Assessment result content"
+>
+  <!-- Hero -->
   <!-- wp:group {"className":"em-assessment-result-hero","style":{"spacing":{"blockGap":"0.75rem","margin":{"bottom":"1.5rem"}}},"layout":{"type":"constrained","contentSize":"780px"}} -->
   <div class="wp-block-group em-assessment-result-hero" style="margin-bottom:1.5rem">
     <!-- wp:post-title {"level":1,"fontSize":"x-large"} /-->
+
     <!-- wp:paragraph {"fontSize":"medium"} -->
-    <p class="has-medium-font-size">This self-check result is for your personal reflection. It is not a diagnosis, and supportive care from a professional may help if you are concerned.</p>
+    <p class="has-medium-font-size">
+      This result is a snapshot of how you have been feeling recently. It is for
+      your own reflection and is not a diagnosis. If anything here worries you,
+      consider talking with a qualified health professional or someone you trust.
+    </p>
     <!-- /wp:paragraph -->
   </div>
   <!-- /wp:group -->
 
-  <!-- wp:shortcode {"text":"[em_assessment_result]"} /-->
+  <!-- Result card -->
+  <!-- wp:group {"className":"em-assessment-result-card","style":{"spacing":{"padding":{"top":"1.25rem","right":"1.5rem","bottom":"1.25rem","left":"1.5rem"},"margin":{"bottom":"1.5rem"}},"border":{"radius":"var(--wp--custom--brand--radius--2xl)"},"shadow":"var(--wp--preset--shadow--natural)"},"layout":{"type":"constrained","contentSize":"780px"}} -->
+  <div
+    class="wp-block-group em-assessment-result-card"
+    style="margin-bottom:1.5rem;padding-top:1.25rem;padding-right:1.5rem;padding-bottom:1.25rem;padding-left:1.5rem;border-radius:var(--wp--custom--brand--radius--2xl)"
+  >
+    <!-- wp:shortcode {"text":"[em_assessment_result]"} /-->
+  </div>
+  <!-- /wp:group -->
 
+  <!-- Safety notice -->
+  <!-- wp:group {"className":"em-assessment-result-safety","style":{"spacing":{"padding":{"top":"1.25rem","right":"1.25rem","bottom":"1.25rem","left":"1.25rem"},"margin":{"bottom":"1.75rem"}},"border":{"radius":"var(--wp--custom--brand--radius--2xl)"},"color":{"background":"#0b2d49"},"elements":{"link":{"color":{"text":"var(--wp--preset--color--white)"}}}},"layout":{"type":"constrained","contentSize":"780px"}} -->
+  <div
+    class="wp-block-group em-assessment-result-safety"
+    style="margin-bottom:1.75rem;padding-top:1.25rem;padding-right:1.25rem;padding-bottom:1.25rem;padding-left:1.25rem;background-color:#0b2d49;border-radius:var(--wp--custom--brand--radius--2xl)"
+  >
+    <!-- wp:paragraph {"textColor":"white"} -->
+    <p class="has-white-color has-text-color">
+      If you ever feel at immediate risk of harming yourself or others, or feel
+      unsafe, please contact your local emergency services or crisis helpline
+      right away. This self-check cannot detect emergencies. You can also visit
+      our <a href="/emergency-help/">emergency help page</a> for more guidance.
+    </p>
+    <!-- /wp:paragraph -->
+  </div>
+  <!-- /wp:group -->
+
+  <!-- Next steps -->
+  <!-- wp:group {"className":"em-assessment-result-next","style":{"spacing":{"blockGap":"0.5rem","margin":{"bottom":"1.75rem"}}},"layout":{"type":"constrained","contentSize":"780px"}} -->
+  <div class="wp-block-group em-assessment-result-next" style="margin-bottom:1.75rem">
+    <!-- wp:heading {"level":2,"fontSize":"large"} -->
+    <h2 class="wp-block-heading has-large-font-size">What you can do next</h2>
+    <!-- /wp:heading -->
+
+    <!-- wp:paragraph -->
+    <p>
+      Small, kind steps matter. You might like to repeat a self-check on another
+      day, or explore short practices to gently support your mood and nervous
+      system.
+    </p>
+    <!-- /wp:paragraph -->
+
+    <!-- wp:buttons {"style":{"spacing":{"margin":{"top":"0.75rem"}}}} -->
+    <div class="wp-block-buttons" style="margin-top:0.75rem">
+      <!-- wp:button {"className":"is-style-fill"} -->
+      <div class="wp-block-button is-style-fill">
+        <a
+          class="wp-block-button__link wp-element-button"
+          href="/assessments/"
+        >
+          Go back to assessments
+        </a>
+      </div>
+      <!-- /wp:button -->
+
+      <!-- wp:button {"className":"is-style-outline"} -->
+      <div class="wp-block-button is-style-outline">
+        <a
+          class="wp-block-button__link wp-element-button"
+          href="/library/"
+        >
+          Explore calming practices
+        </a>
+      </div>
+      <!-- /wp:button -->
+    </div>
+    <!-- /wp:buttons -->
+  </div>
+  <!-- /wp:group -->
+
+  <!-- Optional editor content -->
   <!-- wp:post-content {"layout":{"type":"constrained","contentSize":"780px"},"style":{"typography":{"lineHeight":"1.7"},"spacing":{"margin":{"top":"1.5rem"}}}} /-->
 </main>
 <!-- /wp:group -->
