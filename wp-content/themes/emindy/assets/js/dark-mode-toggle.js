@@ -2,8 +2,9 @@
   const STORAGE_KEY = 'emindy-theme';
   const DARK = 'dark';
   const LIGHT = 'light';
+  const ROOT = document.documentElement;
 
-  const applyTheme = (root, toggle, theme) => {
+  const applyTheme = (root, toggle, theme, persist = true) => {
     const nextTheme = theme === DARK ? DARK : LIGHT;
 
     root.setAttribute('data-em-theme', nextTheme);
@@ -14,18 +15,19 @@
       toggle.setAttribute('aria-label', label);
     }
 
-    try {
-      localStorage.setItem(STORAGE_KEY, nextTheme);
-    } catch (error) {
-      // Ignore storage write errors (e.g., private mode).
+    if (persist) {
+      try {
+        localStorage.setItem(STORAGE_KEY, nextTheme);
+      } catch (error) {
+        // Ignore storage write errors (e.g., private mode).
+      }
     }
   };
 
   const init = () => {
-    const root = document.documentElement;
     const toggle = document.getElementById('em-dark-mode-toggle');
 
-    if (!root || !toggle) {
+    if (!ROOT || !toggle) {
       return;
     }
 
@@ -38,13 +40,13 @@
       // Ignore storage read errors.
     }
 
-    const initialTheme = savedTheme || (prefersDark ? DARK : LIGHT);
-    applyTheme(root, toggle, initialTheme);
+    const initialTheme = savedTheme || ROOT.getAttribute('data-em-theme') || (prefersDark ? DARK : LIGHT);
+    applyTheme(ROOT, toggle, initialTheme, Boolean(savedTheme));
 
     toggle.addEventListener('click', () => {
-      const currentTheme = root.getAttribute('data-em-theme') === DARK ? DARK : LIGHT;
+      const currentTheme = ROOT.getAttribute('data-em-theme') === DARK ? DARK : LIGHT;
       const nextTheme = currentTheme === DARK ? LIGHT : DARK;
-      applyTheme(root, toggle, nextTheme);
+      applyTheme(ROOT, toggle, nextTheme);
     });
   };
 
