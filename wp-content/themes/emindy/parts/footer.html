@@ -5,16 +5,21 @@
  * @package emindy
  */
 
+// :contentReference[oaicite:0]{index=0}
+// :contentReference[oaicite:1]{index=1}
+// :contentReference[oaicite:2]{index=2}
+// :contentReference[oaicite:3]{index=3}
+
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 ?>
-<!-- wp:group {"tagName":"footer","align":"full","style":{"spacing":{"padding":{"top":"2rem","bottom":"2rem"},"margin":{"top":"2rem"}},"border":{"top":{"color":"var(--em-border)","width":"1px","style":"solid"}}},"layout":{"type":"constrained"}} -->
-<footer class="wp-block-group alignfull" style="border-top:1px solid var(--em-border)">
+<!-- wp:group {"tagName":"footer","align":"full","style":{"spacing":{"padding":{"top":"2rem","bottom":"2rem"},"margin":{"top":"2rem"}},"border":{"top":{"color":"var(--em-border)","width":"1px","style":"solid"}}},"layout":{"type":"constrained"},"className":"em-footer"} -->
+<footer class="wp-block-group alignfull em-footer" style="border-top:1px solid var(--em-border)" role="contentinfo">
   <!--
-    Modern footer: three columns for copyright & disclaimer, navigation links and a small sign‑off.
-    Use flexible columns to adapt on mobile devices.  The navigation block allows editors to
-    customise footer menus separately from the main header navigation.  A subtle border
+    Modern footer: three columns for copyright & disclaimer, navigation links and a small sign-off.
+    Use flexible columns to adapt on mobile devices. The navigation block allows editors to
+    customise footer menus separately from the main header navigation. A subtle border
     delineates the footer from the rest of the page.
   -->
   <!-- wp:columns {"verticalAlignment":"top","isStackedOnMobile":true} -->
@@ -27,10 +32,18 @@ if ( ! defined( 'ABSPATH' ) ) {
         © <?php echo esc_html( gmdate( 'Y' ) ); ?> <?php echo esc_html( get_bloginfo( 'name' ) ); ?>
       </p>
       <!-- /wp:paragraph -->
+
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"0.75rem","lineHeight":"1.6"}}} -->
       <p style="font-size:0.75rem;line-height:1.6">
-        <?php esc_html_e( 'Calm, friendly and accessible resources. Educational self-help only (not medical advice). For urgent help, see', 'emindy' ); ?>
-        <a href="<?php echo esc_url( home_url( '/emergency/' ) ); ?>"><?php esc_html_e( 'Emergency', 'emindy' ); ?></a>.
+        <?php
+        printf(
+          wp_kses_post(
+            /* translators: %s: URL of the emergency help page. */
+            __( 'Calm, friendly and accessible resources. Educational self-help only (not medical advice). For urgent help, see <a href="%s">Emergency</a>.', 'emindy' )
+          ),
+          esc_url( home_url( '/emergency/' ) )
+        );
+        ?>
       </p>
       <!-- /wp:paragraph -->
     </div>
@@ -43,12 +56,15 @@ if ( ! defined( 'ABSPATH' ) ) {
     </div>
     <!-- /wp:column -->
 
-    <!-- Column 3: sign‑off or social links -->
+    <!-- Column 3: sign-off or social links -->
     <!-- wp:column {"verticalAlignment":"top","width":"33.33%"} -->
     <div class="wp-block-column" style="flex-basis:33.33%;text-align:right">
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"0.8rem"}}} -->
-      <p style="font-size:0.8rem;margin-top:0"><?php esc_html_e( 'Made with calm', 'emindy' ); ?> <span aria-hidden="true">🌿</span></p>
+      <p style="font-size:0.8rem;margin-top:0">
+        <?php esc_html_e( 'Made with calm', 'emindy' ); ?> <span aria-hidden="true">🌿</span>
+      </p>
       <!-- /wp:paragraph -->
+
       <!-- Optionally include simple social links via shortcode or custom HTML; leave empty if not configured. -->
       <!-- wp:shortcode -->
       [em_social_icons]
@@ -57,5 +73,28 @@ if ( ! defined( 'ABSPATH' ) ) {
     <!-- /wp:column -->
   </div>
   <!-- /wp:columns -->
+
+  <!-- Secondary row: legal links and newsletter CTA -->
+  <!-- wp:group {"style":{"spacing":{"margin":{"top":"1.5rem"}},"typography":{"fontSize":"0.75rem"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between","orientation":"horizontal"}} -->
+  <div class="wp-block-group em-footer-legal" style="font-size:0.75rem;margin-top:1.5rem">
+    <!-- wp:paragraph {"style":{"typography":{"lineHeight":"1.6"}}} -->
+    <p style="line-height:1.6">
+      <a href="<?php echo esc_url( home_url( '/privacy/' ) ); ?>"><?php esc_html_e( 'Privacy', 'emindy' ); ?></a>
+      <span aria-hidden="true"> · </span>
+      <a href="<?php echo esc_url( home_url( '/terms/' ) ); ?>"><?php esc_html_e( 'Terms', 'emindy' ); ?></a>
+      <span aria-hidden="true"> · </span>
+      <a href="<?php echo esc_url( home_url( '/cookies/' ) ); ?>"><?php esc_html_e( 'Cookies', 'emindy' ); ?></a>
+    </p>
+    <!-- /wp:paragraph -->
+
+    <!-- wp:paragraph {"style":{"typography":{"lineHeight":"1.6"}}} -->
+    <p style="line-height:1.6;text-align:right">
+      <a href="<?php echo esc_url( home_url( '/newsletter/' ) ); ?>">
+        <?php esc_html_e( 'Stay in touch: eMINDy newsletter', 'emindy' ); ?>
+      </a>
+    </p>
+    <!-- /wp:paragraph -->
+  </div>
+  <!-- /wp:group -->
 </footer>
 <!-- /wp:group -->
