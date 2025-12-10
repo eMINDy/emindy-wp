@@ -1,19 +1,16 @@
 <!-- wp:group {"tagName":"header","align":"full","style":{"spacing":{"padding":{"top":"1rem","bottom":"1rem"},"margin":{"bottom":"0"},"blockGap":"0"},"border":{"bottom":{"color":"var(--em-border)","width":"1px","style":"solid"}}},"layout":{"type":"constrained"}} -->
-<header class="wp-block-group alignfull" style="border-bottom:1px solid var(--em-border)">
-  <!--
-    Modern header layout: a flexible container with three sections.
-    1. Branding on the left: site title and tagline.
-    2. Center navigation: WordPress navigation block styled as horizontal menu.
-    3. Actions on the right: language switcher, search, CTA button and dark-mode toggle.
-    Flexbox ensures equal spacing and responsive wrapping on smaller screens.
-  -->
+<header
+  id="site-header"
+  class="wp-block-group alignfull"
+  aria-label="Site header"
+  style="padding-top:1rem;padding-bottom:1rem;margin-bottom:0;border-bottom:1px solid var(--em-border)"
+>
   <!-- wp:group {"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between","verticalAlignment":"center"},"style":{"spacing":{"blockGap":"1rem"}}} -->
-  <div class="wp-block-group" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem">
+  <div class="wp-block-group">
     <!-- Branding -->
     <!-- wp:group {"layout":{"type":"flex","verticalAlignment":"center"},"style":{"spacing":{"blockGap":"0.5rem"}}} -->
-    <div class="wp-block-group" style="display:flex;align-items:center;gap:0.5rem">
+    <div class="wp-block-group">
       <!-- wp:site-title {"style":{"typography":{"fontSize":"1.7rem","fontWeight":"700"}}} /-->
-
       <!-- wp:site-tagline {"style":{"typography":{"fontSize":"0.8rem"},"color":{"text":"var(--em-teal)"}}} /-->
     </div>
     <!-- /wp:group -->
@@ -22,9 +19,9 @@
     <!-- wp:navigation {"overlayMenu":"never","layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"blockGap":"1.5rem"}},"fontSize":"small","ariaLabel":"Primary navigation"} /-->
 
     <!-- Action items -->
-    <!-- wp:group {"layout":{"type":"flex","verticalAlignment":"center","justifyContent":"right"},"style":{"spacing":{"blockGap":"0.75rem"}}} -->
-    <div class="wp-block-group" style="display:flex;align-items:center;gap:0.75rem">
-      <!-- Language switcher (Polylang) -->
+    <!-- wp:group {"layout":{"type":"flex","verticalAlignment":"center","justifyContent":"flex-end"},"style":{"spacing":{"blockGap":"0.75rem"}}} -->
+    <div class="wp-block-group">
+      <!-- Language switcher (Polylang via shortcode) -->
       <!-- wp:shortcode -->
       [em_lang_switcher dropdown="1" show_names="1" show_flags="0"]
       <!-- /wp:shortcode -->
@@ -33,15 +30,22 @@
       <!-- wp:search {"label":"Search eMINDy","showLabel":false,"buttonUseIcon":true,"placeholder":"Search…","style":{"border":{"radius":"12px"}},"backgroundColor":"em-card"} /-->
 
       <!-- CTA button -->
-      <!-- wp:button {"className":"is-style-fill","fontSize":"small"} -->
-      <div class="wp-block-button is-style-fill has-custom-font-size has-small-font-size">
-        <a class="wp-block-button__link wp-element-button" href="/start-here/" style="background:var(--em-gold);color:var(--em-bg);padding:0.5rem 0.9rem;border-radius:999px;font-weight:600;text-decoration:none">
-          Start Here
-        </a>
+      <!-- wp:buttons -->
+      <div class="wp-block-buttons">
+        <!-- wp:button {"className":"is-style-fill","backgroundColor":"em-gold","textColor":"em-bg","style":{"border":{"radius":"999px"},"spacing":{"padding":{"top":"0.5rem","bottom":"0.5rem","left":"0.9rem","right":"0.9rem"}},"typography":{"fontWeight":"600"}},"fontSize":"small"} -->
+        <div class="wp-block-button has-custom-font-size has-small-font-size">
+          <a
+            class="wp-block-button__link has-em-bg-color has-em-gold-background-color has-text-color has-background wp-element-button"
+            href="/start-here/"
+          >
+            Start Here
+          </a>
+        </div>
+        <!-- /wp:button -->
       </div>
-      <!-- /wp:button -->
+      <!-- /wp:buttons -->
 
-      <!-- Dark mode toggle: accessible button toggled via JS -->
+      <!-- Dark mode toggle -->
       <!-- wp:html -->
       <button
         id="em-dark-mode-toggle"
@@ -59,7 +63,6 @@
       <!-- /wp:html -->
     </div>
     <!-- /wp:group -->
-
   </div>
   <!-- /wp:group -->
 </header>
