@@ -1,36 +1,69 @@
-/* eMINDy Player */
+/* eMINDy Player — layout, controls & track list
+   Relies on global tokens and card shells from the theme and core plugin.
+   Component prefix: .em-p__*
+*/
+
+/* ---------------------------------
+Root container
+---------------------------------- */
+
 .em-player {
   border: 1px solid var(--em-border, rgba(0, 0, 0, 0.08));
-  border-radius: 16px;
-  background: var(--em-card, #f8fafc);
-  padding: 16px;
+  border-radius: 1rem;
+  background: var(--em-card, #ffffff);
+  padding: 1.25rem;
+  margin: 1rem 0;
+  position: relative;
+  box-shadow: var(--em-card-shadow, 0 16px 35px rgba(15, 23, 42, 0.06));
 }
+
+/* Optional compact variant */
+.em-player.em-player--compact {
+  padding: 0.875rem 1rem;
+  margin: 0.75rem 0;
+  box-shadow: none;
+}
+
+/* ---------------------------------
+Header (title + meta)
+---------------------------------- */
 
 .em-p__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
 }
 
 .em-p__title {
+  margin: 0;
   font-weight: 700;
+  font-size: 1rem;
+  line-height: 1.3;
 }
 
 .em-p__meta {
-  font-size: 12px;
+  font-size: 0.75rem;
   opacity: 0.9;
   display: flex;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
 }
+
+/* ---------------------------------
+Progress bar
+---------------------------------- */
 
 .em-p__barwrap {
   width: 100%;
-  height: 8px;
+  height: 0.5rem;
   background: rgba(0, 0, 0, 0.06);
   border-radius: 999px;
   overflow: hidden;
-  margin: 10px 0 6px;
+  margin: 0.75rem 0 0.5rem;
 }
 
 .em-p__bar {
@@ -40,26 +73,89 @@
   transition: width 0.2s ease;
 }
 
+/* Optional buffered bar (if present in markup) */
+.em-p__bar-buffered {
+  position: relative;
+  height: 100%;
+  width: 0%;
+  background: rgba(0, 163, 163, 0.24);
+}
+
+/* ---------------------------------
+Controls row
+---------------------------------- */
+
 .em-p__controls {
   display: flex;
-  gap: 8px;
-  margin: 10px 0;
   flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.75rem 0;
 }
+
+/* If you split primary vs secondary controls in markup */
+.em-p__controls-main {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.em-p__controls-meta {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+/* Buttons / action chips */
 
 .em-p__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
   color: inherit;
-  padding: 8px 12px;
+  padding: 0.45rem 0.9rem;
   border: 1px solid var(--em-border, rgba(0, 0, 0, 0.1));
   background: transparent;
-  border-radius: 10px;
+  border-radius: 999px;
   cursor: pointer;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.08s ease;
 }
 
-.em-p__btn:focus-visible,
-.em-p__btn:focus {
+.em-p__btn svg,
+.em-p__btn .em-p__icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+.em-p__btn:hover:not(:disabled):not([aria-disabled="true"]) {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: var(--em-border, rgba(0, 0, 0, 0.12));
+}
+
+.em-p__btn:active:not(:disabled):not([aria-disabled="true"]) {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+.em-p__btn:focus-visible {
   outline: 2px solid var(--em-teal, #00a3a3);
-  outline-offset: 1px;
+  outline-offset: 2px;
+  border-color: transparent;
+}
+
+.em-p__btn:focus {
+  outline: none;
 }
 
 .em-p__btn:disabled,
@@ -68,55 +164,147 @@
   opacity: 0.6;
 }
 
+/* Primary style for main CTA (e.g. play/pause) */
+.em-p__btn--primary {
+  background: var(--em-teal, #00a3a3);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 9px 20px rgba(0, 163, 163, 0.18);
+}
+
+.em-p__btn--primary:hover:not(:disabled):not([aria-disabled="true"]) {
+  background: #009191;
+  box-shadow: 0 10px 24px rgba(0, 163, 163, 0.22);
+}
+
+.em-p__btn--primary:focus-visible {
+  outline-color: var(--em-gold, #f4d483);
+}
+
+/* Subtle chip-style secondary buttons */
+.em-p__btn--ghost {
+  border-style: dashed;
+  opacity: 0.9;
+}
+
+/* ---------------------------------
+Track list
+---------------------------------- */
+
 .em-p__list {
   list-style: none;
   padding: 0;
-  margin: 12px 0 0;
+  margin: 0.75rem 0 0;
   display: grid;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .em-p__item {
   border: 1px solid var(--em-border, rgba(0, 0, 0, 0.1));
-  border-radius: 12px;
-  padding: 10px;
-  background: var(--em-bg, #fff);
+  border-radius: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  background: var(--em-bg, #ffffff);
+  position: relative;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
-.em-p__item:focus,
+.em-p__item:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
 .em-p__item:focus-visible {
   outline: 2px solid var(--em-teal, #00a3a3);
-  outline-offset: 1px;
+  outline-offset: 2px;
+}
+
+.em-p__item:focus {
+  outline: none;
 }
 
 .em-p__item-top {
   display: flex;
   align-items: center;
-  gap: 10px;
   justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.em-p__item-main {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
 }
 
 .em-p__item-index {
   font-weight: 700;
-  min-width: 22px;
+  min-width: 1.5rem;
   text-align: center;
+  font-size: 0.8rem;
+}
+
+.em-p__item-label {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  font-weight: 500;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .em-p__item-dur {
-  font-size: 12px;
+  font-size: 0.75rem;
   opacity: 0.8;
+  white-space: nowrap;
 }
 
 .em-p__item-tip {
-  margin-top: 6px;
-  font-size: 13px;
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
   opacity: 0.95;
 }
 
+/* Active track state */
 .em-p__item.is-active {
-  outline: 2px solid var(--em-teal, #00a3a3);
-  outline-offset: 1px;
+  border-color: var(--em-teal, #00a3a3);
+  background: rgba(0, 163, 163, 0.06);
+  box-shadow: 0 0 0 1px rgba(0, 163, 163, 0.35);
 }
+
+.em-p__item.is-active .em-p__item-index {
+  border-radius: 999px;
+  background: var(--em-teal, #00a3a3);
+  color: #ffffff;
+  padding-inline: 0.35rem;
+}
+
+/* ---------------------------------
+States & badges
+---------------------------------- */
+
+.em-p__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.7rem;
+  line-height: 1.2;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+/* Example: playing indicator on list items */
+.em-p__item.is-playing .em-p__badge {
+  background: rgba(0, 163, 163, 0.12);
+  color: var(--em-teal, #00a3a3);
+}
+
+/* ---------------------------------
+Live region (screen readers)
+---------------------------------- */
 
 .em-p__live {
   position: absolute;
@@ -130,16 +318,35 @@
   border: 0;
 }
 
+/* ---------------------------------
+Motion preferences
+---------------------------------- */
+
 @media (prefers-reduced-motion: reduce) {
   .em-p__bar {
     transition: none;
   }
+
+  .em-p__btn,
+  .em-p__item {
+    transition: none;
+  }
 }
+
+/* ---------------------------------
+Dark mode refinements
+(tokens handle most colours)
+---------------------------------- */
 
 @media (prefers-color-scheme: dark) {
   .em-player {
     border-color: var(--em-border, rgba(255, 255, 255, 0.18));
-    background: var(--em-card, rgba(255, 255, 255, 0.06));
+    background: var(--em-card, #020617);
+    box-shadow: var(--em-card-shadow, 0 18px 40px rgba(0, 0, 0, 0.7));
+  }
+
+  .em-p__barwrap {
+    background: rgba(255, 255, 255, 0.08);
   }
 
   .em-p__item {
@@ -147,7 +354,68 @@
     background: transparent;
   }
 
-  .em-p__barwrap {
-    background: rgba(255, 255, 255, 0.1);
+  .em-p__item:hover {
+    background: rgba(148, 163, 184, 0.08);
+  }
+
+  .em-p__item.is-active {
+    background: rgba(0, 163, 163, 0.14);
+    box-shadow: 0 0 0 1px rgba(0, 163, 163, 0.55);
+  }
+
+  .em-p__badge {
+    background: rgba(148, 163, 184, 0.2);
+  }
+}
+
+/* ---------------------------------
+RTL support
+---------------------------------- */
+
+[dir="rtl"] .em-p__controls {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .em-p__controls-meta {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+[dir="rtl"] .em-p__item-main {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .em-p__item-index {
+  text-align: center;
+}
+
+/* ---------------------------------
+Small-screen tweaks
+---------------------------------- */
+
+@media (max-width: 600px) {
+  .em-player {
+    padding: 1rem;
+  }
+
+  .em-p__header {
+    align-items: flex-start;
+  }
+
+  .em-p__meta {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .em-p__controls {
+    flex-direction: row;
+  }
+
+  .em-p__controls-meta {
+    margin-left: 0;
+  }
+
+  .em-p__item-label {
+    white-space: normal;
   }
 }
