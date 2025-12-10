@@ -373,7 +373,15 @@ if ( ! function_exists( 'emindy_extract_headings' ) ) {
     $dom->loadHTML( '<?xml encoding="utf-8" ?>' . $html );
     libxml_clear_errors();
     $xpath    = new DOMXPath( $dom );
-    $selector = implode( '|', array_map( fn( $t ) => '//' . $t, $tags ) );
+    $selector = implode(
+    '|',
+    array_map(
+        function ( $t ) {
+            return '//' . $t;
+        },
+        $tags
+    )
+);
     $nodes    = $xpath->query( $selector );
 
     if ( $nodes && $nodes->length ) {
