@@ -1115,8 +1115,9 @@ add_shortcode('em_sitemap_mini', function(){
 // 2.5) Report broken link (simple form -> email)
 add_shortcode('em_report_link', function($atts){
   $a = shortcode_atts(['id'=>'report'], $atts, 'em_report_link');
-  $uri  = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
-  $curr = esc_url_raw( home_url( $uri ) );
+  $uri_raw = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
+  $uri     = is_string( $uri_raw ) ? sanitize_text_field( $uri_raw ) : '';
+  $curr    = esc_url_raw( home_url( $uri ) );
   $mailto = sanitize_email( antispambot( get_option('admin_email') ) );
   $subject = rawurlencode( __( 'Broken link report on eMINDy', 'emindy-core' ) );
   $body_template = __( "Broken URL:\n%s\n\nUser note:", 'emindy-core' );
