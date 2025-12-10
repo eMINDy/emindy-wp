@@ -7,7 +7,7 @@
   <!-- wp:group {"layout":{"type":"constrained","contentSize":"900px"},"style":{"spacing":{"margin":{"bottom":"1rem"}}}} -->
   <div class="wp-block-group" style="margin-bottom:1rem">
     <!-- wp:heading {"level":1,"style":{"typography":{"fontSize":"clamp(2rem,3vw,2.4rem)"}}} -->
-    <h1>Welcome to eMINDy</h1>
+    <h1 class="wp-block-heading">Welcome to eMINDy</h1>
     <!-- /wp:heading -->
 
     <!-- wp:paragraph -->
@@ -22,13 +22,22 @@
     <!-- wp:html -->
     <form role="search" method="get" action="/" class="em-index-search" aria-label="Search eMINDy content" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
       <label for="idx-s" class="sr-only">Search eMINDy</label>
-      <input id="idx-s" type="search" name="s" placeholder="Search videos, exercises, articles, blog…" aria-describedby="idx-s-desc" style="flex:1;min-width:260px;padding:.55rem .8rem;border-radius:.75rem;border:0">
+      <input
+        id="idx-s"
+        type="search"
+        name="s"
+        placeholder="Search videos, exercises, articles, blog…"
+        aria-describedby="idx-s-desc"
+        style="flex:1;min-width:260px;padding:.55rem .8rem;border-radius:.75rem;border:0"
+      >
       <span id="idx-s-desc" class="sr-only">Enter a keyword to search videos, exercises, articles, and blog posts.</span>
       <input type="hidden" name="post_type[]" value="em_video">
       <input type="hidden" name="post_type[]" value="em_exercise">
       <input type="hidden" name="post_type[]" value="em_article">
       <input type="hidden" name="post_type[]" value="post">
-      <button type="submit" style="padding:.6rem .95rem;border-radius:.75rem;border:0;background-color:var(--wp--custom--brand--colors--gold);color:var(--wp--custom--brand--colors--deepBlue);font-weight:700">Search</button>
+      <button type="submit" style="padding:.6rem .95rem;border-radius:.75rem;border:0;background-color:var(--wp--custom--brand--colors--gold);color:var(--wp--custom--brand--colors--deepBlue);font-weight:700">
+        Search
+      </button>
     </form>
     <!-- /wp:html -->
   </div>
@@ -42,7 +51,14 @@
     <!-- /wp:paragraph -->
 
     <!-- wp:paragraph -->
-    <p><a href="/start-here/">Start Here</a> · <a href="/library/">Library</a> · <a href="/video-library/">Video Library</a> · <a href="/exercise-library/">Exercise Library</a> · <a href="/article-library/">Article Library</a> · <a href="/blog/">Blog</a></p>
+    <p>
+      <a href="/start-here/">Start Here</a> ·
+      <a href="/library/">Library</a> ·
+      <a href="/video-library/">Video Library</a> ·
+      <a href="/exercise-library/">Exercise Library</a> ·
+      <a href="/article-library/">Article Library</a> ·
+      <a href="/blog/">Blog</a>
+    </p>
     <!-- /wp:paragraph -->
   </div>
   <!-- /wp:group -->
@@ -53,7 +69,7 @@
     <!-- wp:column -->
     <div class="wp-block-column">
       <!-- wp:heading {"level":2} -->
-      <h2>Latest Videos</h2>
+      <h2 class="wp-block-heading">Latest Videos</h2>
       <!-- /wp:heading -->
 
       <!-- wp:query {"queryId":9001,"query":{"perPage":4,"postType":"em_video","order":"desc","orderBy":"date","inherit":false},"displayLayout":{"type":"grid","columns":2}} -->
@@ -80,7 +96,7 @@
       <!-- /wp:paragraph -->
 
       <!-- wp:heading {"level":2,"style":{"spacing":{"margin":{"top":"1rem"}}}} -->
-      <h2>Latest Exercises</h2>
+      <h2 class="wp-block-heading" style="margin-top:1rem">Latest Exercises</h2>
       <!-- /wp:heading -->
 
       <!-- wp:query {"queryId":9002,"query":{"perPage":4,"postType":"em_exercise","order":"desc","orderBy":"date","inherit":false},"displayLayout":{"type":"grid","columns":2}} -->
@@ -111,7 +127,7 @@
     <!-- wp:column -->
     <div class="wp-block-column">
       <!-- wp:heading {"level":2} -->
-      <h2>Latest Articles</h2>
+      <h2 class="wp-block-heading">Latest Articles</h2>
       <!-- /wp:heading -->
 
       <!-- wp:query {"queryId":9003,"query":{"perPage":4,"postType":"em_article","order":"desc","orderBy":"date","inherit":false},"displayLayout":{"type":"list"}} -->
@@ -138,7 +154,7 @@
       <!-- /wp:paragraph -->
 
       <!-- wp:heading {"level":2,"style":{"spacing":{"margin":{"top":"1rem"}}}} -->
-      <h2>Latest from the Blog</h2>
+      <h2 class="wp-block-heading" style="margin-top:1rem">Latest from the Blog</h2>
       <!-- /wp:heading -->
 
       <!-- wp:query {"queryId":9004,"query":{"perPage":4,"postType":"post","order":"desc","orderBy":"date","inherit":false},"displayLayout":{"type":"list"}} -->
