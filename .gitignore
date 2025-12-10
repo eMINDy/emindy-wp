@@ -5,6 +5,7 @@ Thumbs.db
 # Node / Composer / tools (اگر بعداً اضافه شد)
 node_modules/
 vendor/
+.phpunit.result.cache
 *.log
 
 # IDE configs
