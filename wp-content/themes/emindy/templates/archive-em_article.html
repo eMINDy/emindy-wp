@@ -1,12 +1,77 @@
 <!-- wp:template-part {"slug":"header","tagName":"header","align":"full"} /-->
 
-<!-- wp:group {"metadata":{"name":"Archive — em_article"},"tagName":"main","align":"full","style":{"spacing":{"padding":{"top":"1.25rem","bottom":"2.5rem"}}},"layout":{"type":"constrained","contentSize":"1200px"}} -->
+<!-- wp:group {"metadata":{"name":"Archive — em_article (Articles)"},"tagName":"main","align":"full","style":{"spacing":{"padding":{"top":"1.25rem","bottom":"2.5rem"}}},"layout":{"type":"constrained","contentSize":"1200px"}} -->
 <main
   id="main-content"
   class="wp-block-group alignfull"
   style="padding-top:1.25rem;padding-bottom:2.5rem"
 >
-  <!-- wp:pattern {"slug":"emindy/archive-cpt"} /-->
+  <!-- Intro section -->
+  <!-- wp:group {"style":{"spacing":{"blockGap":"0.5rem","margin":{"bottom":"1.75rem"}}},"layout":{"type":"constrained"}} -->
+  <div class="wp-block-group" style="margin-bottom:1.75rem">
+    <!-- wp:heading {"level":1} -->
+    <h1 class="wp-block-heading">Articles &amp; Guides</h1>
+    <!-- /wp:heading -->
+
+    <!-- wp:paragraph -->
+    <p>
+      Deep-dive explainers, how-to guides, and gentle reflections to help you
+      understand your mind and practice everyday mental wellness.
+    </p>
+    <!-- /wp:paragraph -->
+
+    <!-- wp:search {"label":"Search articles","showLabel":false,"placeholder":"Search articles and guides","buttonPosition":"button-inside","buttonUseIcon":true} /-->
+  </div>
+  <!-- /wp:group -->
+
+  <!-- Archive query -->
+  <!-- wp:query {"query":{"perPage":9,"pages":0,"offset":0,"postType":["em_article"],"order":"DESC","orderBy":"date","inherit":true},"layout":{"type":"constrained"}} -->
+  <div class="wp-block-query">
+    <!-- wp:post-template {"layout":{"type":"grid","columnCount":3}} -->
+    <!-- wp:group {"style":{"spacing":{"blockGap":"0.75rem","padding":{"top":"1.25rem","right":"1.25rem","bottom":"1.25rem","left":"1.25rem"},"margin":{"bottom":"1.5rem"}},"border":{"radius":"var(--wp--custom--brand--radius--xl)","width":"1px","style":"solid","color":"var(--em-border)"},"color":{"background":"var(--wp--preset--color--base-2)"}}, "layout":{"type":"constrained"},"className":"emindy-archive-card"} -->
+    <div
+      class="wp-block-group emindy-archive-card has-background"
+      style="margin-bottom:1.5rem;border-radius:var(--wp--custom--brand--radius--xl);border-width:1px;border-style:solid;border-color:var(--em-border);padding-top:1.25rem;padding-right:1.25rem;padding-bottom:1.25rem;padding-left:1.25rem;background-color:var(--wp--preset--color--base-2)"
+    >
+      <!-- wp:post-terms {"term":"em_topic","separator":" • ","className":"emindy-archive-card-topics"} /-->
+
+      <!-- wp:post-title {"level":3,"isLink":true,"rel":"bookmark","className":"emindy-archive-card-title"} /-->
+
+      <!-- wp:post-excerpt {"moreText":"Read more","className":"emindy-archive-card-excerpt"} /-->
+
+      <!-- wp:group {"style":{"spacing":{"margin":{"top":"0.5rem"}}},"layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap"},"className":"emindy-archive-card-meta"} -->
+      <div
+        class="wp-block-group emindy-archive-card-meta"
+        style="margin-top:0.5rem"
+      >
+        <!-- wp:post-date {"format":"M j, Y"} /-->
+        <!-- wp:post-author {"showAvatar":false,"showBio":false,"isLink":false} /-->
+      </div>
+      <!-- /wp:group -->
+    </div>
+    <!-- /wp:group -->
+    <!-- /wp:post-template -->
+
+    <!-- wp:query-no-results -->
+    <!-- wp:group {"layout":{"type":"constrained"},"style":{"spacing":{"margin":{"top":"1.5rem"}}}} -->
+    <div class="wp-block-group" style="margin-top:1.5rem">
+      <!-- wp:paragraph -->
+      <p>
+        We couldn’t find any articles here yet. Try a different search or check
+        back soon for new content.
+      </p>
+      <!-- /wp:paragraph -->
+    </div>
+    <!-- /wp:group -->
+    <!-- /wp:query-no-results -->
+
+    <!-- wp:query-pagination {"layout":{"type":"flex","justifyContent":"space-between"},"className":"emindy-archive-pagination"} -->
+    <!-- wp:query-pagination-previous /-->
+    <!-- wp:query-pagination-numbers /-->
+    <!-- wp:query-pagination-next /-->
+    <!-- /wp:query-pagination -->
+  </div>
+  <!-- /wp:query -->
 
   <!-- CTA -->
   <!-- wp:group {"style":{"spacing":{"margin":{"top":"2rem"},"padding":{"top":"1.5rem","bottom":"1.5rem"}},"color":{"background":"var(--wp--custom--brand--colors--deepBlue)"},"border":{"radius":"var(--wp--custom--brand--radius--2xl)"},"elements":{"link":{"color":{"text":"var(--wp--preset--color--white)"}}}},"textColor":"white","layout":{"type":"constrained"},"className":"emindy-archive-cta"} -->
