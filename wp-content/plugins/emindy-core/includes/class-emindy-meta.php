@@ -14,24 +14,17 @@ class Meta {
 	 *
 	 * @return void
 	 */
-        public static function register() {
-                $auth_callback = [ __CLASS__, 'can_edit_meta' ];
+	public static function register() {
+		$auth_callback = [ __CLASS__, 'can_edit_meta' ];
 
-                // Reuse a single auth callback so only editors can modify REST
-                // meta values across all CPT fields registered below.
+		// Reuse a single auth callback so only editors can modify REST meta
+		// values across all CPT fields registered below. All meta is exposed to
+		// REST so the block editor and API clients can edit structured fields.
 
-                // Chapters for videos.
-                register_post_meta(
+		// Chapters for videos.
+		register_post_meta(
 			'em_video',
 			'em_chapters_json',
-                // All meta is exposed to REST so the block editor and API
-                // clients can edit structured fields. The shared auth callback
-                // keeps capability checks consistent across the meta surface.
-
-                // Chapters for videos.
-                register_post_meta(
-                        'em_video',
-                        'em_chapters_json',
 			[
 				'type'              => 'string',
 				'single'            => true,
@@ -132,6 +125,7 @@ class Meta {
 			]
 		);
 	}
+
 
 	/**
 	 * Sanitize JSON string or array values for meta storage.
