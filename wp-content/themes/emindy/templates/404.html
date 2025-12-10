@@ -7,8 +7,9 @@
   <!-- wp:group {"layout":{"type":"constrained","contentSize":"800px"},"style":{"spacing":{"margin":{"bottom":"1rem"}},"border":{"radius":"var(--wp--custom--brand--radius--2xl)"},"color":{"background":"#0b2d49"},"elements":{"link":{"color":{"text":"var(--wp--preset--color--white)"}}}},"textColor":"white"} -->
   <div class="wp-block-group has-white-color has-text-color has-background" style="background-color:#0b2d49;border-radius:var(--wp--custom--brand--radius--2xl);padding:1.25rem 1.25rem 1rem">
     <!-- wp:heading {"level":1,"style":{"typography":{"fontSize":"clamp(1.9rem,3vw,2.4rem)","lineHeight":"1.15"},"spacing":{"margin":{"top":"0","bottom":"0.25rem"}}}} -->
-    <h1>We couldn’t find that page.</h1>
+    <h1 class="wp-block-heading">We couldn’t find that page.</h1>
     <!-- /wp:heading -->
+
     <!-- wp:paragraph {"style":{"typography":{"fontSize":"1.05rem"},"spacing":{"margin":{"top":"0"}}}} -->
     <p>Try a quick search, explore the Library, or start with a 1-minute calm practice.</p>
     <!-- /wp:paragraph -->
@@ -37,8 +38,15 @@
       <!-- wp:paragraph -->
       <p><strong>Shortcuts:</strong></p>
       <!-- /wp:paragraph -->
+
       <!-- wp:paragraph -->
-      <p><a href="/start-here/">Start Here — Essentials</a> · <a href="/library/">Library</a> · <a href="/video-library/">Videos</a> · <a href="/exercise-library/">Exercises</a> · <a href="/article-library/">Articles</a></p>
+      <p>
+        <a href="/start-here/">Start Here — Essentials</a> ·
+        <a href="/library/">Library</a> ·
+        <a href="/videos/">Videos</a> ·
+        <a href="/exercises/">Exercises</a> ·
+        <a href="/articles/">Articles</a>
+      </p>
       <!-- /wp:paragraph -->
     </div>
     <!-- /wp:group -->
@@ -52,7 +60,8 @@
     <!-- wp:paragraph -->
     <p><strong>Explore by topic:</strong></p>
     <!-- /wp:paragraph -->
-    <!-- wp:shortcode -->[em_topics_pills taxonomy="topic"]<!-- /wp:shortcode -->
+
+    <!-- wp:shortcode -->[em_topics_pills taxonomy="em_topic"]<!-- /wp:shortcode -->
   </div>
   <!-- /wp:group -->
 
@@ -62,8 +71,9 @@
     <!-- wp:column -->
     <div class="wp-block-column">
       <!-- wp:heading {"level":2,"style":{"typography":{"fontSize":"1.25rem"}}} -->
-      <h2>Popular right now</h2>
+      <h2 class="wp-block-heading">Popular right now</h2>
       <!-- /wp:heading -->
+
       <!-- wp:shortcode -->[em_popular_videos limit="4"]<!-- /wp:shortcode -->
       <!-- wp:shortcode -->[em_popular_exercises limit="4"]<!-- /wp:shortcode -->
     </div>
@@ -72,12 +82,15 @@
     <!-- wp:column -->
     <div class="wp-block-column">
       <!-- wp:heading {"level":2,"style":{"typography":{"fontSize":"1.25rem"}}} -->
-      <h2>Latest from the blog</h2>
+      <h2 class="wp-block-heading">Latest from the blog</h2>
       <!-- /wp:heading -->
+
       <!-- wp:shortcode -->[em_popular_posts limit="4"]<!-- /wp:shortcode -->
+
       <!-- wp:heading {"level":2,"style":{"typography":{"fontSize":"1.25rem"},"spacing":{"margin":{"top":"1rem"}}}} -->
-      <h2>Mini sitemap</h2>
+      <h2 class="wp-block-heading">Mini sitemap</h2>
       <!-- /wp:heading -->
+
       <!-- wp:shortcode -->[em_sitemap_mini]<!-- /wp:shortcode -->
     </div>
     <!-- /wp:column -->
@@ -90,6 +103,7 @@
     <!-- wp:paragraph -->
     <p>Think this is a broken link? <a href="#report">Tell us and we’ll fix it.</a></p>
     <!-- /wp:paragraph -->
+
     <!-- wp:shortcode -->[em_report_link id="report"]<!-- /wp:shortcode -->
   </div>
   <!-- /wp:group -->
