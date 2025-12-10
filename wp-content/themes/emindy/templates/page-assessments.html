@@ -7,18 +7,83 @@ Keeps content flexible while providing a consistent hero and structure.
 
 <!-- wp:template-part {"slug":"header","tagName":"header","align":"full"} /-->
 
-<!-- wp:group {"metadata":{"name":"Assessments"},"tagName":"main","align":"full","style":{"spacing":{"padding":{"top":"2rem","bottom":"2.5rem"}}},"layout":{"type":"constrained","contentSize":"900px"}} -->
-<main id="main-content" class="wp-block-group alignfull" style="padding-top:2rem;padding-bottom:2.5rem" aria-labelledby="assessments-title">
+<!-- wp:group {"metadata":{"name":"Assessments — Hub"},"tagName":"main","align":"full","style":{"spacing":{"padding":{"top":"2rem","bottom":"2.5rem"}}},"layout":{"type":"constrained","contentSize":"900px"}} -->
+<main
+  id="main-content"
+  class="wp-block-group alignfull"
+  style="padding-top:2rem;padding-bottom:2.5rem"
+  aria-labelledby="assessments-title"
+>
+  <!-- Hero -->
   <!-- wp:group {"style":{"spacing":{"blockGap":"0.75rem","margin":{"bottom":"1.5rem"}}},"layout":{"type":"constrained","contentSize":"780px"}} -->
   <div class="wp-block-group" style="margin-bottom:1.5rem">
     <!-- wp:post-title {"level":1,"fontSize":"x-large","anchor":"assessments-title"} /-->
+
     <!-- wp:paragraph {"fontSize":"medium"} -->
-    <p class="has-medium-font-size">Explore gentle self-checks to reflect on how you are feeling. These tools are educational and should not replace professional support.</p>
+    <p class="has-medium-font-size">
+      Take a few minutes to gently check in with how you are feeling. These short
+      self-checks can help you notice patterns and decide what kind of support might help.
+    </p>
     <!-- /wp:paragraph -->
   </div>
   <!-- /wp:group -->
 
+  <!-- Info notice -->
+  <!-- wp:group {"style":{"spacing":{"padding":{"top":"1rem","right":"1.25rem","bottom":"1rem","left":"1.25rem"},"margin":{"bottom":"1.75rem"}},"border":{"radius":"var(--wp--custom--brand--radius--2xl)"},"color":{"background":"var(--wp--custom--brand--colors--deepBlue)"},"elements":{"link":{"color":{"text":"var(--wp--preset--color--white)"}}}},"textColor":"white","layout":{"type":"constrained","contentSize":"780px"}} -->
+  <div
+    class="wp-block-group has-white-color has-text-color"
+    style="margin-bottom:1.75rem;padding-top:1rem;padding-right:1.25rem;padding-bottom:1rem;padding-left:1.25rem;border-radius:var(--wp--custom--brand--radius--2xl);background-color:var(--wp--custom--brand--colors--deepBlue)"
+  >
+    <!-- wp:paragraph {"fontSize":"small"} -->
+    <p class="has-small-font-size">
+      These tools are educational check-ins, not a diagnosis. If you are in crisis or
+      worried about your safety, please seek urgent help in your area or contact a
+      qualified mental health professional.
+    </p>
+    <!-- /wp:paragraph -->
+  </div>
+  <!-- /wp:group -->
+
+  <!-- Content area (links and/or embedded assessments via shortcodes) -->
   <!-- wp:post-content {"layout":{"type":"constrained","contentSize":"780px"},"style":{"typography":{"lineHeight":"1.7"}}} /-->
+
+  <!-- CTA: Next steps -->
+  <!-- wp:group {"style":{"spacing":{"margin":{"top":"2rem"},"padding":{"top":"1.5rem","right":"1.5rem","bottom":"1.5rem","left":"1.5rem"}},"color":{"background":"var(--wp--custom--brand--colors--deepBlue)"},"border":{"radius":"var(--wp--custom--brand--radius--2xl)"},"elements":{"link":{"color":{"text":"var(--wp--preset--color--white)"}}}},"textColor":"white","layout":{"type":"constrained","contentSize":"780px"}} -->
+  <div
+    class="wp-block-group has-white-color has-text-color"
+    style="margin-top:2rem;padding-top:1.5rem;padding-right:1.5rem;padding-bottom:1.5rem;padding-left:1.5rem;border-radius:var(--wp--custom--brand--radius--2xl);background-color:var(--wp--custom--brand--colors--deepBlue)"
+  >
+    <!-- wp:heading {"level":2,"fontSize":"large"} -->
+    <h2 class="wp-block-heading has-large-font-size">What would you like to explore next?</h2>
+    <!-- /wp:heading -->
+
+    <!-- wp:paragraph {"fontSize":"small"} -->
+    <p class="has-small-font-size">
+      Find gentle, step-by-step exercises and calming resources that support what you discovered in your check-in.
+    </p>
+    <!-- /wp:paragraph -->
+
+    <!-- wp:buttons {"layout":{"type":"flex","justifyContent":"flex-start"}} -->
+    <div class="wp-block-buttons">
+      <!-- wp:button {"style":{"border":{"radius":"999px"}}} -->
+      <div class="wp-block-button">
+        <a class="wp-block-button__link wp-element-button" href="/exercises/">
+          Explore exercises
+        </a>
+      </div>
+      <!-- /wp:button -->
+
+      <!-- wp:button {"className":"is-style-outline","style":{"border":{"radius":"999px"}}} -->
+      <div class="wp-block-button is-style-outline">
+        <a class="wp-block-button__link wp-element-button" href="/library/">
+          Browse articles &amp; videos
+        </a>
+      </div>
+      <!-- /wp:button -->
+    </div>
+    <!-- /wp:buttons -->
+  </div>
+  <!-- /wp:group -->
 </main>
 <!-- /wp:group -->
 
