@@ -88,41 +88,103 @@ function emindy_skip_link(): void {
 add_action( 'wp_body_open', 'emindy_skip_link' );
 
 /**
+ * Render a reusable archive toolbar with search and topic filter.
+ *
+ * @param array $atts Shortcode attributes.
+ * @return string
+ */
+function emindy_render_archive_toolbar( array $atts = [] ): string {
+  $atts = shortcode_atts(
+    [
+      'label'       => '',
+      'placeholder' => '',
+      'button'      => __( 'Search', 'emindy' ),
+      'post_type'   => '',
+    ],
+    $atts,
+    'em_archive_toolbar'
+  );
+
+  $post_type = $atts['post_type'];
+
+  if ( empty( $post_type ) ) {
+    $queried_post_type = get_query_var( 'post_type' );
+
+    if ( is_array( $queried_post_type ) ) {
+      $post_type = (string) reset( $queried_post_type );
+    } elseif ( is_string( $queried_post_type ) && '' !== $queried_post_type ) {
+      $post_type = $queried_post_type;
+    } else {
+      $post_type = get_post_type() ?: 'post';
+    }
+  }
+
+  $post_type = sanitize_key( $post_type );
+  $type_obj  = get_post_type_object( $post_type );
+  $type_name = $type_obj && isset( $type_obj->labels->name ) ? $type_obj->labels->name : ucfirst( $post_type );
+
+  $label       = '' !== $atts['label'] ? $atts['label'] : sprintf( __( 'Search %s', 'emindy' ), $type_name );
+  $placeholder = '' !== $atts['placeholder'] ? $atts['placeholder'] : sprintf( __( 'Search %s…', 'emindy' ), strtolower( $type_name ) );
+  $button      = $atts['button'];
+
+  ob_start();
+  ?>
+  <form role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>" class="em-archive-search" aria-label="<?php echo esc_attr( $label ); ?>" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:.25rem 0 .75rem">
+    <label for="<?php echo esc_attr( $post_type ); ?>-s" class="sr-only"><?php echo esc_html( $label ); ?></label>
+    <input id="<?php echo esc_attr( $post_type ); ?>-s" type="search" name="s" placeholder="<?php echo esc_attr( $placeholder ); ?>" inputmode="search" aria-label="<?php echo esc_attr( $label ); ?>" style="flex:1;min-width:220px;padding:.5rem .75rem;border-radius:.75rem;border:0">
+    <input type="hidden" name="post_type" value="<?php echo esc_attr( $post_type ); ?>">
+    <button type="submit" aria-label="<?php echo esc_attr( $button ); ?>" style="padding:.55rem .9rem;border-radius:.75rem;border:0;background:#F4D483;color:#0A2A43;font-weight:600"><?php echo esc_html( $button ); ?></button>
+  </form>
+
+  <div class="wp-block-group" style="display:flex;flex-wrap:wrap;gap:.5rem;align-items:center">
+    <p style="font-weight:600;margin:0"><?php echo esc_html__( 'Topics:', 'emindy' ); ?></p>
+    <?php echo do_shortcode( '[em_topics_pills taxonomy="topic"]' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+  </div>
+  <?php
+
+  return (string) ob_get_clean();
+}
+add_shortcode( 'em_archive_toolbar', 'emindy_render_archive_toolbar' );
+
+/**
  * Adjust em_video archive queries with topic filtering and search support.
  *
  * @param WP_Query $query Main query.
  */
-function emindy_adjust_em_video_archive( WP_Query $query ): void {
+function emindy_adjust_em_cpt_archives( WP_Query $query ): void {
   if ( is_admin() || ! $query->is_main_query() ) {
     return;
   }
 
-  if ( $query->is_post_type_archive( 'em_video' ) ) {
-    $query->set( 'posts_per_page', 9 );
+  $library_post_types = [ 'em_video', 'em_exercise', 'em_article' ];
 
-    $topic = filter_input( INPUT_GET, 'topic', FILTER_VALIDATE_INT );
-    // Use filter_input to keep the taxonomy filter numeric even when the
-    // request is manipulated; non-numeric values are ignored.
-    if ( $topic ) {
-      $query->set(
-        'tax_query',
-        [
-          [
-            'taxonomy' => 'topic',
-            'field'    => 'term_id',
-            'terms'    => $topic,
-          ],
-        ]
-      );
-    }
+  foreach ( $library_post_types as $post_type ) {
+    if ( $query->is_post_type_archive( $post_type ) ) {
+      $query->set( 'posts_per_page', 9 );
 
-    if ( isset( $_GET['s'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-      $search = sanitize_text_field( wp_unslash( (string) $_GET['s'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-      $query->set( 's', $search );
+      $topic = filter_input( INPUT_GET, 'topic', FILTER_VALIDATE_INT );
+      // Keep taxonomy filter numeric even when the request is manipulated; non-numeric values are ignored.
+      if ( $topic ) {
+        $tax_query   = $query->get( 'tax_query', [] );
+        $tax_query[] = [
+          'taxonomy' => 'topic',
+          'field'    => 'term_id',
+          'terms'    => $topic,
+        ];
+
+        $query->set( 'tax_query', $tax_query );
+      }
+
+      if ( isset( $_GET['s'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $search = sanitize_text_field( wp_unslash( (string) $_GET['s'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $query->set( 's', $search );
+      }
+
+      break;
     }
   }
 }
-add_action( 'pre_get_posts', 'emindy_adjust_em_video_archive' );
+add_action( 'pre_get_posts', 'emindy_adjust_em_cpt_archives' );
 
 /**
  * Highlight search terms in excerpts.
