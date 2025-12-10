@@ -64,6 +64,72 @@ class Shortcodes {
         ];
     }
 
+    /**
+     * Resolve a page URL for the current language when available.
+     *
+     * Falls back to the provided URL if the page cannot be located. When
+     * Polylang is active we request the translation for the current locale so
+     * that slugs differing per language still map to the correct page.
+     *
+     * @param string $slug     Page slug to look up with get_page_by_path().
+     * @param string $fallback URL to use when the page is not found.
+     * @return string URL or an empty string when no match is available.
+     */
+    protected static function get_localized_page_url( string $slug, string $fallback = '' ) : string {
+        $page = get_page_by_path( $slug );
+
+        if ( $page ) {
+            $page_id = $page->ID;
+
+            if ( function_exists( 'pll_get_post' ) ) {
+                $lang = function_exists( 'pll_current_language' ) ? pll_current_language() : null;
+                $translated_id = $lang ? pll_get_post( $page_id, $lang ) : pll_get_post( $page_id );
+
+                if ( $translated_id ) {
+                    $page_id = $translated_id;
+                }
+            }
+
+            $permalink = get_permalink( $page_id );
+            if ( $permalink ) {
+                return $permalink;
+            }
+        }
+
+        return $fallback;
+    }
+
+    /**
+     * Build the emergency notice text with an optional localized link.
+     *
+     * @param string $fallback_text  Plain fallback message.
+     * @param string $linked_message Optional message with a placeholder for the linked text.
+     * @return string Safe HTML for display.
+     */
+    protected static function get_emergency_notice( string $fallback_text, string $linked_message = '' ) : string {
+        $emergency_link = self::get_localized_page_url( 'emergency' );
+
+        if ( $emergency_link ) {
+            $message_template = $linked_message ?: __( 'This check is educational and not a medical diagnosis. If you feel unsafe or in crisis, please visit the %s.', 'emindy-core' );
+            $message          = sprintf(
+                /* translators: %s: link to the emergency resources page. */
+                $message_template,
+                '<a href="' . esc_url( $emergency_link ) . '">' . esc_html__( 'Emergency page', 'emindy-core' ) . '</a>'
+            );
+
+            return wp_kses(
+                $message,
+                [
+                    'a' => [
+                        'href' => [],
+                    ],
+                ]
+            );
+        }
+
+        return esc_html( $fallback_text );
+    }
+
     public static function player( $atts = [], $content = '' ) : string {
         $post_id    = get_the_ID();
         $steps      = self::get_exercise_steps_data( (int) $post_id );
@@ -223,13 +289,13 @@ class Shortcodes {
 			<button type="button" class="em-phq9__reset"><?php echo esc_html__('Reset','emindy-core'); ?></button>
 		</div>
 
-		<div class="em-phq9__result" role="region" aria-live="polite" hidden>
-			<h3><?php echo esc_html__('Your result','emindy-core'); ?></h3>
-			<p class="em-phq9__score"></p>
-			<p class="em-phq9__note"><?php echo esc_html__('This check is educational and not a medical diagnosis. If you feel unsafe or in crisis, please visit the Emergency page.','emindy-core'); ?></p>
-			<div class="em-phq9__share">
-				<button type="button" class="em-phq9__print"><?php echo esc_html__('Print / Save PDF','emindy-core'); ?></button>
-				<button type="button" class="em-phq9__copy"><?php echo esc_html__('Copy summary','emindy-core'); ?></button>
+                <div class="em-phq9__result" role="region" aria-live="polite" hidden>
+                        <h3><?php echo esc_html__('Your result','emindy-core'); ?></h3>
+                        <p class="em-phq9__score"></p>
+                        <p class="em-phq9__note"><?php echo self::get_emergency_notice( __( 'This check is educational and not a medical diagnosis. If you feel unsafe or in crisis, please visit the Emergency page.', 'emindy-core' ) ); ?></p>
+                        <div class="em-phq9__share">
+                                <button type="button" class="em-phq9__print"><?php echo esc_html__('Print / Save PDF','emindy-core'); ?></button>
+                                <button type="button" class="em-phq9__copy"><?php echo esc_html__('Copy summary','emindy-core'); ?></button>
 			    <button type="button" class="em-phq9__sharelink" data-kind="phq9"><?php echo esc_html__('Get shareable link','emindy-core'); ?></button>
                 <button type="button" class="em-phq9__email" data-kind="phq9"><?php echo esc_html__('Email me the summary','emindy-core'); ?></button>
 			</div>
@@ -568,13 +634,13 @@ public static function gad7() : string {
 			<button type="button" class="em-phq9__reset"><?php echo esc_html__('Reset','emindy-core'); ?></button>
 		</div>
 
-		<div class="em-phq9__result" role="region" aria-live="polite" hidden>
-			<h3><?php echo esc_html__('Your result','emindy-core'); ?></h3>
-			<p class="em-phq9__score"></p>
-			<p class="em-phq9__note"><?php echo esc_html__('This check is educational and not a medical diagnosis. If you feel unsafe or in crisis, please visit the Emergency page.','emindy-core'); ?></p>
-			<div class="em-phq9__share">
-				<button type="button" class="em-phq9__print"><?php echo esc_html__('Print / Save PDF','emindy-core'); ?></button>
-				<button type="button" class="em-phq9__copy"><?php echo esc_html__('Copy summary','emindy-core'); ?></button>
+                <div class="em-phq9__result" role="region" aria-live="polite" hidden>
+                        <h3><?php echo esc_html__('Your result','emindy-core'); ?></h3>
+                        <p class="em-phq9__score"></p>
+                        <p class="em-phq9__note"><?php echo self::get_emergency_notice( __( 'This check is educational and not a medical diagnosis. If you feel unsafe or in crisis, please visit the Emergency page.', 'emindy-core' ) ); ?></p>
+                        <div class="em-phq9__share">
+                                <button type="button" class="em-phq9__print"><?php echo esc_html__('Print / Save PDF','emindy-core'); ?></button>
+                                <button type="button" class="em-phq9__copy"><?php echo esc_html__('Copy summary','emindy-core'); ?></button>
 				<button type="button" class="em-phq9__sharelink" data-kind="gad7"><?php echo esc_html__('Get shareable link','emindy-core'); ?></button>
 				<button type="button" class="em-phq9__email" data-kind="gad7"><?php echo esc_html__('Email me the summary','emindy-core'); ?></button>
 			</div>
@@ -662,12 +728,18 @@ public static function gad7() : string {
                      * sentence can be localised.  We use sprintf on the result of
                      * __() rather than on a literal string to allow translators to
                      * rearrange the placeholders as needed.
-                     */
+                    */
                     $score_line = sprintf( __( 'Score: %d / %d — %s', 'emindy-core' ), $score, $max_score, $band );
                     echo esc_html( $score_line );
                 ?></p>
-                        <p><?php echo esc_html__( 'This check is educational, not a diagnosis. If you feel unsafe or in crisis, please visit the Emergency page.', 'emindy-core' ); ?></p>
-                        <p><a href="<?php echo esc_url( home_url( '/assessments/' ) ); ?>">&larr; <?php echo esc_html__( 'Back to assessments', 'emindy-core' ); ?></a></p>
+                        <p><?php echo self::get_emergency_notice(
+                                __( 'This check is educational, not a diagnosis. If you feel unsafe or in crisis, please visit the Emergency page.', 'emindy-core' ),
+                                __( 'This check is educational, not a diagnosis. If you feel unsafe or in crisis, please visit the %s.', 'emindy-core' )
+                        ); ?></p>
+                        <?php
+                        $assessments_url = self::get_localized_page_url( 'assessments', home_url( '/assessments/' ) );
+                        ?>
+                        <p><a href="<?php echo esc_url( $assessments_url ); ?>">&larr; <?php echo esc_html__( 'Back to assessments', 'emindy-core' ); ?></a></p>
                 </div>
                 <?php
                 return ob_get_clean();
