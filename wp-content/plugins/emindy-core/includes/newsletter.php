@@ -1,6 +1,8 @@
 <?php
 /**
- * eMINDy Newsletter — minimal local collector with upgrade hooks.
+ * EMINDy newsletter — minimal local collector with upgrade hooks.
+ *
+ * @package EmindyCore
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

@@ -1,12 +1,14 @@
 <?php
 /**
- * eMINDy JSON-LD Enhancements for Rank Math.
+ * EMINDy JSON-LD Enhancements for Rank Math.
  *
  * - Adds/augments Organization, WebSite/SearchAction
  * - Adds CollectionPage/ItemList for archives
  * - Adds VideoObject for em_video
  * - Adds HowTo for em_exercise
  * - Adds SearchResultsPage on search
+ *
+ * @package EmindyCore
  */
 
 // Exit if accessed directly.
@@ -133,10 +135,10 @@ function emindy_schema_add_organization( $data, $site_url, $site_name ) {
     array_filter(
       array(
         'https://www.youtube.com/@emindy_official',
-        // Add when ready:
+        // Social channels to enable when ready.
         // 'https://www.instagram.com/emindy_official',
         // 'https://www.tiktok.com/@emindy_official',
-        // 'https://twitter.com/emindy_official',
+        // 'https://twitter.com/emindy_official', Placeholder.
       )
     )
   );

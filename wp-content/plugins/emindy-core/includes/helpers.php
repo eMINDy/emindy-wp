@@ -1,4 +1,10 @@
 <?php
+/**
+ * Helper functions for the eMINDy Core plugin.
+ *
+ * @package EmindyCore
+ */
+
 namespace EMINDY\Core;
 
 if ( ! defined( 'ABSPATH' ) ) {
