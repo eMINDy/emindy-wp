@@ -29,6 +29,8 @@ require_once EMINDY_CORE_PATH . 'includes/class-emindy-ajax.php';
 \EMINDY\Core\Ajax::register();
 require_once EMINDY_CORE_PATH . 'includes/class-emindy-analytics.php';
 \EMINDY\Core\Analytics::register();
+require_once EMINDY_CORE_PATH . 'includes/class-emindy-diagnostics.php';
+\EMINDY\Core\Diagnostics::register();
 
 /*
  * Activation & uninstall hooks
