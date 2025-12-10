@@ -5,6 +5,7 @@
  * @package EmindyCore
  */
 
+// Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
         exit;
 }
@@ -37,13 +38,22 @@ function emindy_newsletter_install_table() {
 // Removed the after_switch_theme hook. The table creation is now handled
 // via register_activation_hook in the main plugin file. This prevents
 // duplicate calls on every theme switch and follows WordPress best
-// practices for installing custom tables【331235010806737†L68-L70】.
+// practices for installing custom tables.
 
 // 1) Shortcode: [em_newsletter_form]
 add_shortcode(
         'em_newsletter_form',
         function () {
-                $success = filter_input( INPUT_GET, 'success', FILTER_SANITIZE_SPECIAL_CHARS );
+                // Retrieve the success parameter from the query string. If filter_input
+                // is unavailable, fall back to $_GET. This prevents fatal errors when
+                // the PHP filter extension is disabled.
+                $success = '';
+                if ( function_exists( 'filter_input' ) ) {
+                        $success = filter_input( INPUT_GET, 'success', FILTER_SANITIZE_SPECIAL_CHARS );
+                }
+                if ( '' === $success && isset( $_GET['success'] ) ) {
+                        $success = sanitize_text_field( wp_unslash( $_GET['success'] ) );
+                }
                 if ( '1' === $success ) {
                         return '<div class="em-success" role="status" aria-live="polite" style="background:#e9f7ef;border-radius:12px;padding:12px;margin-bottom:8px"><strong>' . esc_html__( 'Thank you!', 'emindy-core' ) . '</strong> ' . esc_html__( 'Please check your inbox.', 'emindy-core' ) . '</div>';
                 }
@@ -91,7 +101,15 @@ add_action( 'admin_post_em_newsletter_subscribe', 'emindy_newsletter_handle' );
  * @return void
  */
 function emindy_newsletter_handle() {
-        $nonce = filter_input( INPUT_POST, '_wpnonce', FILTER_SANITIZE_SPECIAL_CHARS );
+        // Retrieve nonce value from the request. Fallback to $_POST when filter_input
+        // is unavailable to avoid fatal errors on hosts without the filter extension.
+        $nonce = '';
+        if ( function_exists( 'filter_input' ) ) {
+                $nonce = filter_input( INPUT_POST, '_wpnonce', FILTER_SANITIZE_SPECIAL_CHARS );
+        }
+        if ( '' === $nonce && isset( $_POST['_wpnonce'] ) ) {
+                $nonce = sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) );
+        }
 
         if ( ! $nonce || ! wp_verify_nonce( $nonce, 'emindy_newsletter_subscribe' ) ) {
                 wp_die( esc_html__( 'Security check failed', 'emindy-core' ), '', array( 'response' => 403 ) );
@@ -114,7 +132,7 @@ function emindy_newsletter_handle() {
         $wpdb->query( // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name is trusted prefix.
                 $wpdb->prepare(
                         "INSERT INTO $table (email, name, consent, ip, ua) VALUES (%s,%s,%d,%s,%s)
-     ON DUPLICATE KEY UPDATE name=VALUES(name), consent=VALUES(consent)",
+      ON DUPLICATE KEY UPDATE name=VALUES(name), consent=VALUES(consent)",
                         $email,
                         $name,
                         $consent,
@@ -152,7 +170,7 @@ function emindy_newsletter_handle() {
 
         wp_mail( $email, $subject, $body, $headers );
 
-        // Redirect.
+        // Redirect after success.
         $target = add_query_arg( 'success', '1', home_url( '/newsletter/' ) );
         wp_safe_redirect( $target );
         exit;
@@ -166,10 +184,19 @@ function emindy_newsletter_handle() {
 function emindy_client_ip() {
         foreach ( array( 'HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR' ) as $k ) {
                 if ( ! empty( $_SERVER[ $k ] ) ) {
-                        $ip = explode( ',', sanitize_text_field( wp_unslash( $_SERVER[ $k ] ) ) )[0];
-                        $ip = trim( $ip );
-
-                        if ( filter_var( $ip, FILTER_VALIDATE_IP ) ) {
+                        $ip_parts = explode( ',', sanitize_text_field( wp_unslash( $_SERVER[ $k ] ) ) );
+                        $ip       = trim( $ip_parts[0] );
+                        // Validate the IP address. Use filter_var when available; fall
+                        // back to a simple pattern check when the filter extension is
+                        // disabled.
+                        $is_valid = false;
+                        if ( function_exists( 'filter_var' ) ) {
+                                $is_valid = (bool) filter_var( $ip, FILTER_VALIDATE_IP );
+                        } else {
+                                // Basic IPv4 validation: four octets 0-255 separated by dots.
+                                $is_valid = (bool) preg_match( '/^(?:\d{1,3}\.){3}\d{1,3}$/', $ip );
+                        }
+                        if ( $is_valid ) {
                                 return $ip;
                         }
                 }
