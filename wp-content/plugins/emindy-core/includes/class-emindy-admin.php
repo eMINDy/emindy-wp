@@ -13,6 +13,7 @@ class Admin {
     add_action( 'add_meta_boxes', array( __CLASS__, 'metabox' ) );
     add_action( 'save_post', array( __CLASS__, 'save' ), 10, 2 );
     add_action( 'admin_enqueue_scripts', array( __CLASS__, 'assets' ) );
+    add_action( 'admin_notices', array( __CLASS__, 'missing_pages_notice' ) );
   }
 
   /**
@@ -148,6 +149,24 @@ class Admin {
         'invalid' => __( 'Invalid JSON ✖', 'emindy-core' ),
       )
     );
+  }
+
+  /**
+   * Surface missing required pages to administrators using the shortcode output.
+   */
+  public static function missing_pages_notice() {
+    if ( ! current_user_can( 'manage_options' ) ) {
+      return;
+    }
+
+    // Reuse the shortcode to keep logic centralized.
+    $notice = do_shortcode( '[em_admin_notice_missing_pages]' );
+
+    if ( empty( $notice ) ) {
+      return;
+    }
+
+    echo wp_kses_post( $notice );
   }
 }
 
