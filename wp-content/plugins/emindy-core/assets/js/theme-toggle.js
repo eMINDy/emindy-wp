@@ -59,13 +59,13 @@
       return;
     }
 
-    rootElement.setAttribute('data-theme', normalized);
+    rootElement.setAttribute('data-em-theme', normalized);
     persistTheme(normalized);
     updateToggleControls(normalized);
   }
 
   function current() {
-    var htmlTheme = rootElement ? rootElement.getAttribute('data-theme') : null;
+    var htmlTheme = rootElement ? rootElement.getAttribute('data-em-theme') : null;
     return sanitizeTheme(htmlTheme || FALLBACK_THEME);
   }
 
