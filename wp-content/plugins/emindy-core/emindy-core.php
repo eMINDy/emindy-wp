@@ -20,6 +20,7 @@ require_once EMINDY_CORE_PATH . 'includes/schema.php';
 require_once EMINDY_CORE_PATH . 'includes/newsletter.php';
 require_once EMINDY_CORE_PATH . 'includes/class-emindy-cpt.php';
 require_once EMINDY_CORE_PATH . 'includes/class-emindy-taxonomy.php';
+require_once EMINDY_CORE_PATH . 'includes/class-emindy-shortcodes-deprecated.php';
 require_once EMINDY_CORE_PATH . 'includes/class-emindy-shortcodes.php';
 require_once EMINDY_CORE_PATH . 'includes/class-emindy-content-inject.php';
 require_once EMINDY_CORE_PATH . 'includes/class-emindy-meta.php';
@@ -156,6 +157,7 @@ function emindy_core_register_content_types() {
  */
 function emindy_core_register_shortcodes() {
         \EMINDY\Core\Shortcodes::register_all();
+        \EMINDY\Core\Shortcodes_Deprecated::register_all();
 }
 
 /**
