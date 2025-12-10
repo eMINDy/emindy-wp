@@ -1,26 +1,149 @@
 <!-- wp:template-part {"slug":"header","tagName":"header","align":"full"} /-->
 
-<!-- wp:group {"metadata":{"name":"Archive — em_video"},"tagName":"main","align":"full","style":{"spacing":{"padding":{"top":"1.25rem","bottom":"2.5rem"}}},"layout":{"type":"constrained","contentSize":"1200px"}} -->
-<main class="wp-block-group alignfull" id="main-content" style="padding-top:1.25rem;padding-bottom:2.5rem">
-
-  <!-- wp:pattern {"slug":"emindy/archive-cpt"} /-->
-
-  <!-- CTA -->
-  <!-- wp:group {"style":{"spacing":{"margin":{"top":"2rem"},"padding":{"top":"1.5rem","bottom":"1.5rem"}},"color":{"background":"var(--wp--custom--brand--colors--deepBlue)"},"border":{"radius":"var(--wp--custom--brand--radius--2xl)"},"elements":{"link":{"color":{"text":"var(--wp--preset--color--white)"}}}},"textColor":"white","layout":{"type":"constrained"}} -->
-  <div class="wp-block-group has-white-color has-text-color has-background" style="border-radius:var(--wp--custom--brand--radius--2xl);background-color:var(--wp--custom--brand--colors--deepBlue);padding-top:1.5rem;padding-bottom:1.5rem;margin-top:2rem">
-    <!-- wp:heading {"level":3} -->
-    <h3 class="wp-block-heading">Want more ways to learn and practice?</h3>
+<!-- wp:group {"metadata":{"name":"Archive — em_video (Videos)"},"tagName":"main","align":"full","style":{"spacing":{"padding":{"top":"1.25rem","bottom":"2.5rem"}}},"layout":{"type":"constrained","contentSize":"1200px"}} -->
+<main
+  id="main-content"
+  class="wp-block-group alignfull"
+  style="padding-top:1.25rem;padding-bottom:2.5rem"
+>
+  <!-- Intro -->
+  <!-- wp:group {"style":{"spacing":{"blockGap":"0.5rem","margin":{"bottom":"1.75rem"}}},"layout":{"type":"constrained"}} -->
+  <div class="wp-block-group" style="margin-bottom:1.75rem">
+    <!-- wp:heading {"level":1} -->
+    <h1 class="wp-block-heading">Videos</h1>
     <!-- /wp:heading -->
 
     <!-- wp:paragraph -->
-    <p>Explore the <a href="/exercise-library/">Exercise Library</a> for guided step-by-step practices that pair beautifully with your videos.</p>
+    <p>
+      Short, science-based videos to help you understand your mind, practice
+      calm, and build gentle daily habits for your mental well-being.
+    </p>
+    <!-- /wp:paragraph -->
+
+    <!-- wp:paragraph {"fontSize":"small"} -->
+    <p class="has-small-font-size">
+      This is the full eMINDy video library at <code>/videos/</code>. Use search
+      or browse by topic to find the support that fits your moment.
+    </p>
     <!-- /wp:paragraph -->
   </div>
   <!-- /wp:group -->
 
+  <!-- Search & topics -->
+  <!-- wp:group {"style":{"spacing":{"blockGap":"1rem","margin":{"bottom":"2rem"}}},"layout":{"type":"constrained"}} -->
+  <div class="wp-block-group" style="margin-bottom:2rem">
+    <!-- wp:group {"style":{"spacing":{"blockGap":"0.75rem"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between","verticalAlignment":"center"}} -->
+    <div class="wp-block-group">
+      <!-- wp:search {"label":"Search videos","showLabel":false,"placeholder":"Search videos…","width":280,"widthUnit":"px","buttonText":"Search"} /-->
+
+      <!-- wp:paragraph {"fontSize":"small"} -->
+      <p class="has-small-font-size">
+        Tip: try words like “anxiety”, “sleep”, or “focus”.
+      </p>
+      <!-- /wp:paragraph -->
+    </div>
+    <!-- /wp:group -->
+
+    <!-- wp:group {"style":{"spacing":{"blockGap":"0.5rem","margin":{"top":"1rem"}}},"layout":{"type":"constrained"}} -->
+    <div class="wp-block-group" style="margin-top:1rem">
+      <!-- wp:heading {"level":2,"fontSize":"small"} -->
+      <h2 class="wp-block-heading has-small-font-size">Browse by topic</h2>
+      <!-- /wp:heading -->
+
+      <!-- wp:tag-cloud {"taxonomy":"em_topic","numberOfTags":20,"showTagCounts":false,"smallestFontSize":"0.85rem","largestFontSize":"0.95rem"} /-->
+    </div>
+    <!-- /wp:group -->
+  </div>
+  <!-- /wp:group -->
+
+  <!-- Video grid -->
+  <!-- wp:query {"queryId":0,"query":{"perPage":9,"pages":0,"offset":0,"postType":["em_video"],"order":"desc","orderBy":"date","inherit":true},"layout":{"type":"constrained"}} -->
+  <div class="wp-block-query">
+    <!-- wp:post-template {"layout":{"type":"grid","columnCount":3,"columnGap":"1.75rem","rowGap":"2rem"}} -->
+    <!-- wp:group {"style":{"spacing":{"blockGap":"0.75rem","padding":{"top":"1rem","right":"1rem","bottom":"1.25rem","left":"1rem"}},"border":{"radius":"var(--wp--custom--brand--radius--xl)","width":"1px","color":"var(--em-border)"}},"layout":{"type":"constrained"}} -->
+    <div
+      class="wp-block-group"
+      style="
+        border-radius:var(--wp--custom--brand--radius--xl);
+        border-width:1px;
+        border-style:solid;
+        border-color:var(--em-border);
+        padding-top:1rem;
+        padding-right:1rem;
+        padding-bottom:1.25rem;
+        padding-left:1rem;
+      "
+    >
+      <!-- wp:post-featured-image {"isLink":true,"aspectRatio":"16/9","height":"auto","style":{"border":{"radius":"var(--wp--custom--brand--radius--lg)"}}} /-->
+
+      <!-- wp:group {"style":{"spacing":{"blockGap":"0.5rem","margin":{"top":"0.75rem"}}},"layout":{"type":"constrained"}} -->
+      <div class="wp-block-group" style="margin-top:0.75rem">
+        <!-- wp:post-title {"level":3,"isLink":true,"fontSize":"medium"} /-->
+
+        <!-- wp:group {"style":{"spacing":{"blockGap":"0.5rem"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"flex-start"}} -->
+        <div class="wp-block-group">
+          <!-- wp:post-date {"format":"M j, Y","isLink":false,"fontSize":"small"} /-->
+          <!-- wp:post-terms {"term":"em_topic","fontSize":"small"} /-->
+        </div>
+        <!-- /wp:group -->
+
+        <!-- wp:post-excerpt {"moreText":"Watch video","showMoreOnNewLine":false,"fontSize":"small"} /-->
+      </div>
+      <!-- /wp:group -->
+    </div>
+    <!-- /wp:group -->
+    <!-- /wp:post-template -->
+
+    <!-- wp:query-no-results -->
+    <div class="wp-block-query-no-results">
+      <!-- wp:paragraph -->
+      <p>
+        No videos found yet. Try a different search term or check back soon for
+        new content.
+      </p>
+      <!-- /wp:paragraph -->
+    </div>
+    <!-- /wp:query-no-results -->
+
+    <!-- wp:query-pagination {"layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap"}} -->
+    <div class="wp-block-query-pagination">
+      <!-- wp:query-pagination-previous /-->
+      <!-- wp:query-pagination-numbers /-->
+      <!-- wp:query-pagination-next /-->
+    </div>
+    <!-- /wp:query-pagination -->
+  </div>
+  <!-- /wp:query -->
+
+  <!-- CTA -->
+  <!-- wp:group {"style":{"spacing":{"margin":{"top":"2.5rem"},"padding":{"top":"1.5rem","right":"1.75rem","bottom":"1.5rem","left":"1.75rem"}},"color":{"background":"var(--wp--custom--brand--colors--deepBlue)"},"border":{"radius":"var(--wp--custom--brand--radius--2xl)"},"elements":{"link":{"color":{"text":"var(--wp--preset--color--white)"}}}},"textColor":"white","layout":{"type":"constrained"}} -->
+  <div
+    class="wp-block-group has-white-color has-text-color has-background"
+    style="
+      border-radius:var(--wp--custom--brand--radius--2xl);
+      background-color:var(--wp--custom--brand--colors--deepBlue);
+      padding-top:1.5rem;
+      padding-right:1.75rem;
+      padding-bottom:1.5rem;
+      padding-left:1.75rem;
+      margin-top:2.5rem;
+    "
+  >
+    <!-- wp:heading {"level":3} -->
+    <h3 class="wp-block-heading">
+      Want guided practice to go with your videos?
+    </h3>
+    <!-- /wp:heading -->
+
+    <!-- wp:paragraph -->
+    <p>
+      Visit the <a href="/exercises/">Exercise Library</a> for step-by-step
+      practices that pair beautifully with what you&#8217;re watching.
+    </p>
+    <!-- /wp:paragraph -->
+  </div>
+  <!-- /wp:group -->
 </main>
 <!-- /wp:group -->
 
 <!-- wp:template-part {"slug":"footer","tagName":"footer","align":"full"} /-->
-
-<!-- Sources: :contentReference[oaicite:0]{index=0} :contentReference[oaicite:1]{index=1} :contentReference[oaicite:2]{index=2} :contentReference[oaicite:3]{index=3} -->
