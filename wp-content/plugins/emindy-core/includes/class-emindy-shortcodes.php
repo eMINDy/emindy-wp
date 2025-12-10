@@ -1015,11 +1015,19 @@ add_shortcode('em_i18n', function($atts){
 add_shortcode('em_admin_notice_missing_pages', function(){
   if( ! current_user_can('manage_options') ) return '';
   $out = [];
-  if( ! get_page_by_path('blog') ) {
-    $out[] = esc_html__( 'Missing page: /blog (Posts landing)', 'emindy-core' );
-  }
-  if( ! get_page_by_path('library') ) {
-    $out[] = esc_html__( 'Missing page: /library (Library hub)', 'emindy-core' );
+  $required_pages = array(
+    'assessments'        => esc_html__( 'Missing page: /assessments (Assessments hub)', 'emindy-core' ),
+    'assessment-result'  => esc_html__( 'Missing page: /assessment-result (Assessment results redirect target)', 'emindy-core' ),
+    'newsletter'         => esc_html__( 'Missing page: /newsletter (Newsletter signup)', 'emindy-core' ),
+    'emergency'          => esc_html__( 'Missing page: /emergency (Emergency resources referenced in assessments)', 'emindy-core' ),
+    'blog'               => esc_html__( 'Missing page: /blog (Posts landing)', 'emindy-core' ),
+    'library'            => esc_html__( 'Missing page: /library (Library hub)', 'emindy-core' ),
+  );
+
+  foreach ( $required_pages as $slug => $message ) {
+    if ( ! get_page_by_path( $slug ) ) {
+      $out[] = $message;
+    }
   }
   if( empty($out) ) return '';
   $html = '<div class="em-admin-note" style="margin-top:1rem;padding:.8rem;border:1px solid #f5d27d;border-radius:8px;background:#fff9e8">';
