@@ -1,18 +1,32 @@
 <!-- wp:template-part {"slug":"header","tagName":"header","align":"full"} /-->
 
 <!-- wp:group {"metadata":{"name":"Archive — em_article"},"tagName":"main","align":"full","style":{"spacing":{"padding":{"top":"1.25rem","bottom":"2.5rem"}}},"layout":{"type":"constrained","contentSize":"1200px"}} -->
-<main class="wp-block-group alignfull" id="main-content" style="padding-top:1.25rem;padding-bottom:2.5rem">
-
+<main
+  id="main-content"
+  class="wp-block-group alignfull"
+  style="padding-top:1.25rem;padding-bottom:2.5rem"
+>
   <!-- wp:pattern {"slug":"emindy/archive-cpt"} /-->
 
   <!-- CTA -->
-  <!-- wp:group {"style":{"spacing":{"margin":{"top":"2rem"},"padding":{"top":"1.5rem","bottom":"1.5rem"}},"color":{"background":"#0b2d49"},"border":{"radius":"var(--wp--custom--brand--radius--2xl)"},"elements":{"link":{"color":{"text":"var(--wp--preset--color--white)"}}}},"textColor":"white","layout":{"type":"constrained"}} -->
-  <div class="wp-block-group has-white-color has-text-color has-background" style="border-radius:var(--wp--custom--brand--radius--2xl);background-color:#0b2d49;padding-top:1.5rem;padding-bottom:1.5rem">
-    <h3>Looking for guided practice?</h3>
-    <p>Try the <a href="/em_exercise/">Exercise Library</a> for short, practical How-To exercises.</p>
+  <!-- wp:group {"style":{"spacing":{"margin":{"top":"2rem"},"padding":{"top":"1.5rem","bottom":"1.5rem"}},"color":{"background":"var(--wp--custom--brand--colors--deepBlue)"},"border":{"radius":"var(--wp--custom--brand--radius--2xl)"},"elements":{"link":{"color":{"text":"var(--wp--preset--color--white)"}}}},"textColor":"white","layout":{"type":"constrained"},"className":"emindy-archive-cta"} -->
+  <div
+    class="wp-block-group emindy-archive-cta has-white-color has-text-color has-background"
+    style="margin-top:2rem;border-radius:var(--wp--custom--brand--radius--2xl);background-color:var(--wp--custom--brand--colors--deepBlue);padding-top:1.5rem;padding-bottom:1.5rem"
+  >
+    <!-- wp:heading {"level":3} -->
+    <h3 class="wp-block-heading">Ready to put this into practice?</h3>
+    <!-- /wp:heading -->
+
+    <!-- wp:paragraph -->
+    <p>
+      Explore the
+      <a href="/exercise-library/">Exercise Library</a>
+      for short, guided practices you can do in just a few minutes.
+    </p>
+    <!-- /wp:paragraph -->
   </div>
   <!-- /wp:group -->
-
 </main>
 <!-- /wp:group -->
 
