@@ -183,10 +183,10 @@ function emindy_core_enqueue_assets() {
 
         $post          = get_post();
         $content       = $post ? (string) $post->post_content : '';
-        $has_shortcode = static function ( string $shortcode ) use ( $content ) : bool {
-                return $content && has_shortcode( $content, $shortcode );
-        };
-
+        $has_shortcode = static function ( $shortcode ) use ( $content ) {
+    return $content && has_shortcode( $content, $shortcode );
+};
+	
         $is_assessments_page    = is_page( 'assessments' );
         $needs_assessment_forms = $is_assessments_page || $has_shortcode( 'em_phq9' ) || $has_shortcode( 'em_gad7' ) || $has_shortcode( 'em_assessment_result' );
         $needs_player_assets    = is_singular( 'em_exercise' ) || $has_shortcode( 'em_player' ) || $has_shortcode( 'em_exercise_steps' );
