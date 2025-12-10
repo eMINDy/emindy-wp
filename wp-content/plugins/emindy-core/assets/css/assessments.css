@@ -1,0 +1,325 @@
+/*
+eMINDy Assessments
+Universal assessment layout + PHQ-9 severity accents + print-friendly result
+
+Assumes base card and typography are handled by:
+- Theme style.css (tokens, card shells)
+- emindy-core.css (.em-phq9 container, lists, actions)
+*/
+
+/* ---------------------------------
+Root wrapper + local design tokens
+---------------------------------- */
+
+.em-assessment,
+.em-phq9 {
+  /* Generic assessment tokens */
+  --em-assessment-border-padding: 0.6rem;
+  --em-assessment-border-minimal: #8ed1b2;
+  --em-assessment-border-mild: #66d9ff;
+  --em-assessment-border-moderate: #f4d483;
+  --em-assessment-border-severe: #cf2e2e;
+  --em-assessment-border-default: #cccccc;
+
+  --em-assessment-border-radius: 8px;
+  --em-assessment-text-color: #0a2a43;
+  --em-assessment-muted-color: #4a5568;
+  --em-assessment-chip-bg: rgba(0, 163, 163, 0.06);
+  --em-assessment-chip-text: #006f6f;
+
+  --em-assessment-print-background: #fefefe;
+  --em-assessment-print-padding: 20px;
+  --em-assessment-print-margin-top: 20px;
+
+  /* Backward-compatible PHQ-9 aliases */
+  --em-phq9-border-padding: var(--em-assessment-border-padding);
+  --em-phq9-border-minimal: var(--em-assessment-border-minimal);
+  --em-phq9-border-mild: var(--em-assessment-border-mild);
+  --em-phq9-border-moderate: var(--em-assessment-border-moderate);
+  --em-phq9-border-severe: var(--em-assessment-border-severe);
+  --em-phq9-border-default: var(--em-assessment-border-default);
+  --em-phq9-text-color: var(--em-assessment-text-color);
+  --em-phq9-note-color: var(--em-assessment-muted-color);
+  --em-phq9-border-radius: var(--em-assessment-border-radius);
+  --em-phq9-print-background: var(--em-assessment-print-background);
+  --em-phq9-print-padding: var(--em-assessment-print-padding);
+  --em-phq9-print-margin-top: var(--em-assessment-print-margin-top);
+}
+
+.em-assessment,
+.em-phq9 {
+  color: var(--em-assessment-text-color);
+}
+
+/* ---------------------------------
+Generic assessment layout
+(shared across all assessments)
+---------------------------------- */
+
+/* Header (title + meta + optional chip/badge) */
+.em-assessment__header,
+.em-phq9__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.em-assessment__title,
+.em-phq9__title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.em-assessment__meta,
+.em-phq9__meta {
+  font-size: 0.85rem;
+  color: var(--em-assessment-muted-color);
+  margin: 0.25rem 0 0.75rem;
+}
+
+.em-assessment__chip,
+.em-phq9__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: var(--em-assessment-chip-bg);
+  color: var(--em-assessment-chip-text);
+}
+
+/* Questions list */
+.em-assessment__questions,
+.em-phq9__questions {
+  margin: 0 0 1.25rem;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Single question block */
+.em-assessment__question,
+.em-phq9__question {
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.5rem;
+  background: rgba(10, 42, 67, 0.02);
+}
+
+.em-assessment__question-title,
+.em-phq9__question-title {
+  margin: 0 0 0.4rem;
+  font-weight: 500;
+}
+
+/* Fieldset/legend baseline (for semantic grouping) */
+.em-assessment fieldset,
+.em-phq9 fieldset {
+  margin: 0 0 1.25rem;
+  padding: 0;
+  border: 0;
+}
+
+.em-assessment legend,
+.em-phq9 legend {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+/* Options grid (e.g. Likert scale choices) */
+.em-assessment__options,
+.em-phq9__options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.45rem;
+  margin-top: 0.25rem;
+}
+
+/* Single option (label as pill) */
+.em-assessment__option,
+.em-phq9__option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid rgba(10, 42, 67, 0.14);
+  background-color: #ffffff;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+/* Radio/checkbox alignment */
+.em-assessment__option input[type="radio"],
+.em-assessment__option input[type="checkbox"],
+.em-phq9__option input[type="radio"],
+.em-phq9__option input[type="checkbox"] {
+  margin: 0 0.1rem 0 0;
+}
+
+/* Focus state for accessibility */
+.em-assessment__option input[type="radio"]:focus-visible + span,
+.em-assessment__option input[type="checkbox"]:focus-visible + span,
+.em-phq9__option input[type="radio"]:focus-visible + span,
+.em-phq9__option input[type="checkbox"]:focus-visible + span {
+  outline: 2px solid #00a3a3;
+  outline-offset: 2px;
+}
+
+/* Selected option (when a class is applied via JS) */
+.em-assessment__option.is-selected,
+.em-phq9__option.is-selected {
+  border-color: #00a3a3;
+  background-color: rgba(0, 163, 163, 0.06);
+}
+
+/* Actions row (submit, reset, etc.) */
+.em-assessment__actions,
+.em-phq9__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+/* Footer/disclaimer text */
+.em-assessment__disclaimer,
+.em-phq9__disclaimer,
+.em-assessment__note,
+.em-phq9__note {
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  color: var(--em-assessment-muted-color);
+}
+
+/* ---------------------------------
+Severity score accents (all tests)
+Used for score line showing numeric score + severity label
+---------------------------------- */
+
+.em-assessment__score,
+.em-phq9__score {
+  border-left: 4px solid var(--em-assessment-border-default);
+  padding-left: var(--em-assessment-border-padding);
+  margin: 0 0 0.5rem;
+  font-weight: 500;
+}
+
+/* Severity-specific accents (minimal, mild, moderate, severe) */
+.em-assessment__score[data-severity="minimal"],
+.em-phq9__score[data-severity="minimal"] {
+  border-left-color: var(--em-assessment-border-minimal);
+}
+
+.em-assessment__score[data-severity="mild"],
+.em-phq9__score[data-severity="mild"] {
+  border-left-color: var(--em-assessment-border-mild);
+}
+
+.em-assessment__score[data-severity="moderate"],
+.em-phq9__score[data-severity="moderate"] {
+  border-left-color: var(--em-assessment-border-moderate);
+}
+
+.em-assessment__score[data-severity="severe"],
+.em-phq9__score[data-severity="severe"] {
+  border-left-color: var(--em-assessment-border-severe);
+}
+
+/* Optional small label for severity wording */
+.em-assessment__severity-label,
+.em-phq9__severity-label {
+  font-weight: 600;
+}
+
+/* ---------------------------------
+Result blocks (generic + PHQ-9)
+---------------------------------- */
+
+.em-assessment__result,
+.em-phq9__result {
+  margin-top: 1.25rem;
+  padding: 1rem 1.1rem;
+  border-radius: var(--em-assessment-border-radius);
+  border: 1px solid var(--em-assessment-border-default);
+  background-color: #ffffff;
+}
+
+.em-assessment__result-title,
+.em-phq9__result-title {
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+}
+
+/* Utility: avoid splitting a result across pages when printed */
+.em-assessment--no-break,
+.em-phq9--no-break,
+.em-assessment__result,
+.em-phq9__result {
+  break-inside: avoid;
+}
+
+/* ---------------------------------
+Print layout for assessment results
+---------------------------------- */
+
+@media print {
+  /* Ensure colours and borders print as designed */
+  body,
+  .em-assessment,
+  .em-phq9,
+  .em-assessment__result,
+  .em-phq9__result {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* General body print baseline */
+  body {
+    color: #0a2a43;
+    font: 14px/1.5 "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont,
+      "eMINDy Sans", "Helvetica Neue", Arial, sans-serif;
+    background: #ffffff !important;
+  }
+
+  /* Standalone printable result card
+     (e.g. when user prints the page after completing the test) */
+  .em-assessment__result,
+  .em-phq9__result {
+    border: 1px solid var(--em-assessment-border-default);
+    border-radius: var(--em-assessment-border-radius);
+    padding: var(--em-assessment-print-padding);
+    margin-top: var(--em-assessment-print-margin-top);
+    background: var(--em-assessment-print-background);
+  }
+
+  .em-assessment__score,
+  .em-phq9__score {
+    font-weight: bold;
+    color: var(--em-assessment-text-color);
+  }
+
+  .em-assessment__note,
+  .em-phq9__note {
+    font-size: 12px;
+    color: var(--em-assessment-muted-color);
+  }
+
+  /* Optional branded header line for printed assessment sheets */
+  .em-brand-header::before {
+    content: "eMINDy — Easy Mind, Daily";
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+}
