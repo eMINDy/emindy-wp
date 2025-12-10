@@ -1,11 +1,26 @@
+<!--
+Template: Single — em_video
+
+Dedicated layout for individual eMINDy videos (em_video CPT).
+-->
+
 <!-- wp:template-part {"slug":"header","tagName":"header","align":"full"} /-->
 
-<!-- wp:group {"metadata":{"name":"Single — em_video"},"tagName":"main","align":"full","style":{"spacing":{"padding":{"top":"1.5rem","bottom":"2.5rem"}}},"layout":{"type":"constrained","contentSize":"900px"}} -->
-<main class="wp-block-group alignfull" id="main-content" style="padding-top:1.5rem;padding-bottom:2.5rem">
+<!-- wp:group {"metadata":{"name":"Single — em_video"},"tagName":"main","align":"full","style":{"spacing":{"padding":{"top":"1.5rem","bottom":"2.5rem"}}},"layout":{"type":"constrained","contentSize":"900px"},"ariaLabel":"Video content"} -->
+<main
+  id="main-content"
+  class="wp-block-group alignfull"
+  aria-label="Video content"
+  style="padding-top:1.5rem;padding-bottom:2.5rem"
+>
 
   <!-- Breadcrumbs -->
-  <!-- wp:group {"tagName":"nav","ariaLabel":"Breadcrumb","style":{"spacing":{"margin":{"bottom":"0.75rem"}}}} -->
-  <nav class="wp-block-group" aria-label="Breadcrumb" style="margin-bottom:0.75rem">
+  <!-- wp:group {"tagName":"nav","className":"emindy-breadcrumbs","ariaLabel":"Breadcrumbs","style":{"spacing":{"margin":{"bottom":"0.75rem"}}},"layout":{"type":"constrained"}} -->
+  <nav
+    class="wp-block-group emindy-breadcrumbs"
+    aria-label="Breadcrumbs"
+    style="margin-bottom:0.75rem"
+  >
     <!-- wp:shortcode -->
     [rank_math_breadcrumb]
     <!-- /wp:shortcode -->
@@ -15,50 +30,97 @@
   <!-- Title (H1) -->
   <!-- wp:post-title {"level":1,"style":{"typography":{"fontSize":"clamp(1.9rem,3vw,2.6rem)","lineHeight":"1.15"},"spacing":{"margin":{"bottom":"0.5rem"}}}} /-->
 
-  <!-- Meta row (date / updated) -->
-  <!-- wp:group {"layout":{"type":"flex","flexWrap":"wrap"},"style":{"spacing":{"blockGap":"0.75rem","margin":{"bottom":"1rem"}},"typography":{"fontSize":"0.95rem"}}} -->
-  <div class="wp-block-group" style="margin-bottom:1rem;font-size:0.95rem">
-    <!-- wp:post-date {"format":"F j, Y","isLink":false} /-->
-    <!-- wp:paragraph -->
-    <p aria-hidden="true">·</p>
-    <!-- /wp:paragraph -->
-    <!-- wp:paragraph -->
-    <p>Updated: <!-- wp:post-date {"displayType":"modified","format":"F j, Y","isLink":false} /--></p>
-    <!-- /wp:paragraph -->
+  <!-- Meta row: dates + taxonomy chips -->
+  <!-- wp:group {"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between","verticalAlignment":"center"},"style":{"spacing":{"blockGap":"0.75rem","margin":{"bottom":"1rem"}},"typography":{"fontSize":"0.95rem"}}} -->
+  <div
+    class="wp-block-group"
+    style="margin-bottom:1rem;font-size:0.95rem"
+  >
+    <!-- Left: publish / updated -->
+    <!-- wp:group {"layout":{"type":"flex","flexWrap":"wrap"},"style":{"spacing":{"blockGap":"0.5rem"}}} -->
+    <div class="wp-block-group">
+      <!-- wp:post-date {"format":"F j, Y","isLink":false} /-->
+
+      <!-- wp:paragraph {"ariaHidden":true} -->
+      <p aria-hidden="true">·</p>
+      <!-- /wp:paragraph -->
+
+      <!-- wp:paragraph -->
+      <p>
+        Updated:
+        <!-- wp:post-date {"displayType":"modified","format":"F j, Y","isLink":false} /-->
+      </p>
+      <!-- /wp:paragraph -->
+    </div>
+    <!-- /wp:group -->
+
+    <!-- Right: taxonomy chips -->
+    <!-- wp:group {"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"flex-end"},"style":{"spacing":{"blockGap":"0.5rem"}}} -->
+    <div class="wp-block-group">
+      <!-- wp:post-terms {"term":"topic","className":"emindy-meta-chips emindy-meta-chips--topic","prefix":"Topic: "} /-->
+      <!-- wp:post-terms {"term":"duration","className":"emindy-meta-chips emindy-meta-chips--duration","prefix":"Length: "} /-->
+      <!-- wp:post-terms {"term":"level","className":"emindy-meta-chips emindy-meta-chips--level","prefix":"Level: "} /-->
+    </div>
+    <!-- /wp:group -->
   </div>
   <!-- /wp:group -->
 
-  <!-- HERO — Video Player
-       توصیه: ویدئوی یوتیوب را با WP YouTube Lyte در ابتدای محتوای نوشته قرار بده.
-       یعنی در ادیتور، اولین بلوک محتوایی: Shortcode [lyte id="YOUTUBE_ID"]
-       بدین ترتیب، این Post Content همان بالا ویدئو را نشان می‌دهد. -->
+  <!-- HERO — Video & main content
+       Recommendation: place the YouTube video (via WP YouTube Lyte) as the first block
+       in the post content, followed by a short description.
+       The eMINDy Core plugin will automatically append [em_video_chapters]
+       after the content for chapter navigation. -->
   <!-- wp:post-content {"layout":{"type":"constrained","contentSize":"900px"}} /-->
 
-  <!-- After-content utility bar (optional) -->
+  <!-- After-content divider -->
   <!-- wp:separator {"opacity":"css","className":"is-style-wide"} -->
   <hr class="wp-block-separator has-css-opacity is-style-wide" />
   <!-- /wp:separator -->
 
   <!-- Key Takeaways -->
-  <!-- wp:group {"tagName":"section","style":{"spacing":{"margin":{"top":"1rem","bottom":"1rem"},"padding":{"top":"1rem","bottom":"1rem","left":"1rem","right":"1rem"}},"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"shadow":"var(--wp--custom--brand--shadow--card)"},"layout":{"type":"constrained"}} -->
-  <section class="wp-block-group" style="border-radius:var(--wp--custom--brand--radius--xl);box-shadow:var(--wp--custom--brand--shadow--card);padding:1rem;margin-top:1rem;margin-bottom:1rem">
+  <!-- wp:group {"tagName":"section","className":"emindy-card emindy-card--takeaways","style":{"spacing":{"margin":{"top":"1rem","bottom":"1rem"},"padding":{"top":"1rem","right":"1rem","bottom":"1rem","left":"1rem"}},"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"shadow":"var(--wp--custom--brand--shadow--card)"},"layout":{"type":"constrained"}} -->
+  <section
+    class="wp-block-group emindy-card emindy-card--takeaways"
+    style="border-radius:var(--wp--custom--brand--radius--xl);box-shadow:var(--wp--custom--brand--shadow--card);padding:1rem;margin-top:1rem;margin-bottom:1rem"
+  >
     <!-- wp:heading {"level":2} -->
     <h2>Key takeaways</h2>
     <!-- /wp:heading -->
+
     <!-- wp:paragraph -->
-    <p>Summarise the key ideas for this video here — aim for two or three concise, action-focused points.</p>
+    <p>
+      Highlight two or three concise, action-focused ideas from this video to
+      help viewers remember what matters most.
+    </p>
     <!-- /wp:paragraph -->
+
+    <!-- Optional list for editors -->
+    <!-- wp:list -->
+    <ul>
+      <li>First key idea or practice.</li>
+      <li>Second key idea or practical tip.</li>
+      <li>Optional third takeaway.</li>
+    </ul>
+    <!-- /wp:list -->
   </section>
   <!-- /wp:group -->
 
   <!-- Transcript (collapsible) -->
-  <!-- wp:group {"tagName":"section","style":{"spacing":{"margin":{"top":"1rem","bottom":"1rem"}}},"layout":{"type":"constrained"}} -->
-  <section class="wp-block-group" style="margin-top:1rem;margin-bottom:1rem">
+  <!-- wp:group {"tagName":"section","className":"emindy-transcript","style":{"spacing":{"margin":{"top":"1rem","bottom":"1rem"}}},"layout":{"type":"constrained"}} -->
+  <section
+    class="wp-block-group emindy-transcript"
+    style="margin-top:1rem;margin-bottom:1rem"
+  >
     <!-- wp:html -->
     <details>
-      <summary id="em-transcript-toggle" aria-controls="em-transcript-content"><strong>Transcript</strong></summary>
+      <summary id="em-transcript-toggle" aria-controls="em-transcript-content">
+        <strong>Transcript</strong>
+      </summary>
       <div class="em-transcript" id="em-transcript-content">
-        <p>The transcript will appear here when it has been prepared for this video.</p>
+        <p>
+          The transcript will appear here when it has been prepared for this
+          video.
+        </p>
       </div>
     </details>
     <!-- /wp:html -->
@@ -66,41 +128,86 @@
   <!-- /wp:group -->
 
   <!-- Resources & Citations (Zotpress) -->
-  <!-- wp:group {"tagName":"section","style":{"spacing":{"margin":{"top":"1rem","bottom":"1rem"},"padding":{"top":"1rem","bottom":"1rem","left":"1rem","right":"1rem"}},"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"shadow":"var(--wp--custom--brand--shadow--card)"},"layout":{"type":"constrained"}} -->
-  <section class="wp-block-group" style="border-radius:var(--wp--custom--brand--radius--xl);box-shadow:var(--wp--custom--brand--shadow--card);padding:1rem;margin-top:1rem;margin-bottom:1rem">
+  <!-- wp:group {"tagName":"section","className":"emindy-card emindy-card--resources","style":{"spacing":{"margin":{"top":"1rem","bottom":"1rem"},"padding":{"top":"1rem","right":"1rem","bottom":"1rem","left":"1rem"}},"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"shadow":"var(--wp--custom--brand--shadow--card)"},"layout":{"type":"constrained"}} -->
+  <section
+    class="wp-block-group emindy-card emindy-card--resources"
+    style="border-radius:var(--wp--custom--brand--radius--xl);box-shadow:var(--wp--custom--brand--shadow--card);padding:1rem;margin-top:1rem;margin-bottom:1rem"
+  >
     <!-- wp:heading {"level":2} -->
     <h2>Resources &amp; citations</h2>
     <!-- /wp:heading -->
+
     <!-- wp:paragraph -->
-    <p>Further reading and sources that informed this video.</p>
+    <p>
+      List the studies, books, and trusted references that informed this video.
+      This supports transparency, learning, and search visibility.
+    </p>
     <!-- /wp:paragraph -->
+
     <!-- wp:shortcode -->
     [zotpress collection="YOUR_COLLECTION_ID" sortby="author" order="asc"]
     <!-- /wp:shortcode -->
   </section>
   <!-- /wp:group -->
 
+  <!-- Safety & Support -->
+  <!-- wp:group {"tagName":"section","className":"emindy-safety-note","style":{"spacing":{"margin":{"top":"1rem","bottom":"1rem"},"padding":{"top":"0.75rem","right":"1rem","bottom":"0.75rem","left":"1rem"}}},"layout":{"type":"constrained"}} -->
+  <section
+    class="wp-block-group emindy-safety-note"
+    style="padding-top:0.75rem;padding-right:1rem;padding-bottom:0.75rem;padding-left:1rem;margin-top:1rem;margin-bottom:1rem"
+  >
+    <!-- wp:paragraph {"fontSize":"small"} -->
+    <p class="has-small-font-size">
+      <strong>Safety note:</strong> This video is for education and self-help
+      only and is not a diagnosis or treatment. If you&apos;re in crisis or
+      worried about your safety, please contact a local emergency service or a
+      trusted professional, or visit our emergency help information page.
+    </p>
+    <!-- /wp:paragraph -->
+  </section>
+  <!-- /wp:group -->
+
   <!-- Related content -->
-  <!-- wp:group {"tagName":"section","style":{"spacing":{"margin":{"top":"1rem","bottom":"1rem"}}},"layout":{"type":"constrained"}} -->
-  <section class="wp-block-group" style="margin-top:1rem;margin-bottom:1rem">
+  <!-- wp:group {"tagName":"section","className":"emindy-related-content","style":{"spacing":{"margin":{"top":"1rem","bottom":"1rem"}}},"layout":{"type":"constrained"}} -->
+  <section
+    class="wp-block-group emindy-related-content"
+    style="margin-top:1rem;margin-bottom:1rem"
+  >
     <!-- wp:heading {"level":2} -->
     <h2>Related</h2>
     <!-- /wp:heading -->
+
     <!-- wp:shortcode -->
     [em_related]
     <!-- /wp:shortcode -->
   </section>
   <!-- /wp:group -->
 
+  <!-- Post navigation (previous / next video) -->
+  <!-- wp:group {"style":{"spacing":{"margin":{"top":"1.25rem","bottom":"1.25rem"}}},"layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap"}} -->
+  <div
+    class="wp-block-group"
+    style="margin-top:1.25rem;margin-bottom:1.25rem"
+  >
+    <!-- wp:post-navigation-link {"type":"previous","label":"Previous video","showTitle":true} /-->
+    <!-- wp:post-navigation-link {"type":"next","label":"Next video","showTitle":true} /-->
+  </div>
+  <!-- /wp:group -->
+
   <!-- Newsletter CTA -->
-  <!-- wp:group {"tagName":"section","style":{"spacing":{"margin":{"top":"1.25rem"},"padding":{"top":"1rem","bottom":"1rem"}},"color":{"background":"#0b2d49"},"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"elements":{"link":{"color":{"text":"var(--wp--preset--color--white)"}}}},"textColor":"white","layout":{"type":"constrained"}} -->
-  <section class="wp-block-group has-white-color has-text-color has-background" style="border-radius:var(--wp--custom--brand--radius--xl);background-color:#0b2d49;padding-top:1rem;padding-bottom:1rem">
+  <!-- wp:group {"tagName":"section","className":"emindy-newsletter-cta","style":{"spacing":{"margin":{"top":"1.25rem"},"padding":{"top":"1rem","right":"1rem","bottom":"1rem","left":"1rem"}},"color":{"background":"#0b2d49"},"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"elements":{"link":{"color":{"text":"var(--wp--preset--color--white)"}}}},"textColor":"white","layout":{"type":"constrained"}} -->
+  <section
+    class="wp-block-group emindy-newsletter-cta has-white-color has-text-color has-background"
+    style="border-radius:var(--wp--custom--brand--radius--xl);background-color:#0b2d49;padding-top:1rem;padding-right:1rem;padding-bottom:1rem;padding-left:1rem;margin-top:1.25rem"
+  >
     <!-- wp:heading {"level":3} -->
     <h3>Stay in practice</h3>
     <!-- /wp:heading -->
+
     <!-- wp:paragraph -->
-    <p>Get weekly mini-exercises and new videos.</p>
+    <p>Get weekly mini-exercises, new videos, and gentle reminders.</p>
     <!-- /wp:paragraph -->
+
     <!-- wp:shortcode -->
     [em_newsletter]
     <!-- /wp:shortcode -->
