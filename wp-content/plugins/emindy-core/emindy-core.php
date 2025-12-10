@@ -178,29 +178,51 @@ function emindy_core_register_meta() {
  * Enqueue public assets and localized data.
  */
 function emindy_core_enqueue_assets() {
-        // CSS
+        // CSS used across multiple components.
         wp_enqueue_style( 'emindy-core', EMINDY_CORE_URL . 'assets/css/emindy-core.css', [], EMINDY_CORE_VERSION );
-        wp_enqueue_style( 'emindy-player', EMINDY_CORE_URL . 'assets/css/player.css', [], EMINDY_CORE_VERSION );
-        // Core data for assessments (must load BEFORE phq9/gad7)
-        wp_register_script( 'emindy-assess-core', EMINDY_CORE_URL . 'assets/js/assess-core.js', [], EMINDY_CORE_VERSION, true );
-        wp_localize_script(
-                'emindy-assess-core',
-                'emindyAssess',
-                [
-                        'ajax'        => admin_url( 'admin-ajax.php' ),
-                        'nonce'       => wp_create_nonce( 'emindy_assess' ),
-                        'results_url' => \EMINDY\Core\assessment_result_base_url(),
-                ]
-        );
-        wp_enqueue_script( 'emindy-assess-core' );
-        // Player
-        wp_enqueue_script( 'emindy-player', EMINDY_CORE_URL . 'assets/js/player.js', [ 'emindy-assess-core' ], EMINDY_CORE_VERSION, true );
-        // Assessments
-        wp_enqueue_script( 'emindy-phq9', EMINDY_CORE_URL . 'assets/js/phq9.js', [ 'emindy-assess-core' ], EMINDY_CORE_VERSION, true );
-        wp_enqueue_script( 'emindy-gad7', EMINDY_CORE_URL . 'assets/js/gad7.js', [ 'emindy-assess-core' ], EMINDY_CORE_VERSION, true );
-        wp_enqueue_script( 'emindy-video-analytics', EMINDY_CORE_URL . 'assets/js/video-analytics.js', [ 'emindy-assess-core' ], EMINDY_CORE_VERSION, true );
 
+        $post          = get_post();
+        $content       = $post ? (string) $post->post_content : '';
+        $has_shortcode = static function ( string $shortcode ) use ( $content ) : bool {
+                return $content && has_shortcode( $content, $shortcode );
+        };
+
+        $is_assessments_page    = is_page( 'assessments' );
+        $needs_assessment_forms = $is_assessments_page || $has_shortcode( 'em_phq9' ) || $has_shortcode( 'em_gad7' ) || $has_shortcode( 'em_assessment_result' );
+        $needs_player_assets    = is_singular( 'em_exercise' ) || $has_shortcode( 'em_player' ) || $has_shortcode( 'em_exercise_steps' );
+        $needs_video_analytics  = is_singular( 'em_video' ) || $has_shortcode( 'em_video_chapters' ) || $has_shortcode( 'em_transcript' ) || $has_shortcode( 'em_video_player' );
+        $needs_assess_core      = $needs_assessment_forms || $needs_player_assets || $needs_video_analytics;
+
+        // Core data for assessments (must load BEFORE phq9/gad7/player/video analytics).
+        if ( $needs_assess_core ) {
+                wp_register_script( 'emindy-assess-core', EMINDY_CORE_URL . 'assets/js/assess-core.js', [], EMINDY_CORE_VERSION, true );
+                wp_localize_script(
+                        'emindy-assess-core',
+                        'emindyAssess',
+                        [
+                                'ajax'        => admin_url( 'admin-ajax.php' ),
+                                'nonce'       => wp_create_nonce( 'emindy_assess' ),
+                                'results_url' => \EMINDY\Core\assessment_result_base_url(),
+                        ]
+                );
+                wp_enqueue_script( 'emindy-assess-core' );
+        }
+
+        if ( $needs_player_assets ) {
+                wp_enqueue_style( 'emindy-player', EMINDY_CORE_URL . 'assets/css/player.css', [], EMINDY_CORE_VERSION );
+                wp_enqueue_script( 'emindy-player', EMINDY_CORE_URL . 'assets/js/player.js', [ 'emindy-assess-core' ], EMINDY_CORE_VERSION, true );
+        }
+
+        if ( $needs_assessment_forms ) {
+                wp_enqueue_script( 'emindy-phq9', EMINDY_CORE_URL . 'assets/js/phq9.js', [ 'emindy-assess-core' ], EMINDY_CORE_VERSION, true );
+                wp_enqueue_script( 'emindy-gad7', EMINDY_CORE_URL . 'assets/js/gad7.js', [ 'emindy-assess-core' ], EMINDY_CORE_VERSION, true );
+        }
+
+        if ( $needs_video_analytics ) {
+                wp_enqueue_script( 'emindy-video-analytics', EMINDY_CORE_URL . 'assets/js/video-analytics.js', [ 'emindy-assess-core' ], EMINDY_CORE_VERSION, true );
+        }
 }
+
 
 /**
  * Output fallback JSON-LD when Rank Math is unavailable.
