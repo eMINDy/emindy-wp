@@ -9,7 +9,7 @@
     root.setAttribute('data-em-theme', nextTheme);
     toggle.setAttribute('aria-pressed', nextTheme === DARK ? 'true' : 'false');
 
-    const label = nextTheme === DARK ? toggle.dataset.darkLabel : toggle.dataset.lightLabel;
+    const label = nextTheme === DARK ? toggle.dataset.labelDark : toggle.dataset.labelLight;
     if (label) {
       toggle.setAttribute('aria-label', label);
     }
