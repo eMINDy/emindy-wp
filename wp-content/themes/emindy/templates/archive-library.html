@@ -1,18 +1,184 @@
 <!--
 Template: Complete Archive
 
-This template powers the all-in-one archive page at /library/. It
-uses a pattern that lists videos, exercises, articles and blog posts
-in separate sections. To use this template, create a page with the
-slug “library” and assign this template. Users can search across all
-content and filter by topic.
+This template powers the all-in-one archive page at /library/.
+To use this template, create a page with the slug "library" (/library/)
+and assign this template to it. Users can search across all content
+and browse by topic.
 -->
 
 <!-- wp:template-part {"slug":"header","tagName":"header","align":"full"} /-->
 
 <!-- wp:group {"metadata":{"name":"Library — Complete Archive"},"tagName":"main","align":"full","style":{"spacing":{"padding":{"top":"1.75rem","bottom":"2.75rem"}}},"layout":{"type":"constrained","contentSize":"1200px"}} -->
 <main id="main-content" class="wp-block-group alignfull" style="padding-top:1.75rem;padding-bottom:2.75rem">
-<!-- wp:pattern {"slug":"emindy/archive-library"} /-->
+
+  <!-- Intro -->
+  <!-- wp:group {"style":{"spacing":{"blockGap":"0.75rem","margin":{"bottom":"2rem"}}},"layout":{"type":"constrained"}} -->
+  <div class="wp-block-group" style="margin-bottom:2rem">
+    <!-- wp:heading {"level":1} -->
+    <h1 class="wp-block-heading">Library</h1>
+    <!-- /wp:heading -->
+
+    <!-- wp:paragraph -->
+    <p>All of eMINDy’s videos, guided exercises, and articles in one calm, searchable place.</p>
+    <!-- /wp:paragraph -->
+  </div>
+  <!-- /wp:group -->
+
+  <!-- Search + Topic filters -->
+  <!-- wp:columns {"verticalAlignment":"center","style":{"spacing":{"blockGap":"1.5rem","margin":{"bottom":"2.25rem"}}}} -->
+  <div class="wp-block-columns are-vertically-aligned-center" style="margin-bottom:2.25rem">
+    <!-- wp:column {"verticalAlignment":"center","width":"65%"} -->
+    <div class="wp-block-column is-vertically-aligned-center" style="flex-basis:65%">
+      <!-- wp:search {"label":"Search the library","showLabel":false,"placeholder":"Search videos, exercises, articles…","width":100,"widthUnit":"%","buttonText":"Search","buttonUseIcon":true} /-->
+    </div>
+    <!-- /wp:column -->
+
+    <!-- wp:column {"verticalAlignment":"center","width":"35%"} -->
+    <div class="wp-block-column is-vertically-aligned-center" style="flex-basis:35%">
+      <!-- wp:group {"style":{"spacing":{"blockGap":"0.5rem","padding":{"top":"0.75rem","right":"1rem","bottom":"0.75rem","left":"1rem"}},"border":{"radius":"999px"},"color":{"background":"var(--em-chip-bg, var(--wp--preset--color--contrast-5,#f1f5f9))"}},"layout":{"type":"constrained"}} -->
+      <div class="wp-block-group" style="border-radius:999px;background-color:var(--em-chip-bg, var(--wp--preset--color--contrast-5,#f1f5f9));padding-top:0.75rem;padding-right:1rem;padding-bottom:0.75rem;padding-left:1rem">
+        <!-- wp:heading {"level":3,"style":{"typography":{"fontSize":"0.9rem"}}} -->
+        <h3 class="wp-block-heading" style="font-size:0.9rem">Browse by topic</h3>
+        <!-- /wp:heading -->
+
+        <!-- wp:tag-cloud {"taxonomy":"em_topic","smallestFontSize":"0.8rem","largestFontSize":"1rem"} /-->
+      </div>
+      <!-- /wp:group -->
+    </div>
+    <!-- /wp:column -->
+  </div>
+  <!-- /wp:columns -->
+
+  <!-- Videos section -->
+  <!-- wp:group {"style":{"spacing":{"blockGap":"1rem","margin":{"bottom":"2.5rem"}}},"layout":{"type":"constrained"}} -->
+  <div class="wp-block-group" style="margin-bottom:2.5rem">
+    <!-- wp:heading {"level":2} -->
+    <h2 class="wp-block-heading">Videos</h2>
+    <!-- /wp:heading -->
+
+    <!-- wp:query {"queryId":1,"query":{"perPage":6,"pages":0,"offset":0,"postType":"em_video","order":"desc","orderBy":"date","inherit":false},"displayLayout":{"type":"flex","columns":3},"align":"wide"} -->
+    <div class="wp-block-query alignwide">
+      <!-- wp:post-template -->
+      <!-- wp:group {"style":{"spacing":{"blockGap":"0.5rem","padding":{"top":"1rem","right":"1rem","bottom":"1rem","left":"1rem"}},"border":{"radius":"1rem","width":"1px","style":"solid","color":"var(--em-border, #e2e8f0)"},"color":{"background":"var(--em-card, #ffffff)"}}, "layout":{"type":"constrained"}} -->
+      <div class="wp-block-group" style="border-radius:1rem;border-width:1px;border-style:solid;border-color:var(--em-border, #e2e8f0);background-color:var(--em-card, #ffffff);padding-top:1rem;padding-right:1rem;padding-bottom:1rem;padding-left:1rem">
+        <!-- wp:post-featured-image {"isLink":true,"aspectRatio":"16/9","style":{"border":{"radius":"0.75rem"}}} /-->
+
+        <!-- wp:post-title {"level":3,"isLink":true,"style":{"typography":{"fontSize":"1.05rem"}}} /-->
+
+        <!-- wp:post-excerpt {"moreText":"View video","style":{"typography":{"fontSize":"0.95rem"}}} /-->
+
+        <!-- wp:post-terms {"term":"em_topic","prefix":"Topics: "} /-->
+      </div>
+      <!-- /wp:group -->
+      <!-- /wp:post-template -->
+
+      <!-- wp:query-no-results -->
+      <!-- wp:paragraph -->
+      <p>No videos found yet. New content will appear here as it’s published.</p>
+      <!-- /wp:paragraph -->
+      <!-- /wp:query-no-results -->
+    </div>
+    <!-- /wp:query -->
+  </div>
+  <!-- /wp:group -->
+
+  <!-- Exercises section -->
+  <!-- wp:group {"style":{"spacing":{"blockGap":"1rem","margin":{"bottom":"2.5rem"}}},"layout":{"type":"constrained"}} -->
+  <div class="wp-block-group" style="margin-bottom:2.5rem">
+    <!-- wp:heading {"level":2} -->
+    <h2 class="wp-block-heading">Guided exercises</h2>
+    <!-- /wp:heading -->
+
+    <!-- wp:query {"queryId":2,"query":{"perPage":6,"pages":0,"offset":0,"postType":"em_exercise","order":"desc","orderBy":"date","inherit":false},"displayLayout":{"type":"flex","columns":3},"align":"wide"} -->
+    <div class="wp-block-query alignwide">
+      <!-- wp:post-template -->
+      <!-- wp:group {"style":{"spacing":{"blockGap":"0.5rem","padding":{"top":"1rem","right":"1rem","bottom":"1rem","left":"1rem"}},"border":{"radius":"1rem","width":"1px","style":"solid","color":"var(--em-border, #e2e8f0)"},"color":{"background":"var(--em-card, #ffffff)"}}, "layout":{"type":"constrained"}} -->
+      <div class="wp-block-group" style="border-radius:1rem;border-width:1px;border-style:solid;border-color:var(--em-border, #e2e8f0);background-color:var(--em-card, #ffffff);padding-top:1rem;padding-right:1rem;padding-bottom:1rem;padding-left:1rem">
+        <!-- wp:post-title {"level":3,"isLink":true,"style":{"typography":{"fontSize":"1.05rem"}}} /-->
+
+        <!-- wp:post-excerpt {"moreText":"Start exercise","style":{"typography":{"fontSize":"0.95rem"}}} /-->
+
+        <!-- wp:post-terms {"term":"em_topic","prefix":"Topics: "} /-->
+      </div>
+      <!-- /wp:group -->
+      <!-- /wp:post-template -->
+
+      <!-- wp:query-no-results -->
+      <!-- wp:paragraph -->
+      <p>No guided exercises found yet. New practices will appear here as they’re added.</p>
+      <!-- /wp:paragraph -->
+      <!-- /wp:query-no-results -->
+    </div>
+    <!-- /wp:query -->
+  </div>
+  <!-- /wp:group -->
+
+  <!-- Articles & Guides section -->
+  <!-- wp:group {"style":{"spacing":{"blockGap":"1rem","margin":{"bottom":"2.5rem"}}},"layout":{"type":"constrained"}} -->
+  <div class="wp-block-group" style="margin-bottom:2.5rem">
+    <!-- wp:heading {"level":2} -->
+    <h2 class="wp-block-heading">Articles &amp; guides</h2>
+    <!-- /wp:heading -->
+
+    <!-- wp:query {"queryId":3,"query":{"perPage":6,"pages":0,"offset":0,"postType":"em_article","order":"desc","orderBy":"date","inherit":false},"displayLayout":{"type":"flex","columns":3},"align":"wide"} -->
+    <div class="wp-block-query alignwide">
+      <!-- wp:post-template -->
+      <!-- wp:group {"style":{"spacing":{"blockGap":"0.5rem","padding":{"top":"1rem","right":"1rem","bottom":"1rem","left":"1rem"}},"border":{"radius":"1rem","width":"1px","style":"solid","color":"var(--em-border, #e2e8f0)"},"color":{"background":"var(--em-card, #ffffff)"}}, "layout":{"type":"constrained"}} -->
+      <div class="wp-block-group" style="border-radius:1rem;border-width:1px;border-style:solid;border-color:var(--em-border, #e2e8f0);background-color:var(--em-card, #ffffff);padding-top:1rem;padding-right:1rem;padding-bottom:1rem;padding-left:1rem">
+        <!-- wp:post-title {"level":3,"isLink":true,"style":{"typography":{"fontSize":"1.05rem"}}} /-->
+
+        <!-- wp:post-excerpt {"moreText":"Read article","style":{"typography":{"fontSize":"0.95rem"}}} /-->
+
+        <!-- wp:post-terms {"term":"em_topic","prefix":"Topics: "} /-->
+      </div>
+      <!-- /wp:group -->
+      <!-- /wp:post-template -->
+
+      <!-- wp:query-no-results -->
+      <!-- wp:paragraph -->
+      <p>No articles found yet. New guides will appear here as they’re published.</p>
+      <!-- /wp:paragraph -->
+      <!-- /wp:query-no-results -->
+    </div>
+    <!-- /wp:query -->
+  </div>
+  <!-- /wp:group -->
+
+  <!-- Blog posts section -->
+  <!-- wp:group {"style":{"spacing":{"blockGap":"1rem"}},"layout":{"type":"constrained"}} -->
+  <div class="wp-block-group">
+    <!-- wp:heading {"level":2} -->
+    <h2 class="wp-block-heading">From the blog</h2>
+    <!-- /wp:heading -->
+
+    <!-- wp:query {"queryId":4,"query":{"perPage":5,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","inherit":false},"displayLayout":{"type":"list"},"align":"wide"} -->
+    <div class="wp-block-query alignwide">
+      <!-- wp:post-template -->
+      <!-- wp:group {"style":{"spacing":{"blockGap":"0.25rem","padding":{"top":"0.75rem","right":"0","bottom":"0.75rem","left":"0"}},"border":{"bottom":{"color":"var(--em-border, #e2e8f0)","width":"1px","style":"solid"}}},"layout":{"type":"constrained"}} -->
+      <div class="wp-block-group" style="padding-top:0.75rem;padding-right:0;padding-bottom:0.75rem;padding-left:0;border-bottom-color:var(--em-border, #e2e8f0);border-bottom-width:1px;border-bottom-style:solid">
+        <!-- wp:post-title {"level":3,"isLink":true,"style":{"typography":{"fontSize":"1rem"}}} /-->
+
+        <!-- wp:group {"style":{"spacing":{"blockGap":"0.5rem"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"flex-start"}} -->
+        <div class="wp-block-group">
+          <!-- wp:post-date {"format":"M j, Y"} /-->
+          <!-- wp:post-terms {"term":"em_topic","prefix":"Topics: "} /-->
+        </div>
+        <!-- /wp:group -->
+      </div>
+      <!-- /wp:group -->
+      <!-- /wp:post-template -->
+
+      <!-- wp:query-no-results -->
+      <!-- wp:paragraph -->
+      <p>No blog posts found yet.</p>
+      <!-- /wp:paragraph -->
+      <!-- /wp:query-no-results -->
+    </div>
+    <!-- /wp:query -->
+  </div>
+  <!-- /wp:group -->
+
 </main>
 <!-- /wp:group -->
 
