@@ -1,0 +1,15 @@
+{
+  "title": "Autoevaluación del estado de ánimo (PHQ-9)",
+  "submit": "Ver resultado",
+  "reset": "Restablecer",
+  "print": "Imprimir / Guardar PDF",
+  "copy": "Copiar resumen",
+  "share": "Obtener enlace para compartir",
+  "email": "Enviar por correo electrónico",
+  "note": "Esta evaluación es educativa y no sustituye una valoración profesional. Si te sientes inseguro, visita la página de ayuda de emergencia.",
+  "minimal": "Mínimo",
+  "mild": "Leve",
+  "moderate": "Moderado",
+  "moderately severe": "Moderadamente grave",
+  "severe": "Grave"
+}
