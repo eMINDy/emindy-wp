@@ -1,124 +1,100 @@
-/* Base card styles */
-.em-player,
-.em-chapters,
-.em-related,
-.em-newsletter,
-.em-phq9 {
-  border: 1px solid #e6e6e9;
-  border-radius: 12px;
-  padding: 16px;
-  margin: 16px 0;
-}
+/*
+ * eMINDy Core
+ * Shared plugin styles for headings, legacy PHQ-9 markup, filters toolbar,
+ * and related-content grid.
+ *
+ * Relies on:
+ * - Theme style.css for tokens, base cards (.em-player, .em-chapters, .em-related, .em-newsletter, .em-phq9)
+ * - player.css for .em-player internals
+ * - assessments.css for .em-assessment / .em-phq9 layouts & severity accents
+ */
+
+/* ---------------------------------
+Card headings inside plugin components
+---------------------------------- */
 
 .em-player h3,
-.em-chapters h3 {
+.em-chapters h3,
+.em-related h3,
+.em-newsletter h3 {
   margin-top: 0;
 }
 
-/* PHQ-9 + GAD-7 shared styles */
-.em-phq9 {
-  border: 1px solid var(--em-border, rgba(0, 0, 0, 0.08));
-  border-radius: 16px;
-  padding: 16px;
-  background: var(--em-card, #F8FAFC);
-}
+/* ---------------------------------
+Legacy PHQ-9 list markup (backwards-compat)
+Used only if older shortcodes still output:
+  .em-phq9__list > .em-phq9__item > .em-phq9__opt
+New layouts should use .em-assessment__* / .em-phq9__* from assessments.css.
+---------------------------------- */
 
 .em-phq9__list {
-  list-style: none;
-  margin: 0;
+  margin: 0 0 1.25rem;
   padding: 0;
-  display: grid;
-  gap: 12px;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .em-phq9__item {
-  border: 1px solid var(--em-border, rgba(0, 0, 0, 0.1));
-  border-radius: 12px;
-  padding: 12px;
-  background: var(--em-bg, #fff);
+  padding: 0.75rem 0.9rem;
+  border-radius: var(--em-assessment-border-radius, 0.5rem);
+  border: 1px solid
+    var(
+      --em-assessment-border-default,
+      var(--em-border, rgba(0, 0, 0, 0.1))
+    );
+  background: var(--em-card, #f8fafc);
 }
 
 .em-phq9__opt {
   display: flex;
-  gap: 8px;
   align-items: center;
-  padding: 6px 0;
+  gap: 0.45rem;
+  padding: 0.3rem 0;
 }
 
-.em-phq9__opt input:focus-visible {
-  outline: 2px solid var(--em-border, rgba(0, 0, 0, 0.35));
-  outline-offset: 3px;
+.em-phq9__opt input[type="radio"],
+.em-phq9__opt input[type="checkbox"] {
+  margin: 0;
 }
 
-.em-phq9__actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 12px;
-  flex-wrap: wrap;
-}
-
-.em-phq9__actions button {
+.em-phq9__opt label,
+.em-phq9__opt span {
   cursor: pointer;
-  border-radius: 10px;
-  border: 1px solid var(--em-border, rgba(0, 0, 0, 0.1));
-  background: transparent;
-  padding: 8px 12px;
-  color: inherit;
 }
 
-.em-phq9__actions button:hover,
-.em-phq9__actions button:focus-visible {
-  outline: 2px solid var(--em-border, rgba(0, 0, 0, 0.35));
+.em-phq9__opt input[type="radio"]:focus-visible,
+.em-phq9__opt input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--em-teal, #00a3a3);
   outline-offset: 2px;
 }
 
-.em-phq9__result {
-  margin-top: 12px;
-  border-top: 1px dashed var(--em-border, rgba(0, 0, 0, 0.1));
-  padding-top: 12px;
-}
+/* ---------------------------------
+Filters toolbar (archives / search helpers)
+---------------------------------- */
 
-@media (prefers-color-scheme: dark) {
-  .em-phq9 {
-    border-color: var(--em-border, rgba(255, 255, 255, 0.18));
-    background: var(--em-card, rgba(255, 255, 255, 0.06));
-  }
-
-  .em-phq9__item {
-    border-color: var(--em-border, rgba(255, 255, 255, 0.18));
-    background: transparent;
-  }
-
-  .em-phq9__actions button {
-    border-color: var(--em-border, rgba(255, 255, 255, 0.18));
-  }
-
-  .em-phq9__actions button:hover,
-  .em-phq9__actions button:focus-visible {
-    outline-color: var(--em-border, rgba(255, 255, 255, 0.45));
-  }
-
-  .em-phq9__opt input:focus-visible {
-    outline-color: var(--em-border, rgba(255, 255, 255, 0.45));
-  }
-}
-
-/* Filters */
 .em-filters {
   display: flex;
-  gap: 10px;
   flex-wrap: wrap;
   align-items: center;
-  margin: 0 0 12px;
+  gap: 0.625rem;
+  margin: 0 0 1rem;
 }
 
 .em-filters input[type="search"],
 .em-filters select {
-  padding: 8px 10px;
-  border-radius: 10px;
-  border: 1px solid var(--em-border, rgba(0, 0, 0, 0.1));
-  background: var(--em-card, #F8FAFC);
-  color: var(--em-text, #0A2A43);
+  min-width: 0;
+  padding: 0.5rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--em-border, rgba(0, 0, 0, 0.12));
+  background: var(--em-card, #f8fafc);
+  color: var(--em-text, #0a2a43);
+  font: inherit;
+}
+
+.em-filters input[type="search"]::placeholder {
+  color: rgba(10, 42, 67, 0.55);
 }
 
 .em-filters input[type="search"]:focus-visible,
@@ -129,49 +105,86 @@
 
 .em-filters .em-filter-submit,
 .em-filters .em-filter-reset {
-  padding: 8px 12px;
-  border-radius: 10px;
-  border: 1px solid var(--em-border);
-  background: transparent;
-  text-decoration: none;
   display: inline-flex;
   align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--em-border, rgba(0, 0, 0, 0.14));
+  background: transparent;
   color: inherit;
+  font: inherit;
+  text-decoration: none;
   cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.08s ease;
 }
 
 .em-filters .em-filter-submit:hover,
 .em-filters .em-filter-reset:hover,
 .em-filters .em-filter-submit:focus-visible,
 .em-filters .em-filter-reset:focus-visible {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: var(--em-border, rgba(0, 0, 0, 0.2));
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03);
   outline: 2px solid var(--em-border, rgba(0, 0, 0, 0.35));
   outline-offset: 2px;
 }
 
-@media (prefers-color-scheme: dark) {
+.em-filters .em-filter-submit:active,
+.em-filters .em-filter-reset:active {
+  transform: translateY(1px);
+}
+
+@media (max-width: 599px) {
+  .em-filters {
+    align-items: stretch;
+  }
+
   .em-filters input[type="search"],
   .em-filters select {
-    border-color: var(--em-border, rgba(255, 255, 255, 0.18));
-    background: var(--em-card, rgba(255, 255, 255, 0.06));
-    color: var(--em-text, #fff);
+    flex: 1 1 100%;
   }
 
   .em-filters .em-filter-submit,
   .em-filters .em-filter-reset {
-    border-color: var(--em-border, rgba(255, 255, 255, 0.18));
-  }
-
-  .em-filters .em-filter-submit:hover,
-  .em-filters .em-filter-reset:hover,
-  .em-filters .em-filter-submit:focus-visible,
-  .em-filters .em-filter-reset:focus-visible {
-    outline-color: var(--em-border, rgba(255, 255, 255, 0.45));
+    flex: 0 0 auto;
   }
 }
 
-/* Related grid */
+/* ---------------------------------
+Related content grid ([em_related])
+---------------------------------- */
+
 .em-related-grid {
+  margin: 0;
+  padding: 0;
+  list-style: none;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 12px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .em-related-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.em-related-grid li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.em-related-grid a {
+  text-decoration: none;
+}
+
+.em-related-grid a:hover,
+.em-related-grid a:focus-visible {
+  text-decoration: underline;
 }
