@@ -1,7 +1,28 @@
-(function(){
+(function () {
   'use strict';
 
   const KIND = 'phq9';
+
+  const SELECTORS = Object.freeze({
+    form: 'form.em-phq9',
+    result: '.em-phq9__result',
+    score: '.em-phq9__score',
+    reset: '.em-phq9__reset',
+    print: '.em-phq9__print',
+    copy: '.em-phq9__copy',
+    share: '.em-phq9__sharelink',
+    email: '.em-phq9__email',
+  });
+
+  const UI_TEXT = Object.freeze({
+    pleaseComplete: 'Please complete the form first.',
+    shareUnavailable: 'Share link service unavailable.',
+    shareCopied: 'Link copied',
+    shareFailed: 'Failed to create link',
+    emailUnavailable: 'Email service unavailable.',
+    copyButtonDefault: 'Copy summary',
+    copyButtonSuccess: 'Copied ✔',
+  });
 
   /**
    * Shorthand query helper.
@@ -9,8 +30,8 @@
    * @param {Document|Element} [root=document]
    * @returns {Element|null}
    */
-  function $(sel, root = document) {
-    return root.querySelector(sel);
+  function $(sel, root) {
+    return (root || document).querySelector(sel);
   }
 
   /**
@@ -19,8 +40,42 @@
    * @param {Document|Element} [root=document]
    * @returns {Element[]}
    */
-  function $all(sel, root = document) {
-    return Array.prototype.slice.call(root.querySelectorAll(sel));
+  function $all(sel, root) {
+    return Array.prototype.slice.call(
+      (root || document).querySelectorAll(sel)
+    );
+  }
+
+  /**
+   * Safe accessor for emindyAssess helpers namespace.
+   * @returns {{track?:Function, signURL?:Function, emailSummary?:Function}|null}
+   */
+  function getHelpers() {
+    if (
+      typeof window !== 'undefined' &&
+      window.emindyAssess &&
+      window.emindyAssess.helpers
+    ) {
+      return window.emindyAssess.helpers;
+    }
+    return null;
+  }
+
+  /**
+   * Track an assessment-related event, if tracking is available.
+   * @param {string} eventName
+   * @param {string} value
+   */
+  function trackEvent(eventName, value) {
+    const helpers = getHelpers();
+    if (!helpers || typeof helpers.track !== 'function') {
+      return;
+    }
+    try {
+      helpers.track(eventName, KIND, value, window.em_post_id || 0);
+    } catch (error) {
+      // Tracking is non-blocking.
+    }
   }
 
   /**
@@ -30,28 +85,59 @@
    */
   function scoreToBand(score) {
     if (score <= 4) {
-      return { band: 'Minimal', advice: 'Keep gentle routines.', severity: 'minimal' };
+      return {
+        band: 'Minimal',
+        advice: 'Keep gentle routines.',
+        severity: 'minimal',
+      };
     }
     if (score <= 9) {
-      return { band: 'Mild', advice: 'Simple practices may help.', severity: 'mild' };
+      return {
+        band: 'Mild',
+        advice: 'Simple practices may help.',
+        severity: 'mild',
+      };
     }
     if (score <= 14) {
-      return { band: 'Moderate', advice: 'Consider regular practices.', severity: 'moderate' };
+      return {
+        band: 'Moderate',
+        advice: 'Consider regular practices.',
+        severity: 'moderate',
+      };
     }
     if (score <= 19) {
-      return { band: 'Moderately severe', advice: 'Consider talking to a professional.', severity: 'moderately-severe' };
+      return {
+        band: 'Moderately severe',
+        advice: 'Consider talking to a professional.',
+        severity: 'moderately-severe',
+      };
     }
-    return { band: 'Severe', advice: 'Consider professional support; reach out if you feel unsafe.', severity: 'severe' };
+    return {
+      band: 'Severe',
+      advice: 'Consider professional support; reach out if you feel unsafe.',
+      severity: 'severe',
+    };
+  }
+
+  /**
+   * Build a human-readable summary line for the given score.
+   * @param {number} score
+   * @returns {string}
+   */
+  function buildSummary(score) {
+    const band = scoreToBand(score);
+    return 'PHQ-9 Score: ' + score + ' / 27 — ' + band.band + '. ' + band.advice;
   }
 
   /**
    * Calculate the total PHQ-9 score from the form inputs.
+   * Only radios whose name starts with "phq9_q" are included.
    * @param {HTMLFormElement} form
    * @returns {number}
    */
   function calcSum(form) {
     let sum = 0;
-    $all('input[name^="phq9_q"]:checked', form).forEach(function(el) {
+    $all('input[name^="phq9_q"]:checked', form).forEach(function (el) {
       const value = Number(el.value);
       if (!Number.isNaN(value)) {
         sum += value;
@@ -61,21 +147,65 @@
   }
 
   /**
-   * Render the computed score to the UI.
+   * Verify all PHQ-9 question groups have been answered.
+   * Only fieldsets containing radios for "phq9_q*" are considered required.
+   * @param {HTMLFormElement} form
+   * @returns {boolean}
+   */
+  function allAnswered(form) {
+    const fieldsets = $all('fieldset', form);
+    return fieldsets.every(function (fs) {
+      const radios = $all('input[type="radio"][name^="phq9_q"]', fs);
+      if (!radios.length) {
+        // Not a PHQ-9 question group; ignore.
+        return true;
+      }
+      return radios.some(function (radio) {
+        return radio.checked;
+      });
+    });
+  }
+
+  /**
+   * Find the first unanswered PHQ-9 question group, if any.
+   * @param {HTMLFormElement} form
+   * @returns {HTMLElement|null}
+   */
+  function findFirstUnansweredFieldset(form) {
+    const fieldsets = $all('fieldset', form);
+    for (let i = 0; i < fieldsets.length; i++) {
+      const fs = fieldsets[i];
+      const radios = $all('input[type="radio"][name^="phq9_q"]', fs);
+      if (!radios.length) {
+        continue;
+      }
+      const noneChecked = radios.every(function (radio) {
+        return !radio.checked;
+      });
+      if (noneChecked) {
+        return fs;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Render the computed score and accompanying messaging.
    * @param {HTMLFormElement} form
    * @param {number} sum
    */
   function render(form, sum) {
     const band = scoreToBand(sum);
-    const result = $('.em-phq9__result', form);
-    const scoreEl = $('.em-phq9__score', form);
+    const result = $(SELECTORS.result, form);
+    const scoreEl = $(SELECTORS.score, form);
 
     form._lastScore = sum;
-    form._lastSummary = `Score: ${sum} / 27 — ${band.band}. ${band.advice}`;
+    form._lastSummary = buildSummary(sum);
 
     if (scoreEl) {
       scoreEl.textContent = form._lastSummary;
       scoreEl.setAttribute('data-severity', band.severity);
+      scoreEl.setAttribute('aria-live', 'polite');
     }
 
     if (result) {
@@ -89,33 +219,19 @@
       }
     }
 
-    try {
-      if (typeof emindyAssess === 'object') {
-        emindyAssess?.helpers?.track?.('assessment_submit', KIND, String(sum), (window.em_post_id || 0));
-      }
-    } catch (error) {
-      // Tracking is non-blocking.
-    }
+    trackEvent('assessment_submit', String(sum));
 
     try {
-      if (history.replaceState) {
-        history.replaceState(null, '', location.href);
+      if (
+        typeof history !== 'undefined' &&
+        history &&
+        typeof history.replaceState === 'function'
+      ) {
+        history.replaceState(null, '', window.location.href);
       }
     } catch (error) {
       // Ignore history cleanup failures.
     }
-  }
-
-  /**
-   * Verify all questions have been answered.
-   * @param {HTMLFormElement} form
-   * @returns {boolean}
-   */
-  function allAnswered(form) {
-    const fieldsets = $all('fieldset', form);
-    return fieldsets.every(function(fs) {
-      return $all('input[type="radio"]:checked', fs).length === 1;
-    });
   }
 
   /**
@@ -124,17 +240,17 @@
    */
   function init(form) {
     if (!form || form._emBound) {
-      return; // جلوگیری از دوبار بایند شدن
+      return;
     }
     form._emBound = true;
 
-    const result = $('.em-phq9__result', form);
-    const scoreEl = $('.em-phq9__score', form);
-    const btnReset = $('.em-phq9__reset', form);
-    const btnPrint = $('.em-phq9__print', form);
-    const btnCopy = $('.em-phq9__copy', form);
-    const btnLink = $('.em-phq9__sharelink', form);
-    const btnEmail = $('.em-phq9__email', form);
+    const result = $(SELECTORS.result, form);
+    const scoreEl = $(SELECTORS.score, form);
+    const btnReset = $(SELECTORS.reset, form);
+    const btnPrint = $(SELECTORS.print, form);
+    const btnCopy = $(SELECTORS.copy, form);
+    const btnLink = $(SELECTORS.share, form);
+    const btnEmail = $(SELECTORS.email, form);
 
     if (!result || !scoreEl) {
       return;
@@ -143,119 +259,195 @@
     form._lastScore = null;
     form._lastSummary = '';
 
-    form.addEventListener('submit', function(event) {
+    // Submit handler
+    form.addEventListener('submit', function (event) {
       event.preventDefault();
 
       if (!allAnswered(form)) {
-        const firstUnanswered = $all('fieldset', form).find(function(fs) {
-          return $all('input[type="radio"]:checked', fs).length === 0;
-        });
+        const firstUnanswered = findFirstUnansweredFieldset(form);
+
         if (firstUnanswered) {
-          const firstRadio = $('input[type="radio"]', firstUnanswered);
+          firstUnanswered.setAttribute('aria-invalid', 'true');
+
+          const firstRadio = $(
+            'input[type="radio"][name^="phq9_q"]',
+            firstUnanswered
+          );
+
+          if (typeof firstUnanswered.scrollIntoView === 'function') {
+            try {
+              firstUnanswered.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } catch (error) {
+              // Non-blocking
+            }
+          }
+
           if (firstRadio && typeof firstRadio.focus === 'function') {
-            try { firstRadio.focus(); } catch (error) {}
+            try {
+              firstRadio.focus();
+            } catch (error) {
+              // Non-blocking
+            }
           }
         }
+
         return;
       }
+
+      // Clear any previous aria-invalid flags
+      $all('fieldset[aria-invalid="true"]', form).forEach(function (fs) {
+        fs.removeAttribute('aria-invalid');
+      });
 
       const sum = calcSum(form);
       render(form, sum);
     });
 
+    // Live recalculation when radios change, if result is already visible
+    form.addEventListener('change', function (event) {
+      const target = event.target;
+      if (!target || target.type !== 'radio') {
+        return;
+      }
+      const resultShown = result && !result.hidden;
+      if (resultShown) {
+        render(form, calcSum(form));
+      }
+    });
+
+    // Reset button
     if (btnReset) {
-      btnReset.addEventListener('click', function() {
+      btnReset.addEventListener('click', function () {
         form.reset();
         result.hidden = true;
         form._lastScore = null;
         form._lastSummary = '';
         scoreEl.textContent = '';
         scoreEl.removeAttribute('data-severity');
-      });
-    }
+        scoreEl.removeAttribute('aria-live');
 
-    if (btnPrint) {
-      btnPrint.addEventListener('click', function() {
-        window.print();
-      });
-    }
+        if (btnCopy) {
+          btnCopy.textContent = UI_TEXT.copyButtonDefault;
+        }
 
-    if (btnCopy) {
-      btnCopy.addEventListener('click', async function() {
-        if (!form._lastSummary) {
-          alert('Please complete the form first.');
-          return;
-        }
-        if (!navigator.clipboard || !navigator.clipboard.writeText) {
-          return;
-        }
-        try {
-          await navigator.clipboard.writeText(form._lastSummary);
-          btnCopy.textContent = 'Copied ✔';
-          setTimeout(function() {
-            btnCopy.textContent = 'Copy summary';
-          }, 1200);
-        } catch (error) {
-          // Clipboard failures are silently ignored to avoid blocking the UI.
-        }
-      });
-    }
-
-    if (btnLink) {
-      btnLink.addEventListener('click', async function() {
-        if (form._lastScore == null) {
-          alert('Please complete the form first.');
-          return;
-        }
-        if (!(window.emindyAssess && emindyAssess.helpers && emindyAssess.helpers.signURL)) {
-          alert('Share link service unavailable.');
-          return;
-        }
-        try {
-          const url = await emindyAssess.helpers.signURL(KIND, form._lastScore);
-          if (!url) {
-            throw new Error('Unable to create link');
-          }
-          if (navigator.clipboard && navigator.clipboard.writeText) {
-            await navigator.clipboard.writeText(url);
-          }
-          alert('Link copied');
-          try {
-            emindyAssess.helpers.track('assessment_sharelink', KIND, String(form._lastScore), (window.em_post_id || 0));
-          } catch (error) {
-            // Tracking is non-blocking.
-          }
-        } catch (error) {
-          alert('Failed to create link');
-        }
-      });
-    }
-
-    if (btnEmail) {
-      btnEmail.addEventListener('click', function() {
-        if (!form._lastSummary) {
-          alert('Please complete the form first.');
-          return;
-        }
-        if (!(window.emindyAssess && emindyAssess.helpers && emindyAssess.helpers.emailSummary)) {
-          alert('Email is unavailable right now.');
-          return;
-        }
-        emindyAssess.helpers.emailSummary(KIND, form._lastSummary).then(function() {
-          try {
-            emindyAssess.helpers.track('assessment_email', KIND, '1', (window.em_post_id || 0));
-          } catch (error) {
-            // Tracking is non-blocking.
-          }
-        }).catch(function() {
-          // Email failures are non-blocking for the UI.
+        $all('fieldset[aria-invalid="true"]', form).forEach(function (fs) {
+          fs.removeAttribute('aria-invalid');
         });
+
+        trackEvent('assessment_reset', '1');
+      });
+    }
+
+    // Print button
+    if (btnPrint) {
+      btnPrint.addEventListener('click', function () {
+        window.print();
+        trackEvent('assessment_print', '1');
+      });
+    }
+
+    // Copy summary button
+    if (btnCopy) {
+      if (
+        !navigator.clipboard ||
+        typeof navigator.clipboard.writeText !== 'function'
+      ) {
+        btnCopy.disabled = true;
+        btnCopy.setAttribute('aria-disabled', 'true');
+      }
+
+      btnCopy.addEventListener('click', function () {
+        if (!form._lastSummary) {
+          window.alert(UI_TEXT.pleaseComplete);
+          return;
+        }
+        if (
+          !navigator.clipboard ||
+          typeof navigator.clipboard.writeText !== 'function'
+        ) {
+          return;
+        }
+        navigator.clipboard
+          .writeText(form._lastSummary)
+          .then(function () {
+            btnCopy.textContent = UI_TEXT.copyButtonSuccess;
+            window.setTimeout(function () {
+              btnCopy.textContent = UI_TEXT.copyButtonDefault;
+            }, 1200);
+            trackEvent('assessment_copy', '1');
+          })
+          .catch(function () {
+            // Clipboard failures are silently ignored.
+          });
+      });
+    }
+
+    // Share link button
+    if (btnLink) {
+      btnLink.addEventListener('click', function () {
+        if (form._lastScore == null) {
+          window.alert(UI_TEXT.pleaseComplete);
+          return;
+        }
+
+        const helpers = getHelpers();
+        if (!helpers || typeof helpers.signURL !== 'function') {
+          window.alert(UI_TEXT.shareUnavailable);
+          return;
+        }
+
+        helpers
+          .signURL(KIND, form._lastScore)
+          .then(function (url) {
+            if (!url) {
+              throw new Error('Unable to create link');
+            }
+            if (
+              navigator.clipboard &&
+              typeof navigator.clipboard.writeText === 'function'
+            ) {
+              return navigator.clipboard.writeText(url);
+            }
+            return null;
+          })
+          .then(function () {
+            window.alert(UI_TEXT.shareCopied);
+            trackEvent('assessment_sharelink', String(form._lastScore));
+          })
+          .catch(function () {
+            window.alert(UI_TEXT.shareFailed);
+          });
+      });
+    }
+
+    // Email summary button
+    if (btnEmail) {
+      btnEmail.addEventListener('click', function () {
+        if (!form._lastSummary) {
+          window.alert(UI_TEXT.pleaseComplete);
+          return;
+        }
+
+        const helpers = getHelpers();
+        if (!helpers || typeof helpers.emailSummary !== 'function') {
+          window.alert(UI_TEXT.emailUnavailable);
+          return;
+        }
+
+        helpers
+          .emailSummary(KIND, form._lastSummary)
+          .then(function () {
+            trackEvent('assessment_email', '1');
+          })
+          .catch(function () {
+            // Email failures are non-blocking for the UI.
+          });
       });
     }
   }
 
   function initAll() {
-    $all('form.em-phq9').forEach(init);
+    $all(SELECTORS.form).forEach(init);
   }
 
   if (document.readyState === 'loading') {
