@@ -7,108 +7,110 @@ Text Domain: emindy
 Project context: eMINDy child theme and core plugin architecture.
 */
 
-/* Color tokens – light theme (default) */
+/* ===============================
+Color tokens – light theme (default)
+=============================== */
+
 :root {
---em-bg: #FFFFFF;
---em-text: #0A2A43;
---em-teal: #00A3A3;
---em-gold: #F4D483;
---em-ink: #111111;
---em-card: #F8FAFC;
---em-border: rgba(0, 0, 0, 0.08);
+  --em-bg: #ffffff;
+  --em-text: #0a2a43;
+  --em-teal: #00a3a3;
+  --em-gold: #f4d483;
+  --em-ink: #111111;
+  --em-card: #f8fafc;
+  --em-border: rgba(0, 0, 0, 0.08);
 
-/* Menu tokens (light) */
---menu-surface: var(--em-card);
---menu-text: var(--em-text);
---menu-border: var(--em-border);
---menu-hover: rgba(0, 0, 0, 0.06);
---menu-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
---menu-current: var(--em-teal);
+  /* Menu tokens (light) */
+  --menu-surface: var(--em-card);
+  --menu-text: var(--em-text);
+  --menu-border: var(--em-border);
+  --menu-hover: rgba(0, 0, 0, 0.06);
+  --menu-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+  --menu-current: var(--em-teal);
 
-color-scheme: light;
+  color-scheme: light;
 }
 
-/*
+/* ===============================
+Explicit dark theme via data-em-theme
+=============================== */
 
-Explicit light/dark themes via data-em-theme attribute.
+:root[data-em-theme="dark"] {
+  --em-bg: #0a2a43;
+  --em-text: #ffffff;
+  --em-teal: #66d9ff;
+  --em-gold: #f4d483;
+  --em-ink: #ededed;
+  --em-card: rgba(255, 255, 255, 0.06);
+  --em-border: rgba(255, 255, 255, 0.18);
 
-When the root has data-em-theme="dark", override the variables defined above.
+  /* Menu tokens (dark) */
+  --menu-surface: var(--em-card);
+  --menu-text: var(--em-text);
+  --menu-border: var(--em-border);
+  --menu-hover: rgba(255, 255, 255, 0.1);
+  --menu-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+  --menu-current: var(--em-teal);
 
-The toggle is implemented in assets/js/dark-mode-toggle.js.
-*/
-:root {
---em-bg: #0A2A43;
---em-text: #FFFFFF;
---em-teal: #66D9FF;
---em-gold: #F4D483;
---em-ink: #EDEDED;
---em-card: rgba(255, 255, 255, 0.06);
---em-border: rgba(255, 255, 255, 0.18);
-
-/* Menu tokens (dark) */
---menu-surface: var(--em-card);
---menu-text: var(--em-text);
---menu-border: var(--em-border);
---menu-hover: rgba(255, 255, 255, 0.10);
---menu-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
---menu-current: var(--em-teal);
-
-color-scheme: dark;
-}
-
-:root {
-color-scheme: light;
+  color-scheme: dark;
 }
 
 /* Automatic dark mode based on system preference when no explicit choice */
+
 @media (prefers-color-scheme: dark) {
-:root:not([data-em-theme]) {
---em-bg: #0A2A43;
---em-text: #FFFFFF;
---em-teal: #66D9FF;
---em-gold: #F4D483;
---em-ink: #EDEDED;
---em-card: rgba(255, 255, 255, 0.06);
---em-border: rgba(255, 255, 255, 0.18);
---menu-surface: var(--em-card);
---menu-text: var(--em-text);
---menu-border: var(--em-border);
---menu-hover: rgba(255, 255, 255, 0.10);
---menu-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
---menu-current: var(--em-teal);
+  :root:not([data-em-theme]) {
+    --em-bg: #0a2a43;
+    --em-text: #ffffff;
+    --em-teal: #66d9ff;
+    --em-gold: #f4d483;
+    --em-ink: #ededed;
+    --em-card: rgba(255, 255, 255, 0.06);
+    --em-border: rgba(255, 255, 255, 0.18);
 
-color-scheme: dark;
+    --menu-surface: var(--em-card);
+    --menu-text: var(--em-text);
+    --menu-border: var(--em-border);
+    --menu-hover: rgba(255, 255, 255, 0.1);
+    --menu-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+    --menu-current: var(--em-teal);
+
+    color-scheme: dark;
+  }
 }
 
-:root:not([data-em-theme]) body,
-:root:not([data-em-theme]) .wp-site-blocks {
-background: var(--em-bg) !important;
-color: var(--em-text);
-}
-}
+/* ===============================
+Base layout & typography
+=============================== */
 
-/* Base layout */
-:root body,
-:root .wp-site-blocks {
-background: var(--em-bg) !important;
-color: var(--em-text);
+html,
+body {
+  background: var(--em-bg);
+  color: var(--em-text);
 }
 
 body,
 .wp-site-blocks {
-background: var(--em-bg) !important;
-color: var(--em-text);
+  background: var(--em-bg) !important;
+  color: var(--em-text);
+  font-family: var(--font-sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
 }
 
-:root a {
-color: var(--em-teal);
-}
+/* Links */
 
 a {
-color: var(--em-teal);
+  color: var(--em-teal);
+  text-decoration-thickness: 0.09em;
+  text-underline-offset: 0.16em;
 }
 
-/* Focus outlines */
+a:hover {
+  text-decoration: underline;
+}
+
+/* ===============================
+Focus outlines (global a11y)
+=============================== */
+
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
@@ -122,123 +124,142 @@ input:focus-visible,
 .menu-item-language .sub-menu a:focus-visible,
 .pll-parent-menu-item .sub-menu a:focus-visible,
 .lang-item .sub-menu a:focus-visible {
-outline: 3px solid rgba(244, 212, 131, 0.65);
-outline-offset: 2px;
+  outline: 3px solid rgba(244, 212, 131, 0.65);
+  outline-offset: 2px;
 }
 
-/* Cards */
-.em-player,
+/* ===============================
+Card shells (theme-level)
+Plugin components (player, chapters, related, newsletter, assessments)
+rely on theme card tokens + structure.
+=============================== */
+
 .em-chapters,
 .em-related,
 .em-newsletter,
 .em-phq9,
 .wp-block-group.is-style-em-card {
-border: 1px solid var(--em-border);
-border-radius: 16px;
-background: var(--em-card);
-padding: 20px;
-margin: 16px 0;
+  border: 1px solid var(--em-border);
+  border-radius: 16px;
+  background: var(--em-card);
+  padding: 20px;
+  margin: 16px 0;
 }
 
 /* Dark mode toggle button */
+
 .em-dark-mode-toggle {
-background: transparent;
-border: none;
-cursor: pointer;
-color: var(--em-text);
-font-size: 20px;
-line-height: 1;
-padding: 4px;
-}
-
-/* Skip link */
-.skip-link {
-position: absolute;
-left: -999px;
-top: auto;
-width: 1px;
-height: 1px;
-overflow: hidden;
-z-index: -1;
-}
-
-.skip-link:focus {
-position: static;
-width: auto;
-height: auto;
-padding: 8px 12px;
-background: var(--em-teal);
-color: #fff;
-border-radius: 8px;
-z-index: 9999;
-}
-
-/* RTL helpers */
-html[dir="rtl"] .wp-block-list {
-padding-right: 1.2rem;
-padding-left: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--em-text);
+  font-size: 20px;
+  line-height: 1;
+  padding: 4px;
 }
 
 /* ===============================
-Polylang Language Switcher (final, theme-aligned)
+Skip link
+=============================== */
+
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.skip-link:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 8px 12px;
+  background: var(--em-teal);
+  color: #fff;
+  border-radius: 8px;
+  z-index: 9999;
+}
+
+/* ===============================
+RTL helpers
+=============================== */
+
+html[dir="rtl"] .wp-block-list {
+  padding-right: 1.2rem;
+  padding-left: 0;
+}
+
+/* ===============================
+Polylang Language Switcher
+(works for both Navigation block + classic menus)
 =============================== */
 
 /* 1) FSE / Navigation block submenu */
+
 .wp-block-navigation .wp-block-navigation__submenu-container {
-background: var(--menu-surface);
-border: 1px solid var(--menu-border);
-border-radius: 12px;
-padding: 8px;
-min-width: 180px;
-box-shadow: var(--menu-shadow);
-z-index: 1000;
+  background: var(--menu-surface);
+  border: 1px solid var(--menu-border);
+  border-radius: 12px;
+  padding: 8px;
+  min-width: 180px;
+  box-shadow: var(--menu-shadow);
+  z-index: 1000;
 }
 
 .wp-block-navigation .wp-block-navigation__submenu-container .wp-block-navigation-item__content {
-color: var(--menu-text);
-padding: 8px 10px;
-border-radius: 8px;
-text-decoration: none;
-display: block;
-transition: background-color 0.15s ease, color 0.15s ease;
+  color: var(--menu-text);
+  padding: 8px 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  display: block;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .wp-block-navigation .wp-block-navigation__submenu-container .wp-block-navigation-item__content:hover,
 .wp-block-navigation .wp-block-navigation__submenu-container .wp-block-navigation-item__content:focus,
 .wp-block-navigation .wp-block-navigation__submenu-container .wp-block-navigation-item__content:focus-visible {
-background: var(--menu-hover);
-outline: none;
+  background: var(--menu-hover);
+  outline: none;
 }
 
 /* Highlight current language item (if Polylang adds a class) */
+
 .wp-block-navigation .wp-block-navigation__submenu-container .current-lang > .wp-block-navigation-item__content,
 .wp-block-navigation .wp-block-navigation__submenu-container .is-current > .wp-block-navigation-item__content {
-outline: 2px solid var(--menu-current);
-outline-offset: 1px;
+  outline: 2px solid var(--menu-current);
+  outline-offset: 1px;
 }
 
 /* 2) Classic menus (if used) */
+
 .menu-item-language .sub-menu,
 .pll-parent-menu-item .sub-menu,
 .lang-item .sub-menu {
-background: var(--menu-surface);
-border: 1px solid var(--menu-border);
-border-radius: 12px;
-padding: 8px;
-min-width: 180px;
-box-shadow: var(--menu-shadow);
-z-index: 1000;
+  background: var(--menu-surface);
+  border: 1px solid var(--menu-border);
+  border-radius: 12px;
+  padding: 8px;
+  min-width: 180px;
+  box-shadow: var(--menu-shadow);
+  z-index: 1000;
 }
 
 .menu-item-language .sub-menu a,
 .pll-parent-menu-item .sub-menu a,
 .lang-item .sub-menu a {
-color: var(--menu-text) !important;
-padding: 8px 10px;
-border-radius: 8px;
-text-decoration: none;
-display: block;
-transition: background-color 0.15s ease, color 0.15s ease;
+  color: var(--menu-text) !important;
+  padding: 8px 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  display: block;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .menu-item-language .sub-menu a:hover,
@@ -250,387 +271,464 @@ transition: background-color 0.15s ease, color 0.15s ease;
 .lang-item .sub-menu a:hover,
 .lang-item .sub-menu a:focus,
 .lang-item .sub-menu a:focus-visible {
-background: var(--menu-hover);
-outline: none;
+  background: var(--menu-hover);
+  outline: none;
 }
 
 .menu-item-language .sub-menu .current-lang > a,
 .pll-parent-menu-item .sub-menu .current-lang > a,
 .lang-item .sub-menu .current-lang > a {
-outline: 2px solid var(--menu-current);
-outline-offset: 1px;
+  outline: 2px solid var(--menu-current);
+  outline-offset: 1px;
 }
 
 /* 3) RTL tweaks */
+
 html[dir="rtl"] .wp-block-navigation .wp-block-navigation__submenu-container,
 html[dir="rtl"] .menu-item-language .sub-menu {
-text-align: right;
+  text-align: right;
 }
 
-/* Print styles */
+/* ===============================
+Print styles (global)
+=============================== */
+
 @media print {
-header,
-footer,
-.wp-block-navigation,
-.em-header-actions,
-.site-header {
-display: none !important;
+  header,
+  footer,
+  .wp-block-navigation,
+  .em-header-actions,
+  .site-header {
+    display: none !important;
+  }
+
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  .is-style-em-card,
+  .em-chapters,
+  .em-phq9 {
+    border: 1px solid #000;
+    background: #fff;
+  }
+
+  a:after {
+    content: " (" attr(href) ")";
+    font-size: 12px;
+  }
+
+  .em-p__controls,
+  .em-p__barwrap {
+    display: none !important;
+  }
 }
 
-body {
-background: #fff !important;
-color: #000 !important;
-}
+/* ===============================
+Performance hints
+=============================== */
 
-.is-style-em-card,
-.em-player,
-.em-phq9 {
-border: 1px solid #000;
-background: #fff;
-}
-
-a:after {
-content: " (" attr(href) ")";
-font-size: 12px;
-}
-
-.em-p__controls,
-.em-p__barwrap {
-display: none !important;
-}
-}
-
-/* Image performance hint */
 img[fetchpriority="high"] {
-content-visibility: auto;
+  content-visibility: auto;
 }
 
-/* Accessible visually-hidden utility (keeps element for AT/SEO) */
+/* ===============================
+Visually hidden utility
+=============================== */
+
 .sr-only {
-position: absolute !important;
-width: 1px !important;
-height: 1px !important;
-padding: 0 !important;
-margin: -1px !important;
-overflow: hidden !important;
-clip: rect(0, 0, 0, 0) !important;
-white-space: nowrap !important;
-border: 0 !important;
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
 }
 
 /* Focusable skip container */
+
 .focusable-skip a:focus,
 .focusable-skip a:active {
-position: static !important;
-width: auto !important;
-height: auto !important;
-margin: 0 !important;
-clip: auto !important;
-white-space: normal !important;
-padding: 0.5rem 0.75rem;
-background: #F4D483;
-color: #0A2A43;
-border-radius: 0.5rem;
-box-shadow: 0 0 0 3px rgba(244, 212, 131, 0.4);
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  clip: auto !important;
+  white-space: normal !important;
+  padding: 0.5rem 0.75rem;
+  background: #f4d483;
+  color: #0a2a43;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 0 3px rgba(244, 212, 131, 0.4);
 }
 
-/* Reduced motion */
+/* ===============================
+Reduced motion
+=============================== */
+
 @media (prefers-reduced-motion: reduce) {
-*,
-*::before,
-*::after {
-scroll-behavior: auto !important;
-animation-duration: 0.01ms !important;
-animation-iteration-count: 1 !important;
-transition-duration: 0.01ms !important;
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .wp-block-navigation .wp-block-navigation__submenu-container .wp-block-navigation-item__content,
+  .menu-item-language .sub-menu a,
+  .pll-parent-menu-item .sub-menu a,
+  .lang-item .sub-menu a {
+    transition: none;
+  }
 }
 
-.wp-block-navigation .wp-block-navigation__submenu-container .wp-block-navigation-item__content,
-.menu-item-language .sub-menu a,
-.pll-parent-menu-item .sub-menu a,
-.lang-item .sub-menu a {
-transition: none;
-}
-}
+/* ===============================
+Content helpers
+(transcript, chapters, steps, timers)
+=============================== */
 
-/* Transcript details */
 .em-transcript {
-line-height: 1.8;
+  line-height: 1.8;
 }
 
 details > summary {
-cursor: pointer;
-padding: 0.25rem 0;
+  cursor: pointer;
+  padding: 0.25rem 0;
 }
 
 details > summary:focus-visible {
-outline: 3px solid rgba(244, 212, 131, 0.65);
-outline-offset: 2px;
+  outline: 3px solid rgba(244, 212, 131, 0.65);
+  outline-offset: 2px;
 }
 
 details[open] > summary {
-opacity: 0.9;
+  opacity: 0.9;
 }
 
 /* Chapters list injected by [em_video_chapters] */
+
 .em-chapters {
-margin-top: 1rem;
+  margin-top: 1rem;
 }
 
 .em-chapters a {
-text-decoration: none;
+  text-decoration: none;
 }
 
 .em-chapters a:hover {
-text-decoration: underline;
+  text-decoration: underline;
 }
 
+/* Steps list (exercises) */
+
 .em-steps li {
-margin-bottom: 0.5rem;
-line-height: 1.7;
+  margin-bottom: 0.5rem;
+  line-height: 1.7;
 }
 
 .em-steps strong {
-color: var(--wp--preset--color--teal);
+  color: var(--wp--preset--color--teal);
 }
 
 #em-timer {
-font-weight: 600;
+  font-weight: 600;
 }
 
 /* Reading time */
+
 .em-reading-time {
-opacity: 0.85;
+  opacity: 0.85;
 }
 
 .em-reading-min {
-font-weight: 600;
+  font-weight: 600;
 }
 
-/* TOC */
+/* ===============================
+Table of contents
+=============================== */
+
 .em-toc ul {
-margin: 0.25rem 0 0 1rem;
+  margin: 0.25rem 0 0 1rem;
 }
 
 .em-toc ol {
-margin: 0.25rem 0 0 1rem;
-padding-left: 0;
+  margin: 0.25rem 0 0 1rem;
+  padding-left: 0;
 }
 
 .em-toc li {
-margin: 0.2rem 0;
+  margin: 0.2rem 0;
 }
 
 .em-toc a {
-text-decoration: none;
+  text-decoration: none;
 }
 
 .em-toc a:hover {
-text-decoration: underline;
+  text-decoration: underline;
 }
 
-/* Author box */
+/* ===============================
+Author box
+=============================== */
+
 .em-author-box .wp-block-post-author__name {
-font-size: 1.05rem;
-font-weight: 600;
+  font-size: 1.05rem;
+  font-weight: 600;
 }
 
 .em-author-box p {
-margin: 0.25rem 0 0;
+  margin: 0.25rem 0 0;
 }
 
-/* Topic pills */
+/* ===============================
+Topic pills
+=============================== */
+
 .em-topic-pills {
-display: flex;
-gap: 0.5rem;
-flex-wrap: wrap;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .em-topic-pills .pill {
-display: inline-block;
-padding: 0.35rem 0.7rem;
-border-radius: 999px;
-background: #0b2d49;
-color: #fff;
-text-decoration: none;
-font-size: 0.9rem;
+  display: inline-block;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: #0b2d49;
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.9rem;
 }
 
 .em-topic-pills .pill:hover {
-text-decoration: underline;
+  text-decoration: underline;
 }
 
-/* Search placeholders */
+/* ===============================
+Search placeholders
+=============================== */
+
 .em-archive-search input[type="search"]::placeholder,
 .em-help-search input::placeholder,
 .em-404-search input[type="search"]::placeholder {
-color: #666;
+  color: #666;
 }
 
 .em-meta {
-line-height: 1.4;
+  line-height: 1.4;
 }
 
-/* Query spacing */
+/* ===============================
+Query spacing
+=============================== */
+
 .wp-block-query .wp-block-post-template {
-gap: 1rem;
+  gap: 1rem;
 }
 
 .wp-block-post-excerpt p {
-margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .wp-block-query-pagination {
-margin-top: 1rem;
+  margin-top: 1rem;
 }
 
-/* Tabs */
+/* ===============================
+Tabs
+=============================== */
+
 .em-tabs .em-tab {
-display: inline-block;
-padding: 0.45rem 0.8rem;
-border-radius: 999px;
-background: #0b2d49;
-color: #fff;
-text-decoration: none;
-font-weight: 600;
+  display: inline-block;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  background: #0b2d49;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
 }
 
 .em-tabs .em-tab.is-active {
-outline: 3px solid rgba(244, 212, 131, 0.35);
+  outline: 3px solid rgba(244, 212, 131, 0.35);
 }
 
-/* Quick filter pills */
+/* ===============================
+Quick filter pills
+=============================== */
+
 .em-quick-filters .pill {
-display: inline-block;
-padding: 0.38rem 0.8rem;
-border-radius: 999px;
-background: #0b2d49;
-color: #fff;
-text-decoration: none;
-font-weight: 600;
+  display: inline-block;
+  padding: 0.38rem 0.8rem;
+  border-radius: 999px;
+  background: #0b2d49;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
 }
 
 .em-quick-filters .pill:hover {
-text-decoration: underline;
+  text-decoration: underline;
 }
 
-/* Badges */
+/* ===============================
+Badges
+=============================== */
+
 .em-badge {
-display: inline-block;
-padding: 0.15rem 0.5rem;
-border-radius: 6px;
-font-size: 0.8rem;
-font-weight: 700;
-line-height: 1;
-vertical-align: middle;
-background: #eef2f7;
-color: #0A2A43;
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1;
+  vertical-align: middle;
+  background: #eef2f7;
+  color: #0a2a43;
 }
 
 .em-badge-em_video {
-background: #e8f7ff;
+  background: #e8f7ff;
 }
 
 .em-badge-em_exercise {
-background: #e9fff3;
+  background: #e9fff3;
 }
 
 .em-badge-em_article {
-background: #fff6e8;
+  background: #fff6e8;
 }
 
 .em-badge-post {
-background: #f0e9ff;
+  background: #f0e9ff;
 }
 
-/* Highlight */
+/* ===============================
+Highlights
+=============================== */
+
 mark {
-background: #F4D483;
-padding: 0 0.15em;
-border-radius: 2px;
+  background: #f4d483;
+  padding: 0 0.15em;
+  border-radius: 2px;
 }
 
-/* Excerpt spacing */
+/* ===============================
+Excerpt + mini lists
+=============================== */
+
 .em-excerpt {
-margin: 0.35rem 0 0;
+  margin: 0.35rem 0 0;
 }
 
-/* Mini lists */
 .em-mini-list {
-list-style: none;
-padding-left: 0;
-margin: 0.4rem 0;
+  list-style: none;
+  padding-left: 0;
+  margin: 0.4rem 0;
 }
 
 .em-mini-list li {
-margin: 0.25rem 0;
+  margin: 0.25rem 0;
 }
 
-/* Buttons */
+/* ===============================
+Buttons
+=============================== */
+
 .em-button {
-display: inline-block;
-padding: 0.55rem 1rem;
-border-radius: 999px;
-background: #F4D483;
-color: #0A2A43;
-font-weight: 700;
-text-decoration: none;
+  display: inline-block;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  background: #f4d483;
+  color: #0a2a43;
+  font-weight: 700;
+  text-decoration: none;
 }
 
 .em-button:hover {
-text-decoration: underline;
+  text-decoration: underline;
 }
 
-/* Typography refinements for single posts */
+/* ===============================
+Typography refinements for single posts
+=============================== */
+
 .single-post .wp-block-post-content p {
-margin: 0 0 1.05rem;
+  margin: 0 0 1.05rem;
 }
 
 .single-post .wp-block-post-content h2 {
-margin: 1.4rem 0 0.6rem;
+  margin: 1.4rem 0 0.6rem;
 }
 
 .single-post .wp-block-post-content h3 {
-margin: 1rem 0 0.5rem;
+  margin: 1rem 0 0.5rem;
 }
 
 .single-post figure img {
-border-radius: 12px;
+  border-radius: 12px;
 }
 
-/* Dark mode overrides /
-/
+/* ===============================
+Dark mode overrides for blocks with fixed backgrounds
+=============================== */
 
-Some templates set explicit background colours (e.g. dark blue sections) which do not change
+/* Explicit dark-mode toggle active */
 
-when the dark-mode toggle is activated. To ensure dark mode provides sufficient contrast, we
-
-override backgrounds and text colours for blocks with background styles and common UI pills.
-/
-:root .has-background,
-:root [class="is-style-em-card"] {
-background: var(--em-card) !important;
-color: var(--em-text) !important;
+:root[data-em-theme="dark"] .has-background,
+:root[data-em-theme="dark"] .wp-block-group.is-style-em-card {
+  background: var(--em-card) !important;
+  color: var(--em-text) !important;
 }
 
-/* Override pills and tab backgrounds in dark mode */
-:root .em-topic-pills .pill,
-:root .em-tabs .em-tab,
-:root .em-quick-filters .pill {
-background: var(--em-card) !important;
-color: var(--em-text) !important;
+:root[data-em-theme="dark"] .em-topic-pills .pill,
+:root[data-em-theme="dark"] .em-tabs .em-tab,
+:root[data-em-theme="dark"] .em-quick-filters .pill {
+  background: var(--em-card) !important;
+  color: var(--em-text) !important;
 }
 
-/* Override inline dark backgrounds defined in templates (e.g. #0e3252, #0b2d49) /
-:root [style="#0e3252"],
-:root [style*="#0b2d49"],
-:root [style*="#0B2D49"],
-:root [style*="#0E3252"] {
-background: var(--em-card) !important;
-color: var(--em-text) !important;
+:root[data-em-theme="dark"] [style*="#0e3252"],
+:root[data-em-theme="dark"] [style*="#0b2d49"],
+:root[data-em-theme="dark"] [style*="#0B2D49"],
+:root[data-em-theme="dark"] [style*="#0E3252"] {
+  background: var(--em-card) !important;
+  color: var(--em-text) !important;
 }
 
-/* Cards inside groups using box shadow token /
-.wp-block-group[style="box-shadow:var(--wp--custom--brand--shadow--card)"] p {
-margin: 0.35rem 0;
+/* System dark mode with no explicit toggle */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-em-theme]) .has-background,
+  :root:not([data-em-theme]) .wp-block-group.is-style-em-card {
+    background: var(--em-card) !important;
+    color: var(--em-text) !important;
+  }
+
+  :root:not([data-em-theme]) .em-topic-pills .pill,
+  :root:not([data-em-theme]) .em-tabs .em-tab,
+  :root:not([data-em-theme]) .em-quick-filters .pill {
+    background: var(--em-card) !important;
+    color: var(--em-text) !important;
+  }
+
+  :root:not([data-em-theme]) [style*="#0e3252"],
+  :root:not([data-em-theme]) [style*="#0b2d49"],
+  :root:not([data-em-theme]) [style*="#0B2D49"],
+  :root:not([data-em-theme]) [style*="#0E3252"] {
+    background: var(--em-card) !important;
+    color: var(--em-text) !important;
+  }
+
+  /* Card groups using the brand shadow token */
+  :root:not([data-em-theme]) .wp-block-group[style="box-shadow:var(--wp--custom--brand--shadow--card)"] p {
+    margin: 0.35rem 0;
+  }
 }
