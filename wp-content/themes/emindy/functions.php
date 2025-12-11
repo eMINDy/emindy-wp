@@ -1,518 +1,527 @@
 <?php
 /**
- * Child theme bootstrap for eMINDy.
+ * eMINDy child theme functions.
  *
- * Loads the child theme assets, registers supports and contains small
- * frontend/admin helpers.
+ * Keep the theme lightweight; platform logic lives in the emindy-core plugin.
  *
  * @package emindy
  */
 
-// Bail early if WordPress is not bootstrapped.
+declare( strict_types=1 );
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 /**
- * Define a reusable theme version constant (from style.css header).
+ * Theme constants.
  */
+if ( ! defined( 'EMINDY_THEME_SLUG' ) ) {
+	define( 'EMINDY_THEME_SLUG', 'emindy' );
+}
+
 if ( ! defined( 'EMINDY_THEME_VERSION' ) ) {
 	$emindy_theme = wp_get_theme( get_stylesheet() );
-	$version      = $emindy_theme->get( 'Version' );
-
-	if ( ! $version ) {
-		$version = '0.5.0';
-	}
-
-	define( 'EMINDY_THEME_VERSION', $version );
+	$version      = (string) $emindy_theme->get( 'Version' );
+	define( 'EMINDY_THEME_VERSION', $version ? $version : '1.0.0' );
 }
 
 /**
- * Enqueue child theme assets.
+ * Print an inline script tag safely (WP 5.7+ helper when available).
  */
-function emindy_enqueue_child_assets() {
-	wp_enqueue_style(
-		'emindy-child',
-		get_stylesheet_uri(),
-		array( 'twentytwentyfive-style' ),
-		EMINDY_THEME_VERSION
-	);
-
-	wp_enqueue_script(
-		'emindy-dark-mode-toggle',
-		get_stylesheet_directory_uri() . '/assets/js/dark-mode-toggle.js',
-		array(),
-		EMINDY_THEME_VERSION,
-		true
-	);
-}
-add_action( 'wp_enqueue_scripts', 'emindy_enqueue_child_assets' );
-
-/**
- * Register theme supports and translation domain.
- */
-function emindy_setup_theme() {
-	load_theme_textdomain( 'emindy', get_stylesheet_directory() . '/languages' );
-
-	add_theme_support( 'title-tag' );
-	add_theme_support( 'post-thumbnails' );
-	add_theme_support( 'html5', array( 'search-form', 'gallery', 'caption', 'style', 'script' ) );
-	add_theme_support( 'align-wide' );
-	add_theme_support( 'editor-styles' );
-	add_theme_support( 'responsive-embeds' );
-}
-add_action( 'after_setup_theme', 'emindy_setup_theme' );
-
-/**
- * Ensure search and 404 pages are noindexed when Rank Math is active.
- *
- * @param array $robots Robots directives.
- * @return array
- */
-function emindy_rank_math_robots( $robots ) {
-	if ( is_search() || is_404() ) {
-		$robots['index']  = 'noindex';
-		$robots['follow'] = 'follow';
-	}
-	return $robots;
-}
-add_filter( 'rank_math/frontend/robots', 'emindy_rank_math_robots' );
-
-/**
- * Fallback robots meta when Rank Math is not available.
- */
-function emindy_fallback_robots_meta() {
-	if ( function_exists( 'rank_math' ) ) {
-		return;
-	}
-	if ( is_search() || is_404() ) {
-		printf(
-			'<meta name="robots" content="%s" />' . "\n",
-			esc_attr( 'noindex,follow' )
-		);
-	}
-}
-add_action( 'wp_head', 'emindy_fallback_robots_meta', 99 );
-
-/**
- * Output a skip link for accessibility.
- */
-function emindy_skip_link() {
-	printf(
-		'<a class="skip-link screen-reader-text" href="%1$s">%2$s</a>',
-		esc_url( '#main-content' ),
-		esc_html__( 'Skip to content', 'emindy' )
-	);
-}
-add_action( 'wp_body_open', 'emindy_skip_link' );
-
-/**
- * Render a reusable archive toolbar with search and topic filter.
- *
- * @param array $atts Shortcode attributes.
- * @return string
- */
-function emindy_render_archive_toolbar( $atts = array() ) {
-	$atts = shortcode_atts(
-		array(
-			'label'       => '',
-			'placeholder' => '',
-			'button'      => __( 'Search', 'emindy' ),
-			'post_type'   => '',
-		),
-		$atts,
-		'em_archive_toolbar'
-	);
-
-	$post_type = $atts['post_type'];
-
-	if ( empty( $post_type ) ) {
-		$queried_post_type = get_query_var( 'post_type' );
-		if ( is_array( $queried_post_type ) ) {
-			$post_type = (string) reset( $queried_post_type );
-		} elseif ( is_string( $queried_post_type ) && '' !== $queried_post_type ) {
-			$post_type = $queried_post_type;
-		} else {
-			$post_type = get_post_type() ? get_post_type() : 'post';
+if ( ! function_exists( 'emindy_print_inline_script_tag' ) ) {
+	function emindy_print_inline_script_tag( string $js, string $id = '' ): void {
+		$attrs = array();
+		if ( '' !== $id ) {
+			$attrs['id'] = $id;
 		}
-	}
 
-	$post_type = sanitize_key( $post_type );
-	$type_obj  = get_post_type_object( $post_type );
-	$type_name = ( $type_obj && isset( $type_obj->labels->name ) ) ? $type_obj->labels->name : ucfirst( $post_type );
+		if ( function_exists( 'wp_print_inline_script_tag' ) ) {
+			wp_print_inline_script_tag( $js, $attrs );
+			return;
+		}
 
-	$label       = '' !== $atts['label'] ? $atts['label'] : sprintf( __( 'Search %s', 'emindy' ), $type_name );
-	$placeholder = '' !== $atts['placeholder'] ? $atts['placeholder'] : sprintf( __( 'Search %s…', 'emindy' ), strtolower( $type_name ) );
-	$button      = $atts['button'];
-
-	ob_start();
-	?>
-	<form
-		role="search"
-		method="get"
-		action="<?php echo esc_url( home_url( '/' ) ); ?>"
-		class="em-archive-search"
-		aria-label="<?php echo esc_attr( $label ); ?>"
-		style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:.25rem 0 .75rem"
-	>
-		<label for="<?php echo esc_attr( $post_type ); ?>-s" class="sr-only"><?php echo esc_html( $label ); ?></label>
-		<input
-			id="<?php echo esc_attr( $post_type ); ?>-s"
-			type="search"
-			name="s"
-			placeholder="<?php echo esc_attr( $placeholder ); ?>"
-			inputmode="search"
-			aria-label="<?php echo esc_attr( $label ); ?>"
-			style="flex:1;min-width:220px;padding:.5rem .75rem;border-radius:.75rem;border:0"
-		/>
-		<input type="hidden" name="post_type" value="<?php echo esc_attr( $post_type ); ?>" />
-		<button
-			type="submit"
-			aria-label="<?php echo esc_attr( $button ); ?>"
-			style="padding:.55rem .9rem;border-radius:.75rem;border:0;background:#F4D483;color:#0A2A43;font-weight:600"
-		>
-			<?php echo esc_html( $button ); ?>
-		</button>
-	</form>
-	<div class="wp-block-group" style="display:flex;flex-wrap:wrap;gap:.5rem;align-items:center">
-		<p style="font-weight:600;margin:0"><?php echo esc_html__( 'Topics:', 'emindy' ); ?></p>
-		<?php
+		$id_attr = ( '' !== $id ) ? ' id="' . esc_attr( $id ) . '"' : '';
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo do_shortcode( '[em_topics_pills taxonomy="topic"]' );
-		?>
-	</div>
-	<?php
-	return (string) ob_get_clean();
-}
-add_shortcode( 'em_archive_toolbar', 'emindy_render_archive_toolbar' );
-
-/**
- * Adjust em_* archive queries with topic filtering and search support.
- *
- * @param WP_Query $query Main query.
- */
-function emindy_adjust_em_cpt_archives( $query ) {
-	if ( is_admin() || ! $query->is_main_query() ) {
-		return;
-	}
-
-	$library_post_types = array( 'em_video', 'em_exercise', 'em_article' );
-
-	foreach ( $library_post_types as $post_type ) {
-		if ( $query->is_post_type_archive( $post_type ) ) {
-			$query->set( 'posts_per_page', 9 );
-
-			// Retrieve the topic from the querystring. If filter_input is not
-			// available, fall back to using $_GET with manual sanitization.
-			$topic = null;
-
-			if ( function_exists( 'filter_input' ) ) {
-				$topic = filter_input( INPUT_GET, 'topic', FILTER_VALIDATE_INT );
-			}
-
-			if ( ! $topic && isset( $_GET['topic'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$topic = absint( wp_unslash( $_GET['topic'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			}
-
-			if ( $topic ) {
-				$tax_query = $query->get( 'tax_query' );
-
-				if ( ! is_array( $tax_query ) ) {
-					$tax_query = array();
-				}
-
-				$tax_query[] = array(
-					'taxonomy' => 'topic',
-					'field'    => 'term_id',
-					'terms'    => $topic,
-				);
-
-				$query->set( 'tax_query', $tax_query );
-			}
-
-			if ( isset( $_GET['s'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$search = sanitize_text_field( wp_unslash( (string) $_GET['s'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$query->set( 's', $search );
-			}
-
-			break;
-		}
+		echo '<script' . $id_attr . '>' . $js . '</script>' . "\n";
 	}
 }
-add_action( 'pre_get_posts', 'emindy_adjust_em_cpt_archives' );
 
 /**
- * Highlight search terms in excerpts.
- *
- * @param string $excerpt Post excerpt.
- * @return string
+ * Theme setup.
  */
-function emindy_highlight_search_terms( $excerpt ) {
-	$search_query = get_search_query( false );
+add_action( 'after_setup_theme', 'emindy_theme_setup' );
+if ( ! function_exists( 'emindy_theme_setup' ) ) {
+	function emindy_theme_setup(): void {
+		load_child_theme_textdomain( 'emindy', get_stylesheet_directory() . '/languages' );
 
-	if ( is_search() && '' !== $search_query ) {
-		$quoted_query = preg_quote( $search_query, '/' );
-		$highlighted  = preg_replace( '/(' . $quoted_query . ')/iu', '<mark>$1</mark>', $excerpt );
+		add_theme_support( 'title-tag' );
+		add_theme_support( 'automatic-feed-links' );
+		add_theme_support( 'responsive-embeds' );
+		add_theme_support( 'post-thumbnails' );
+		add_theme_support( 'align-wide' );
+		add_theme_support( 'wp-block-styles' );
 
-		if ( null !== $highlighted ) {
-			$excerpt = $highlighted;
-		}
-
-		$allowed_html = array_merge(
-			wp_kses_allowed_html( 'post' ),
+		add_theme_support(
+			'html5',
 			array(
-				'mark' => array(),
+				'search-form',
+				'comment-form',
+				'comment-list',
+				'gallery',
+				'caption',
+				'script',
+				'style',
 			)
 		);
 
-		$excerpt = (string) wp_kses( $excerpt, $allowed_html );
+		register_nav_menus(
+			array(
+				'primary' => __( 'Primary Navigation', 'emindy' ),
+				'footer'  => __( 'Footer Navigation', 'emindy' ),
+				'social'  => __( 'Social Links', 'emindy' ),
+			)
+		);
 	}
-
-	return (string) $excerpt;
 }
-add_filter( 'the_excerpt', 'emindy_highlight_search_terms' );
 
 /**
- * Add resource hints for YouTube assets.
- *
- * @param array  $urls          Current URLs.
- * @param string $relation_type Relation type.
- * @return array
+ * Enqueue styles.
  */
-function emindy_resource_hints( $urls, $relation_type ) {
-	if ( 'preconnect' === $relation_type ) {
-		$urls[] = 'https://i.ytimg.com';
-		$urls[] = 'https://www.youtube-nocookie.com';
-		$urls[] = 'https://www.youtube.com';
-		$urls[] = 'https://s.ytimg.com';
-	}
+add_action( 'wp_enqueue_scripts', 'emindy_enqueue_assets', 20 );
+if ( ! function_exists( 'emindy_enqueue_assets' ) ) {
+	function emindy_enqueue_assets(): void {
+		$child_style_path = get_stylesheet_directory() . '/style.css';
+		$child_style_ver  = file_exists( $child_style_path ) ? (string) filemtime( $child_style_path ) : EMINDY_THEME_VERSION;
 
-	return array_unique( $urls );
-}
-add_filter( 'wp_resource_hints', 'emindy_resource_hints', 10, 2 );
+		$parent_style_path = get_template_directory() . '/style.css';
+		$parent_style_ver  = file_exists( $parent_style_path ) ? (string) filemtime( $parent_style_path ) : (string) wp_get_theme( get_template() )->get( 'Version' );
 
-/**
- * Print ItemList JSON-LD schema.
- *
- * @param string $title List name.
- * @param array  $items Array of [ 'name' => '', 'url' => '' ].
- */
-function emindy_print_itemlist_jsonld( $title, $items ) {
-	$list = array();
-	$pos  = 0;
-
-	foreach ( $items as $item ) {
-		if ( ! is_array( $item ) || empty( $item['name'] ) || empty( $item['url'] ) ) {
-			continue;
+		// Parent stylesheet (safe for both classic + block parents).
+		$deps = array();
+		if ( get_template_directory() !== get_stylesheet_directory() && file_exists( $parent_style_path ) ) {
+			wp_enqueue_style(
+				'emindy-parent',
+				get_template_directory_uri() . '/style.css',
+				array(),
+				$parent_style_ver
+			);
+			$deps = array( 'emindy-parent' );
 		}
 
-		$pos++;
+		// Child stylesheet.
+		wp_enqueue_style(
+			'emindy-style',
+			get_stylesheet_uri(),
+			$deps,
+			$child_style_ver
+		);
 
-		$list[] = array(
-			'@type'    => 'ListItem',
-			'position' => $pos,
-			'item'     => array(
-				'@type' => 'WebPage',
-				'name'  => wp_strip_all_tags( (string) $item['name'] ),
-				'url'   => esc_url_raw( (string) $item['url'] ),
+		wp_style_add_data( 'emindy-style', 'rtl', 'replace' );
+
+		// Compatibility / alias variables (keeps templates stable).
+		$compat_css = emindy_get_compat_css();
+		if ( '' !== $compat_css ) {
+			wp_add_inline_style( 'emindy-style', $compat_css );
+		}
+	}
+}
+
+/**
+ * Early bootstrap script: apply saved theme choice before styles render.
+ */
+add_action( 'wp_head', 'emindy_head_theme_bootstrap', 0 );
+if ( ! function_exists( 'emindy_head_theme_bootstrap' ) ) {
+	function emindy_head_theme_bootstrap(): void {
+		$js = "(function(){try{var t=localStorage.getItem('emindy_theme');if(t==='dark'||t==='light'){document.documentElement.setAttribute('data-em-theme',t);}}catch(e){}})();";
+		emindy_print_inline_script_tag( $js, 'emindy-theme-bootstrap' );
+	}
+}
+
+/**
+ * Theme JS (footer): dark/light toggle using data-em-theme and localStorage('emindy_theme').
+ */
+add_action( 'wp_footer', 'emindy_print_theme_js', 20 );
+if ( ! function_exists( 'emindy_print_theme_js' ) ) {
+	function emindy_print_theme_js(): void {
+		$js = emindy_get_theme_js();
+		if ( '' === $js ) {
+			return;
+		}
+		emindy_print_inline_script_tag( $js, 'emindy-theme-js' );
+	}
+}
+
+/**
+ * Accessibility: Skip link.
+ */
+add_action( 'wp_body_open', 'emindy_output_skip_link', 1 );
+if ( ! function_exists( 'emindy_output_skip_link' ) ) {
+	function emindy_output_skip_link(): void {
+		printf(
+			'<a class="skip-link" href="#main-content">%s</a>',
+			esc_html__( 'Skip to content', 'emindy' )
+		);
+	}
+}
+
+/**
+ * Block style variations used by templates/CSS.
+ */
+add_action( 'init', 'emindy_register_block_styles' );
+if ( ! function_exists( 'emindy_register_block_styles' ) ) {
+	function emindy_register_block_styles(): void {
+		if ( ! function_exists( 'register_block_style' ) ) {
+			return;
+		}
+
+		register_block_style(
+			'core/group',
+			array(
+				'name'  => 'em-card',
+				'label' => __( 'eMINDy Card', 'emindy' ),
+			)
+		);
+
+		register_block_style(
+			'core/button',
+			array(
+				'name'  => 'em-soft',
+				'label' => __( 'Soft', 'emindy' ),
+			)
+		);
+	}
+}
+
+/**
+ * Fallback shortcodes for templates (avoid raw shortcode output if plugin is disabled).
+ */
+add_action( 'init', 'emindy_register_fallback_shortcodes', 11 );
+if ( ! function_exists( 'emindy_register_fallback_shortcodes' ) ) {
+	function emindy_register_fallback_shortcodes(): void {
+		if ( ! function_exists( 'add_shortcode' ) ) {
+			return;
+		}
+
+		if ( function_exists( 'shortcode_exists' ) && ! shortcode_exists( 'em_lang_switcher' ) ) {
+			add_shortcode( 'em_lang_switcher', 'emindy_shortcode_lang_switcher' );
+		}
+
+		if ( function_exists( 'shortcode_exists' ) && ! shortcode_exists( 'em_social_icons' ) ) {
+			add_shortcode( 'em_social_icons', 'emindy_shortcode_social_icons' );
+		}
+	}
+}
+
+/**
+ * [em_lang_switcher] fallback (Polylang).
+ *
+ * Attributes:
+ * - dropdown="1|0"
+ * - show_names="1|0"
+ * - show_flags="1|0"
+ */
+if ( ! function_exists( 'emindy_shortcode_lang_switcher' ) ) {
+	function emindy_shortcode_lang_switcher( array $atts = array() ): string {
+		if ( ! function_exists( 'pll_the_languages' ) ) {
+			return '';
+		}
+
+		$atts = shortcode_atts(
+			array(
+				'dropdown'   => '0',
+				'show_names' => '1',
+				'show_flags' => '0',
 			),
+			$atts,
+			'em_lang_switcher'
 		);
+
+		$args = array(
+			'echo'          => 0,
+			'dropdown'      => (int) ( '1' === (string) $atts['dropdown'] ),
+			'show_names'    => (int) ( '1' === (string) $atts['show_names'] ),
+			'show_flags'    => (int) ( '1' === (string) $atts['show_flags'] ),
+			'hide_if_empty' => 0,
+		);
+
+		$html = pll_the_languages( $args );
+
+		if ( empty( $html ) || ! is_string( $html ) ) {
+			return '';
+		}
+
+		return '<div class="em-lang-switcher" aria-label="' . esc_attr__( 'Language switcher', 'emindy' ) . '">' . $html . '</div>';
 	}
+}
 
-	if ( ! $list ) {
-		return;
-	}
+/**
+ * [em_social_icons] fallback.
+ *
+ * Renders the "social" menu location if assigned.
+ */
+if ( ! function_exists( 'emindy_shortcode_social_icons' ) ) {
+	function emindy_shortcode_social_icons(): string {
+		if ( ! has_nav_menu( 'social' ) ) {
+			return '';
+		}
 
-	$graph = array(
-		'@context'        => 'https://schema.org',
-		'@type'           => 'ItemList',
-		'name'            => wp_strip_all_tags( $title ),
-		'itemListElement' => $list,
-	);
-
-	printf(
-		'<script type="application/ld+json">%s</script>',
-		wp_kses_post(
-			wp_json_encode(
-				$graph,
-				JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
+		return (string) wp_nav_menu(
+			array(
+				'theme_location'  => 'social',
+				'container'       => 'nav',
+				'container_class' => 'em-social-icons',
+				'container_id'    => 'em-social-icons',
+				'menu_class'      => 'em-social-icons__list',
+				'depth'           => 1,
+				'echo'            => false,
+				'fallback_cb'     => '__return_empty_string',
 			)
-		)
-	);
-}
-
-// Define the meta key used to store the primary topic.
-define( 'EMINDY_PRIMARY_TOPIC_META', '_em_primary_topic' );
-
-/**
- * Register the Primary Topic meta box.
- */
-function emindy_register_primary_topic_metabox() {
-	$post_types = array( 'post', 'page' );
-	$taxonomy   = get_taxonomy( 'topic' );
-
-	if ( $taxonomy && ! empty( $taxonomy->object_type ) && is_array( $taxonomy->object_type ) ) {
-		$post_types = array_unique( array_merge( $post_types, $taxonomy->object_type ) );
-	}
-
-	add_meta_box(
-		'emindy_primary_topic',
-		__( 'Primary Topic', 'emindy' ),
-		'emindy_primary_topic_box',
-		$post_types,
-		'side',
-		'default'
-	);
-}
-add_action( 'add_meta_boxes', 'emindy_register_primary_topic_metabox' );
-
-/**
- * Render the Primary Topic meta box.
- *
- * @param WP_Post $post Current post object.
- */
-function emindy_primary_topic_box( $post ) {
-	$saved = (int) get_post_meta( $post->ID, EMINDY_PRIMARY_TOPIC_META, true );
-	$terms = wp_get_post_terms( $post->ID, 'topic' );
-
-	if ( is_wp_error( $terms ) ) {
-		return;
-	}
-
-	echo '<p>' . esc_html__( 'Select the primary topic (required if topics are set):', 'emindy' ) . '</p>';
-	echo '<select name="em_primary_topic" style="width:100%">';
-	echo '<option value="">' . esc_html__( '— None —', 'emindy' ) . '</option>';
-
-	foreach ( $terms as $term ) {
-		printf(
-			'<option value="%1$d" %2$s>%3$s</option>',
-			(int) $term->term_id,
-			selected( $saved, (int) $term->term_id, false ),
-			esc_html( $term->name )
 		);
 	}
-
-	echo '</select>';
-	wp_nonce_field( 'em_primary_topic_save', 'em_primary_topic_nonce' );
 }
 
 /**
- * Save the Primary Topic meta value.
- *
- * @param int $post_id Post ID.
+ * Prevent PHP code from leaking if someone accidentally put PHP into .html block templates.
  */
-function emindy_save_primary_topic( $post_id ) {
-	// Verify nonce and permissions.
-	if ( ! isset( $_POST['em_primary_topic_nonce'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-		return;
+add_filter( 'render_block', 'emindy_filter_render_block', 10, 2 );
+if ( ! function_exists( 'emindy_filter_render_block' ) ) {
+	function emindy_filter_render_block( string $block_content, array $block ): string {
+		if ( '' === $block_content || empty( $block['blockName'] ) ) {
+			return $block_content;
+		}
+
+		// Only touch template parts (header/footer/etc).
+		if ( 'core/template-part' !== (string) $block['blockName'] ) {
+			return $block_content;
+		}
+
+		if ( false === strpos( $block_content, '<?php' ) ) {
+			return $block_content;
+		}
+
+		$slug = '';
+		if ( ! empty( $block['attrs']['slug'] ) ) {
+			$slug = (string) $block['attrs']['slug'];
+		}
+
+		$block_content = emindy_safe_template_php_replace( $block_content, $slug );
+
+		// Strip any remaining PHP tags (never render raw PHP).
+		$block_content = preg_replace( '/<\?php[\s\S]*?\?>/m', '', (string) $block_content );
+
+		return (string) $block_content;
 	}
+}
 
-	if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['em_primary_topic_nonce'] ) ), 'em_primary_topic_save' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-		return;
-	}
+/**
+ * Safe template PHP replacement (minimal allowlist).
+ */
+if ( ! function_exists( 'emindy_safe_template_php_replace' ) ) {
+	function emindy_safe_template_php_replace( string $html, string $template_part_slug = '' ): string {
+		$site_name = get_bloginfo( 'name' );
+		$year      = gmdate( 'Y' );
 
-	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
-		return;
-	}
+		$replace_cb = static function ( array $m ) use ( $site_name, $year, $template_part_slug ): string {
+			$php = (string) $m[0];
 
-	if ( ! current_user_can( 'edit_post', $post_id ) ) {
-		return;
-	}
-
-	if ( isset( $_POST['em_primary_topic'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-		$primary = absint( wp_unslash( $_POST['em_primary_topic'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
-
-		if ( $primary > 0 ) {
-			$term_assigned = has_term( $primary, 'topic', $post_id );
-
-			if ( ! is_wp_error( $term_assigned ) && $term_assigned ) {
-				update_post_meta( $post_id, EMINDY_PRIMARY_TOPIC_META, $primary );
+			// Strip common headers/guards.
+			if ( false !== strpos( $php, '@package' ) || false !== strpos( $php, 'ABSPATH' ) ) {
+				return '';
 			}
-		} else {
-			delete_post_meta( $post_id, EMINDY_PRIMARY_TOPIC_META );
-		}
+
+			// Year.
+			if ( false !== strpos( $php, 'gmdate' ) && preg_match( "/gmdate\(\s*['\"]Y['\"]\s*\)/", $php ) ) {
+				return esc_html( $year );
+			}
+
+			// Site name.
+			if ( false !== strpos( $php, 'get_bloginfo' ) && preg_match( "/get_bloginfo\(\s*['\"]name['\"]\s*\)/", $php ) ) {
+				return esc_html( $site_name );
+			}
+
+			// Simple translations: esc_html_e( 'Text', 'emindy' ) or esc_html_e( "Text", "emindy" ).
+			if ( preg_match( "/esc_html_e\(\s*(['\"])([^'\"]+)\\1\s*,\s*(['\"])emindy\\3\s*\)/", $php, $mm ) ) {
+				return esc_html__( (string) $mm[2], 'emindy' );
+			}
+
+			// URLs: home_url( '/path/' ).
+			if ( preg_match( "/home_url\(\s*(['\"])([^'\"]+)\\1\s*\)/", $php, $mm ) ) {
+				$path = (string) $mm[2];
+				return esc_url( home_url( $path ) );
+			}
+
+			// Footer disclaimer (known snippet).
+			if ( 'footer' === $template_part_slug && false !== strpos( $php, 'Calm, friendly and accessible resources' ) ) {
+				$text = __( 'Calm, friendly and accessible resources. Educational self-help only (not medical advice). For urgent help, see <a href="%s">Emergency</a>.', 'emindy' );
+				$out  = sprintf( (string) $text, esc_url( home_url( '/emergency/' ) ) );
+				return wp_kses_post( $out );
+			}
+
+			return '';
+		};
+
+		// Replace each PHP segment with a safe computed value (or empty).
+		$html = preg_replace_callback( '/<\?php[\s\S]*?\?>/m', $replace_cb, $html );
+
+		return (string) $html;
 	}
 }
-add_action( 'save_post', 'emindy_save_primary_topic' );
 
 /**
- * Warn editors when a primary topic is missing.
- */
-function emindy_primary_topic_notice() {
-	$screen = get_current_screen();
-
-	if ( ! $screen ) {
-		return;
-	}
-
-	$allowed_screens = array( 'post', 'page' );
-	$taxonomy        = get_taxonomy( 'topic' );
-
-	if ( $taxonomy && ! empty( $taxonomy->object_type ) && is_array( $taxonomy->object_type ) ) {
-		$allowed_screens = array_unique( array_merge( $allowed_screens, $taxonomy->object_type ) );
-	}
-
-	if ( ! in_array( $screen->id, $allowed_screens, true ) ) {
-		return;
-	}
-
-	$post_id = isset( $_GET['post'] ) ? absint( wp_unslash( $_GET['post'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-
-	if ( ! $post_id ) {
-		return;
-	}
-
-	$topics = wp_get_post_terms( $post_id, 'topic', array( 'fields' => 'ids' ) );
-
-	if ( is_wp_error( $topics ) ) {
-		return;
-	}
-
-	if ( $topics && ! get_post_meta( $post_id, EMINDY_PRIMARY_TOPIC_META, true ) ) {
-		printf(
-			'<div class="notice notice-warning"><p><strong>%1$s</strong> %2$s</p></div>',
-			esc_html__( 'Primary Topic', 'emindy' ),
-			esc_html__( 'is not set. Please select one in the sidebar meta box for better recommendations & SEO.', 'emindy' )
-		);
-	}
-}
-add_action( 'admin_notices', 'emindy_primary_topic_notice' );
-
-/**
- * Handle sorting for em_video archives and topic term pages.
+ * Compatibility CSS variables for tokens referenced across templates and CSS.
  *
- * @param WP_Query $query Main query.
+ * Keeps templates stable even if upstream tokens (from a parent theme) are absent.
  */
-function emindy_sort_em_video_archives( $query ) {
-	if ( is_admin() || ! $query->is_main_query() ) {
-		return;
-	}
+if ( ! function_exists( 'emindy_get_compat_css' ) ) {
+	function emindy_get_compat_css(): string {
+		$lines = array(
+			':root{',
+			'  --font-sans: var(--wp--preset--font-family--emindy-sans, Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif);',
+			'  --font-serif: var(--wp--preset--font-family--emindy-serif, Literata, ui-serif, Georgia, serif);',
+			'  --wp--custom--brand--radius--lg: 12px;',
+			'  --wp--custom--brand--radius--xl: 16px;',
+			'  --wp--custom--brand--radius--2xl: 24px;',
+			'  --wp--custom--brand--shadow--card: 0 10px 30px rgba(0,0,0,0.08);',
+			'  --wp--custom--brand--colors--deepBlue: #0b2d49;',
+			'  --wp--custom--brand--colors--gold: #f4d483;',
+			'  --wp--custom--brand--colors--teal: #00a3a3;',
+			'  --wp--preset--shadow--natural: var(--wp--custom--brand--shadow--card);',
+			'  --wp--preset--color--white: #ffffff;',
+			'  --wp--preset--color--black: #000000;',
+			'  --wp--preset--color--base: #ffffff;',
+			'  --wp--preset--color--base-2: var(--em-card, #f8fafc);',
+			'  --wp--preset--color--background: var(--em-bg, #ffffff);',
+			'  --wp--preset--color--border: var(--em-border, rgba(0,0,0,0.08));',
+			'  --wp--preset--color--secondary: rgba(244,212,131,0.18);',
+			'  --wp--preset--color--teal: var(--em-teal, #00a3a3);',
+			'  --wp--preset--color--contrast: var(--em-text, #0a2a43);',
+			'  --wp--preset--color--contrast-3: rgba(0,0,0,0.12);',
+			'  --wp--preset--color--contrast-5: #f1f5f9;',
+			'}',
+		);
 
-	$is_em_video_archive = $query->is_post_type_archive( 'em_video' );
-	$is_topic_em_video   = $query->is_tax( 'topic' ) && 'em_video' === $query->get( 'post_type' );
+		/**
+		 * Filter compatibility CSS lines.
+		 *
+		 * @param string[] $lines CSS lines to be joined with "\n".
+		 */
+		$lines = apply_filters( 'emindy_compat_css_lines', $lines );
 
-	if ( $is_em_video_archive || $is_topic_em_video ) {
-		// Retrieve sort parameter from query string. Fallback to $_GET when
-		// filter_input is unavailable.
-		$sort = '';
-
-		if ( function_exists( 'filter_input' ) ) {
-			$sort = filter_input( INPUT_GET, 'sort', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		if ( empty( $lines ) || ! is_array( $lines ) ) {
+			return '';
 		}
 
-		if ( '' === $sort && isset( $_GET['sort'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$sort = sanitize_text_field( wp_unslash( $_GET['sort'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		}
+		$lines = array_map(
+			static function ( $line ): string {
+				return is_string( $line ) ? $line : '';
+			},
+			$lines
+		);
 
-		$sort = ( 'alpha' === $sort ) ? 'alpha' : '';
+		$lines = array_values( array_filter( $lines, 'strlen' ) );
 
-		if ( 'alpha' === $sort ) {
-			$query->set( 'orderby', 'title' );
-			$query->set( 'order', 'ASC' );
-		} else {
-			$query->set( 'orderby', 'date' );
-			$query->set( 'order', 'DESC' );
-		}
+		return implode( "\n", $lines ) . "\n";
 	}
 }
-add_action( 'pre_get_posts', 'emindy_sort_em_video_archives' );
+
+/**
+ * Theme JS:
+ * - Dark/light toggle using data-em-theme and localStorage('emindy_theme').
+ * - Updates aria-label and icon for accessibility.
+ */
+if ( ! function_exists( 'emindy_get_theme_js' ) ) {
+	function emindy_get_theme_js(): string {
+		return <<<JS
+(function(){
+	'use strict';
+	var KEY='emindy_theme';
+	var root=document.documentElement;
+
+	function prefersDark(){
+		try{
+			return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+		}catch(e){return false;}
+	}
+
+	function getStored(){
+		try{return localStorage.getItem(KEY);}catch(e){return null;}
+	}
+
+	function setStored(v){
+		try{
+			if(v===null){localStorage.removeItem(KEY);}else{localStorage.setItem(KEY,v);}
+		}catch(e){}
+	}
+
+	function getExplicit(){
+		var explicit=root.getAttribute('data-em-theme');
+		if(explicit==='dark'||explicit==='light'){return explicit;}
+		var stored=getStored();
+		if(stored==='dark'||stored==='light'){return stored;}
+		return null;
+	}
+
+	function getEffectiveMode(){
+		var explicit=getExplicit();
+		if(explicit){return explicit;}
+		return prefersDark() ? 'dark' : 'light';
+	}
+
+	function applyMode(mode){
+		if(mode==='dark'){root.setAttribute('data-em-theme','dark');}
+		else if(mode==='light'){root.setAttribute('data-em-theme','light');}
+		else{root.removeAttribute('data-em-theme');}
+	}
+
+	function updateButton(btn){
+		if(!btn){return;}
+		var mode=getEffectiveMode();
+		var isDark=(mode==='dark');
+		btn.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+
+		var labelToDark  = btn.getAttribute('data-labelToDark')  || 'Switch to dark mode';
+		var labelToLight = btn.getAttribute('data-labelToLight') || 'Switch to light mode';
+		btn.setAttribute('aria-label', isDark ? labelToLight : labelToDark);
+
+		var icon = btn.querySelector('span[aria-hidden="true"]');
+		if(icon){icon.textContent = isDark ? '☀️' : '🌙';}
+	}
+
+	function toggle(){
+		var current=getEffectiveMode();
+		var next=(current==='dark') ? 'light' : 'dark';
+		applyMode(next);
+		setStored(next);
+		updateButton(document.getElementById('em-dark-mode-toggle'));
+	}
+
+	document.addEventListener('click', function(e){
+		var el = e.target;
+		if(!el){return;}
+		var btn = (el.id==='em-dark-mode-toggle') ? el : (el.closest ? el.closest('#em-dark-mode-toggle') : null);
+		if(!btn){return;}
+		e.preventDefault();
+		toggle();
+	});
+
+	document.addEventListener('DOMContentLoaded', function(){
+		updateButton(document.getElementById('em-dark-mode-toggle'));
+	});
+
+	// If the user has not explicitly chosen a mode, keep the toggle UI in sync with system changes.
+	try{
+		if(window.matchMedia){
+			var mq = window.matchMedia('(prefers-color-scheme: dark)');
+			var handler = function(){
+				if(getExplicit()){ return; }
+				updateButton(document.getElementById('em-dark-mode-toggle'));
+			};
+			if(mq.addEventListener){ mq.addEventListener('change', handler); }
+			else if(mq.addListener){ mq.addListener(handler); }
+		}
+	}catch(e){}
+})();
+JS;
+	}
+}
