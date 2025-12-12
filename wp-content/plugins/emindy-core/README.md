@@ -404,7 +404,6 @@ Checks can include:
 - `assets/js/player.js` – guided practice player logic (reads `data-steps`)
 - `assets/js/video-analytics.js` – video tracking (play/chapter interactions, etc.)
 - `assets/js/admin.js` – JSON meta box validation/UX
-- `assets/js/theme-toggle.js` – theme behavior helper (if enabled/used)
 
 ### Fonts
 - `assets/fonts/fonts.css` – self-hosted variable fonts (Inter + Vazirmatn) under the unified family alias:
