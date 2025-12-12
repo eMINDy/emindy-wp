@@ -405,9 +405,6 @@ Checks can include:
 - `assets/js/video-analytics.js` – video tracking (play/chapter interactions, etc.)
 - `assets/js/admin.js` – JSON meta box validation/UX
 
-### Fonts
-- `assets/fonts/fonts.css` – self-hosted variable fonts (Inter + Vazirmatn) under the unified family alias:
-  - **"eMINDy Sans"** (useful for bilingual/RTL readiness)
 
 ### Enqueue logic (high-level)
 - Always loads `emindy-core.css`
