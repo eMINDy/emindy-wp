@@ -1,214 +1,136 @@
 <!--
-Template: Single — em_exercise
-
-Dedicated layout for individual eMINDy exercises (em_exercise CPT).
+Template: Single — em_exercise (eMINDy)
+Block/Shortcode-first and translation-friendly: avoid hardcoded URLs and non-translatable fixed copy.
 -->
 
 <!-- wp:template-part {"slug":"header","tagName":"header","align":"full"} /-->
 
-<!-- wp:group {"metadata":{"name":"Single — em_exercise"},"tagName":"main","align":"full","style":{"spacing":{"padding":{"top":"1.5rem","bottom":"2.5rem"}}},"layout":{"type":"constrained","contentSize":"900px"}} -->
-<main
-  id="main-content"
-  class="wp-block-group alignfull"
-  style="padding-top:1.5rem;padding-bottom:2.5rem"
->
-  <!-- Breadcrumbs -->
-  <!-- wp:group {"tagName":"nav","className":"emindy-breadcrumbs","ariaLabel":"Breadcrumbs","style":{"spacing":{"margin":{"bottom":"0.75rem"}}},"layout":{"type":"constrained"}} -->
-  <nav
-    class="wp-block-group emindy-breadcrumbs"
-    aria-label="Breadcrumbs"
-    style="margin-bottom:0.75rem"
-  >
-    <!-- wp:shortcode -->
-    [rank_math_breadcrumb]
-    <!-- /wp:shortcode -->
-  </nav>
-  <!-- /wp:group -->
+<!-- wp:group {"metadata":{"name":"Single — em_exercise"},"tagName":"main","anchor":"main-content","align":"full","className":"em-single em-single--exercise","style":{"spacing":{"padding":{"top":"var:preset|spacing|xl","bottom":"var:preset|spacing|3xl"},"blockGap":"var:preset|spacing|l"}},"layout":{"type":"constrained"}} -->
+<main id="main-content" class="wp-block-group alignfull em-single em-single--exercise" style="padding-top:var(--wp--preset--spacing--xl);padding-bottom:var(--wp--preset--spacing--3xl)">
 
-  <!-- Hero: Title + Meta -->
-  <!-- wp:group {"style":{"spacing":{"blockGap":"0.75rem","margin":{"bottom":"1.5rem"}}},"layout":{"type":"constrained"}} -->
-  <div class="wp-block-group" style="margin-bottom:1.5rem">
-    <!-- Title (H1) -->
-    <!-- wp:post-title {"level":1,"style":{"typography":{"fontSize":"clamp(1.9rem,3vw,2.6rem)","lineHeight":"1.15"},"spacing":{"margin":{"bottom":"0.25rem"}}}} /-->
+	<!-- wp:group {"align":"wide","layout":{"type":"constrained"}} -->
+	<div class="wp-block-group alignwide">
 
-    <!-- Meta: date, topics, level, duration -->
-    <!-- wp:group {"layout":{"type":"flex","flexWrap":"wrap"},"style":{"spacing":{"blockGap":"0.75rem"},"typography":{"fontSize":"0.95rem"}}} -->
-    <div class="wp-block-group" style="font-size:0.95rem">
-      <!-- Left: date + topics -->
-      <!-- wp:group {"layout":{"type":"flex","flexWrap":"wrap","verticalAlignment":"center"},"style":{"spacing":{"blockGap":"0.5rem"}}} -->
-      <div class="wp-block-group">
-        <!-- wp:post-date {"format":"F j, Y"} /-->
-        <!-- wp:paragraph -->
-        <p>·</p>
-        <!-- /wp:paragraph -->
-        <!-- wp:post-terms {"term":"em_topic","className":"emindy-post-terms--topic"} /-->
-      </div>
-      <!-- /wp:group -->
+		<!-- wp:group {"tagName":"article","style":{"spacing":{"blockGap":"var:preset|spacing|l"}},"layout":{"type":"constrained"}} -->
+		<article class="wp-block-group">
 
-      <!-- Right: level + duration -->
-      <!-- wp:group {"layout":{"type":"flex","flexWrap":"wrap","verticalAlignment":"center"},"style":{"spacing":{"blockGap":"0.5rem","margin":{"top":"0.25rem"}}}} -->
-      <div class="wp-block-group" style="margin-top:0.25rem">
-        <!-- wp:paragraph -->
-        <p><strong>Level:</strong></p>
-        <!-- /wp:paragraph -->
-        <!-- wp:post-terms {"term":"level","className":"emindy-post-terms--level"} /-->
-        <!-- wp:paragraph -->
-        <p>·</p>
-        <!-- /wp:paragraph -->
-        <!-- wp:paragraph -->
-        <p><strong>Duration:</strong></p>
-        <!-- /wp:paragraph -->
-        <!-- wp:post-terms {"term":"duration","className":"emindy-post-terms--duration"} /-->
-      </div>
-      <!-- /wp:group -->
-    </div>
-    <!-- /wp:group -->
+			<!-- wp:group {"className":"em-breadcrumbs","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|xs"}}},"layout":{"type":"constrained"}} -->
+			<div class="wp-block-group em-breadcrumbs" style="margin-bottom:var(--wp--preset--spacing--xs)">
+				<!-- wp:shortcode -->
+				[rank_math_breadcrumb]
+				<!-- /wp:shortcode -->
+			</div>
+			<!-- /wp:group -->
 
-    <!-- Optional excerpt / intro -->
-    <!-- wp:post-excerpt {"moreText":"","style":{"typography":{"lineHeight":"1.6"},"spacing":{"margin":{"top":"0.25rem","bottom":"1.5rem"}}}} /-->
-  </div>
-  <!-- /wp:group -->
+			<!-- wp:group {"align":"wide","className":"is-style-emindy-card","style":{"border":{"radius":"var:preset|radius|2xl"},"spacing":{"padding":{"top":"var:preset|spacing|xl","right":"var:preset|spacing|xl","bottom":"var:preset|spacing|xl","left":"var:preset|spacing|xl"},"margin":{"bottom":"var:preset|spacing|l"},"blockGap":"var:preset|spacing|m"},"shadow":"var:preset|shadow|card"},"gradient":"calm-dawn","layout":{"type":"constrained"}} -->
+			<div class="wp-block-group alignwide is-style-emindy-card has-calm-dawn-gradient-background has-background" style="border-radius:var(--wp--preset--radius--2xl);padding-top:var(--wp--preset--spacing--xl);padding-right:var(--wp--preset--spacing--xl);padding-bottom:var(--wp--preset--spacing--xl);padding-left:var(--wp--preset--spacing--xl);margin-bottom:var(--wp--preset--spacing--l)">
 
-  <!-- Main exercise content (player + narrative) -->
-  <!-- wp:group {"tagName":"section","ariaLabel":"Exercise content","style":{"spacing":{"margin":{"bottom":"1.75rem"}}},"layout":{"type":"constrained"}} -->
-  <section
-    class="wp-block-group"
-    aria-label="Exercise content"
-    style="margin-bottom:1.75rem"
-  >
-    <!-- wp:post-content {"layout":{"type":"constrained","contentSize":"900px"}} /-->
-    <!-- [em_player] is automatically prepended to the content for em_exercise posts via the plugin. -->
-  </section>
-  <!-- /wp:group -->
+				<!-- wp:post-title {"level":1,"style":{"typography":{"lineHeight":"1.12","letterSpacing":"-0.02em"},"spacing":{"margin":{"top":"0","bottom":"var:preset|spacing|xs"}}}} /-->
 
-  <!-- Separator -->
-  <!-- wp:separator {"opacity":"css","className":"is-style-wide"} -->
-  <hr class="wp-block-separator has-css-opacity is-style-wide" />
-  <!-- /wp:separator -->
+				<!-- wp:post-excerpt {"excerptLength":36,"style":{"typography":{"fontSize":"var:preset|font-size|l","lineHeight":"1.6"},"spacing":{"margin":{"top":"0","bottom":"0"}}}} /-->
 
-  <!-- Steps Section -->
-  <!-- wp:group {"tagName":"section","ariaLabel":"Exercise steps","style":{"spacing":{"margin":{"top":"1rem","bottom":"1rem"},"padding":{"top":"1rem","bottom":"1rem","left":"1rem","right":"1rem"}},"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"shadow":"var(--wp--custom--brand--shadow--card)"},"layout":{"type":"constrained"}} -->
-  <section
-    class="wp-block-group"
-    aria-label="Exercise steps"
-    style="border-radius:var(--wp--custom--brand--radius--xl);box-shadow:var(--wp--custom--brand--shadow--card);padding:1rem;margin-top:1rem;margin-bottom:1rem"
-  >
-    <!-- wp:heading {"level":2} -->
-    <h2>Steps</h2>
-    <!-- /wp:heading -->
+				<!-- wp:post-featured-image {"align":"wide","isLink":false,"aspectRatio":"16/9","width":"100%","style":{"spacing":{"margin":{"top":"var:preset|spacing|l","bottom":"0"}},"border":{"radius":"var:preset|radius|2xl"},"shadow":"var:preset|shadow|card"}} /-->
 
-    <!-- wp:paragraph {"style":{"typography":{"fontSize":"0.95rem"},"spacing":{"margin":{"bottom":"0.75rem"}}}} -->
-    <p>
-      Follow these steps at your own pace. You can pause, repeat, or adapt any
-      step to fit how you feel today.
-    </p>
-    <!-- /wp:paragraph -->
+				<!-- wp:group {"style":{"spacing":{"margin":{"top":"var:preset|spacing|m"},"blockGap":"var:preset|spacing|s"}},"layout":{"type":"flex","flexWrap":"wrap","verticalAlignment":"center"}} -->
+				<div class="wp-block-group" style="margin-top:var(--wp--preset--spacing--m)">
 
-    <!-- wp:shortcode -->
-    [em_exercise_steps]
-    <!-- /wp:shortcode -->
-  </section>
-  <!-- /wp:group -->
+					<!-- wp:post-date {"fontSize":"xs"} /-->
 
-  <!-- Tips / Variations -->
-  <!-- wp:group {"tagName":"section","ariaLabel":"Tips and variations","style":{"spacing":{"margin":{"top":"1rem","bottom":"1rem"},"padding":{"top":"1rem","bottom":"1rem","left":"1rem","right":"1rem"}},"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"shadow":"var(--wp--custom--brand--shadow--card)"},"layout":{"type":"constrained"}} -->
-  <section
-    class="wp-block-group"
-    aria-label="Tips and variations"
-    style="border-radius:var(--wp--custom--brand--radius--xl);box-shadow:var(--wp--custom--brand--shadow--card);padding:1rem;margin-top:1rem;margin-bottom:1rem"
-  >
-    <!-- wp:heading {"level":2} -->
-    <h2>Tips &amp; variations</h2>
-    <!-- /wp:heading -->
+					<!-- wp:paragraph {"textColor":"emindy-muted","fontSize":"xs"} -->
+					<p class="has-emindy-muted-color has-text-color has-xs-font-size">•</p>
+					<!-- /wp:paragraph -->
 
-    <!-- wp:paragraph -->
-    <p>
-      Make this exercise your own. Adjust the pace, shorten or lengthen the
-      practice, and skip anything that doesn’t feel right for you today.
-    </p>
-    <!-- /wp:paragraph -->
+					<!-- wp:post-terms {"term":"topic","separator":" ","className":"em-cat-pills","fontSize":"xs"} /-->
 
-    <!-- wp:paragraph -->
-    <p>
-      You can also repeat your favorite step a few times or pair this exercise
-      with a calming video or music track if that feels supportive.
-    </p>
-    <!-- /wp:paragraph -->
-  </section>
-  <!-- /wp:group -->
+					<!-- wp:post-terms {"term":"technique","separator":" ","className":"em-cat-pills","fontSize":"xs"} /-->
 
-  <!-- Resources -->
-  <!-- wp:group {"tagName":"section","ariaLabel":"Further resources","style":{"spacing":{"margin":{"top":"1rem","bottom":"1rem"},"padding":{"top":"1rem","bottom":"1rem","left":"1rem","right":"1rem"}},"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"shadow":"var(--wp--custom--brand--shadow--card)"},"layout":{"type":"constrained"}} -->
-  <section
-    class="wp-block-group"
-    aria-label="Further resources"
-    style="border-radius:var(--wp--custom--brand--radius--xl);box-shadow:var(--wp--custom--brand--shadow--card);padding:1rem;margin-top:1rem;margin-bottom:1rem"
-  >
-    <!-- wp:heading {"level":2} -->
-    <h2>Further resources</h2>
-    <!-- /wp:heading -->
+					<!-- wp:post-terms {"term":"format","separator":" ","className":"em-cat-pills","fontSize":"xs"} /-->
 
-    <!-- wp:paragraph {"style":{"typography":{"fontSize":"0.95rem"},"spacing":{"margin":{"bottom":"0.75rem"}}}} -->
-    <p>
-      Explore references and evidence-based resources related to this exercise.
-    </p>
-    <!-- /wp:paragraph -->
+					<!-- wp:post-terms {"term":"duration","separator":" ","className":"em-cat-pills","fontSize":"xs"} /-->
 
-    <!-- wp:shortcode -->
-    <!-- Set the correct Zotpress collection ID in production. -->
-    [zotpress collection="YOUR_COLLECTION_ID"]
-    <!-- /wp:shortcode -->
-  </section>
-  <!-- /wp:group -->
+					<!-- wp:post-terms {"term":"level","separator":" ","className":"em-cat-pills","fontSize":"xs"} /-->
 
-  <!-- Related content -->
-  <!-- wp:group {"tagName":"section","ariaLabel":"Related content","style":{"spacing":{"margin":{"top":"1rem"}}},"layout":{"type":"constrained"}} -->
-  <section
-    class="wp-block-group"
-    aria-label="Related content"
-    style="margin-top:1rem"
-  >
-    <!-- wp:shortcode -->
-    [em_related]
-    <!-- /wp:shortcode -->
-  </section>
-  <!-- /wp:group -->
+					<!-- wp:post-terms {"term":"a11y_feature","separator":" ","className":"em-cat-pills","fontSize":"xs"} /-->
 
-  <!-- Newsletter signup -->
-  <!-- wp:group {"tagName":"section","ariaLabel":"Newsletter signup","style":{"spacing":{"margin":{"top":"1.25rem"},"padding":{"top":"1rem","bottom":"1rem","left":"1.25rem","right":"1.25rem"}},"color":{"background":"#0b2d49"},"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"elements":{"link":{"color":{"text":"var(--wp--preset--color--white)"}}}},"textColor":"white","layout":{"type":"constrained"}} -->
-  <section
-    class="wp-block-group has-white-color has-text-color has-background"
-    aria-label="Newsletter signup"
-    style="border-radius:var(--wp--custom--brand--radius--xl);background-color:#0b2d49;padding-top:1rem;padding-bottom:1rem;padding-left:1.25rem;padding-right:1.25rem;margin-top:1.25rem"
-  >
-    <!-- wp:heading {"level":3} -->
-    <h3>Stay in practice</h3>
-    <!-- /wp:heading -->
+				</div>
+				<!-- /wp:group -->
 
-    <!-- wp:paragraph -->
-    <p>
-      Get weekly mini-exercises, new videos, and gentle reminders to check in
-      with yourself.
-    </p>
-    <!-- /wp:paragraph -->
+			</div>
+			<!-- /wp:group -->
 
-    <!-- wp:shortcode -->
-    [em_newsletter]
-    <!-- /wp:shortcode -->
-  </section>
-  <!-- /wp:group -->
+			<!-- wp:columns {"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|l"}}} -->
+			<div class="wp-block-columns alignwide">
 
-  <!-- Post navigation (optional helper to keep practicing) -->
-  <!-- wp:group {"tagName":"nav","ariaLabel":"Exercise navigation","style":{"spacing":{"margin":{"top":"2rem"}}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between"}} -->
-  <nav
-    class="wp-block-group"
-    aria-label="Exercise navigation"
-    style="margin-top:2rem"
-  >
-    <!-- wp:post-navigation-link {"type":"previous","showTitle":true,"label":"Previous exercise","className":"emindy-post-nav--prev"} /-->
-    <!-- wp:post-navigation-link {"type":"next","showTitle":true,"label":"Next exercise","className":"emindy-post-nav--next"} /-->
-  </nav>
-  <!-- /wp:group -->
+				<!-- wp:column {"width":"68%","style":{"spacing":{"blockGap":"var:preset|spacing|l"}}} -->
+				<div class="wp-block-column" style="flex-basis:68%">
+
+					<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+
+					<!-- wp:shortcode -->
+					[em_exercise_steps]
+					<!-- /wp:shortcode -->
+
+					<!-- wp:separator {"opacity":"css","className":"is-style-wide"} /-->
+
+					<!-- wp:group {"layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap"},"style":{"spacing":{"blockGap":"var:preset|spacing|s"}}} -->
+					<div class="wp-block-group">
+						<!-- wp:post-navigation-link {"type":"previous","showTitle":true} /-->
+						<!-- wp:post-navigation-link {"type":"next","showTitle":true} /-->
+					</div>
+					<!-- /wp:group -->
+
+				</div>
+				<!-- /wp:column -->
+
+				<!-- wp:column {"width":"32%","style":{"spacing":{"blockGap":"var:preset|spacing|l"}}} -->
+				<div class="wp-block-column" style="flex-basis:32%">
+
+					<!-- wp:table-of-contents {"className":"em-toc"} /-->
+
+					<!-- wp:group {"className":"is-style-emindy-card","style":{"spacing":{"padding":{"top":"var:preset|spacing|m","right":"var:preset|spacing|m","bottom":"var:preset|spacing|m","left":"var:preset|spacing|m"},"blockGap":"var:preset|spacing|s"}},"layout":{"type":"constrained"}} -->
+					<div class="wp-block-group is-style-emindy-card" style="padding-top:var(--wp--preset--spacing--m);padding-right:var(--wp--preset--spacing--m);padding-bottom:var(--wp--preset--spacing--m);padding-left:var(--wp--preset--spacing--m)">
+
+						<!-- wp:shortcode -->
+						[em_share]
+						<!-- /wp:shortcode -->
+
+						<!-- wp:shortcode -->
+						[em_report_link]
+						<!-- /wp:shortcode -->
+
+					</div>
+					<!-- /wp:group -->
+
+				</div>
+				<!-- /wp:column -->
+
+			</div>
+			<!-- /wp:columns -->
+
+			<!-- wp:group {"style":{"spacing":{"margin":{"top":"var:preset|spacing|2xl"},"blockGap":"var:preset|spacing|l"}},"layout":{"type":"constrained"}} -->
+			<div class="wp-block-group" style="margin-top:var(--wp--preset--spacing--2xl)">
+
+				<!-- wp:shortcode -->
+				[em_related post_type="em_exercise,em_video,em_article" taxonomy="topic" count="6" topic="current" orderby="date"]
+				<!-- /wp:shortcode -->
+
+				<!-- wp:group {"className":"is-style-emindy-card","style":{"spacing":{"padding":{"top":"var:preset|spacing|l","right":"var:preset|spacing|l","bottom":"var:preset|spacing|l","left":"var:preset|spacing|l"}}},"layout":{"type":"constrained"}} -->
+				<div class="wp-block-group is-style-emindy-card" style="padding-top:var(--wp--preset--spacing--l);padding-right:var(--wp--preset--spacing--l);padding-bottom:var(--wp--preset--spacing--l);padding-left:var(--wp--preset--spacing--l)">
+					<!-- wp:shortcode -->
+					[em_newsletter_form]
+					<!-- /wp:shortcode -->
+				</div>
+				<!-- /wp:group -->
+
+			</div>
+			<!-- /wp:group -->
+
+		</article>
+		<!-- /wp:group -->
+
+	</div>
+	<!-- /wp:group -->
+
 </main>
 <!-- /wp:group -->
 
