@@ -1,89 +1,40 @@
 <!--
-Template: Assessments Hub
-
-Lightweight hub layout for the assessments page at /assessments/.
-Keeps content flexible while providing a consistent hero and structure.
+Template: Assessments (page-assessments)
+Block/Shortcode-first, translation-friendly (Polylang), no hardcoded URLs/copy.
+All user-visible copy and CTAs should live in the page content.
 -->
 
 <!-- wp:template-part {"slug":"header","tagName":"header","align":"full"} /-->
 
-<!-- wp:group {"metadata":{"name":"Assessments — Hub"},"tagName":"main","align":"full","style":{"spacing":{"padding":{"top":"2rem","bottom":"2.5rem"}}},"layout":{"type":"constrained","contentSize":"900px"}} -->
-<main
-  id="main-content"
-  class="wp-block-group alignfull"
-  style="padding-top:2rem;padding-bottom:2.5rem"
-  aria-labelledby="assessments-title"
->
-  <!-- Hero -->
-  <!-- wp:group {"style":{"spacing":{"blockGap":"0.75rem","margin":{"bottom":"1.5rem"}}},"layout":{"type":"constrained","contentSize":"780px"}} -->
-  <div class="wp-block-group" style="margin-bottom:1.5rem">
-    <!-- wp:post-title {"level":1,"fontSize":"x-large","anchor":"assessments-title"} /-->
+<!-- wp:group {"metadata":{"name":"Page — Assessments"},"tagName":"main","align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|xl","bottom":"var:preset|spacing|3xl"}}},"layout":{"type":"constrained"}} -->
+<main id="main-content" class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--xl);padding-bottom:var(--wp--preset--spacing--3xl)" aria-labelledby="assessments-title">
+	<!-- wp:group {"align":"wide","layout":{"type":"constrained"}} -->
+	<div class="wp-block-group alignwide">
 
-    <!-- wp:paragraph {"fontSize":"medium"} -->
-    <p class="has-medium-font-size">
-      Take a few minutes to gently check in with how you are feeling. These short
-      self-checks can help you notice patterns and decide what kind of support might help.
-    </p>
-    <!-- /wp:paragraph -->
-  </div>
-  <!-- /wp:group -->
+		<!-- wp:group {"align":"wide","className":"is-style-emindy-card has-calm-dawn-gradient-background has-background","style":{"border":{"radius":"var:preset|radius|2xl"},"spacing":{"padding":{"top":"var:preset|spacing|xl","right":"var:preset|spacing|xl","bottom":"var:preset|spacing|xl","left":"var:preset|spacing|xl"},"margin":{"bottom":"var:preset|spacing|l"}}},"layout":{"type":"constrained"}} -->
+		<div class="wp-block-group alignwide is-style-emindy-card has-calm-dawn-gradient-background has-background" style="border-radius:var(--wp--preset--radius--2xl);padding-top:var(--wp--preset--spacing--xl);padding-right:var(--wp--preset--spacing--xl);padding-bottom:var(--wp--preset--spacing--xl);padding-left:var(--wp--preset--spacing--xl);margin-bottom:var(--wp--preset--spacing--l)">
+			<!-- wp:shortcode -->
+			[rank_math_breadcrumb]
+			<!-- /wp:shortcode -->
 
-  <!-- Info notice -->
-  <!-- wp:group {"style":{"spacing":{"padding":{"top":"1rem","right":"1.25rem","bottom":"1rem","left":"1.25rem"},"margin":{"bottom":"1.75rem"}},"border":{"radius":"var(--wp--custom--brand--radius--2xl)"},"color":{"background":"var(--wp--custom--brand--colors--deepBlue)"},"elements":{"link":{"color":{"text":"var(--wp--preset--color--white)"}}}},"textColor":"white","layout":{"type":"constrained","contentSize":"780px"}} -->
-  <div
-    class="wp-block-group has-white-color has-text-color"
-    style="margin-bottom:1.75rem;padding-top:1rem;padding-right:1.25rem;padding-bottom:1rem;padding-left:1.25rem;border-radius:var(--wp--custom--brand--radius--2xl);background-color:var(--wp--custom--brand--colors--deepBlue)"
-  >
-    <!-- wp:paragraph {"fontSize":"small"} -->
-    <p class="has-small-font-size">
-      These tools are educational check-ins, not a diagnosis. If you are in crisis or
-      worried about your safety, please seek urgent help in your area or contact a
-      qualified mental health professional.
-    </p>
-    <!-- /wp:paragraph -->
-  </div>
-  <!-- /wp:group -->
+			<!-- wp:post-title {"level":1,"anchor":"assessments-title","style":{"typography":{"fontSize":"clamp(2rem,4vw,2.8rem)","lineHeight":"1.12","letterSpacing":"-0.02em"}}} /-->
 
-  <!-- Content area (links and/or embedded assessments via shortcodes) -->
-  <!-- wp:post-content {"layout":{"type":"constrained","contentSize":"780px"},"style":{"typography":{"lineHeight":"1.7"}}} /-->
+			<!-- wp:post-excerpt {"excerptLength":32,"style":{"spacing":{"margin":{"top":"var:preset|spacing|xs"}},"typography":{"fontSize":"var:preset|font-size|l","lineHeight":"1.6"}}} /-->
+		</div>
+		<!-- /wp:group -->
 
-  <!-- CTA: Next steps -->
-  <!-- wp:group {"style":{"spacing":{"margin":{"top":"2rem"},"padding":{"top":"1.5rem","right":"1.5rem","bottom":"1.5rem","left":"1.5rem"}},"color":{"background":"var(--wp--custom--brand--colors--deepBlue)"},"border":{"radius":"var(--wp--custom--brand--radius--2xl)"},"elements":{"link":{"color":{"text":"var(--wp--preset--color--white)"}}}},"textColor":"white","layout":{"type":"constrained","contentSize":"780px"}} -->
-  <div
-    class="wp-block-group has-white-color has-text-color"
-    style="margin-top:2rem;padding-top:1.5rem;padding-right:1.5rem;padding-bottom:1.5rem;padding-left:1.5rem;border-radius:var(--wp--custom--brand--radius--2xl);background-color:var(--wp--custom--brand--colors--deepBlue)"
-  >
-    <!-- wp:heading {"level":2,"fontSize":"large"} -->
-    <h2 class="wp-block-heading has-large-font-size">What would you like to explore next?</h2>
-    <!-- /wp:heading -->
+		<!-- wp:shortcode -->
+		[em_admin_notice_missing_pages]
+		<!-- /wp:shortcode -->
 
-    <!-- wp:paragraph {"fontSize":"small"} -->
-    <p class="has-small-font-size">
-      Find gentle, step-by-step exercises and calming resources that support what you discovered in your check-in.
-    </p>
-    <!-- /wp:paragraph -->
+		<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|l"}},"layout":{"type":"constrained","contentSize":"860px"}} -->
+		<div class="wp-block-group">
+			<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+		</div>
+		<!-- /wp:group -->
 
-    <!-- wp:buttons {"layout":{"type":"flex","justifyContent":"flex-start"}} -->
-    <div class="wp-block-buttons">
-      <!-- wp:button {"style":{"border":{"radius":"999px"}}} -->
-      <div class="wp-block-button">
-        <a class="wp-block-button__link wp-element-button" href="/exercises/">
-          Explore exercises
-        </a>
-      </div>
-      <!-- /wp:button -->
-
-      <!-- wp:button {"className":"is-style-outline","style":{"border":{"radius":"999px"}}} -->
-      <div class="wp-block-button is-style-outline">
-        <a class="wp-block-button__link wp-element-button" href="/library/">
-          Browse articles &amp; videos
-        </a>
-      </div>
-      <!-- /wp:button -->
-    </div>
-    <!-- /wp:buttons -->
-  </div>
-  <!-- /wp:group -->
+	</div>
+	<!-- /wp:group -->
 </main>
 <!-- /wp:group -->
 
