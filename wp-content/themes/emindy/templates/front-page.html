@@ -1,278 +1,145 @@
-<!-- wp:template-part {"slug":"header","theme":"emindy","area":"header"} /-->
+<!--
+Template: Front Page — eMINDy
+Goal: Block/Shortcode-first, translation-friendly (Polylang), no hardcoded URLs, no non-translatable fixed copy.
+-->
 
-<!-- wp:group {"metadata":{"name":"Front Page — eMINDy"},"tagName":"main","align":"full","id":"main-content","style":{"spacing":{"padding":{"top":"2.5rem","bottom":"2.75rem"},"blockGap":"2.5rem"}},"layout":{"type":"constrained","contentSize":"1200px"}} -->
-<main id="main-content" class="wp-block-group alignfull" style="padding-top:2.5rem;padding-bottom:2.75rem">
+<!-- wp:template-part {"slug":"header","tagName":"header","align":"full"} /-->
 
-	<!-- Hero -->
-	<!-- wp:group {"style":{"spacing":{"padding":{"top":"2rem","right":"1.75rem","bottom":"2rem","left":"1.75rem"},"blockGap":"1.5rem"},"border":{"radius":"var(--wp--custom--brand--radius--2xl)"},"color":{"background":"var(--wp--custom--brand--colors--deepBlue)"},"elements":{"link":{"color":{"text":"var(--wp--preset--color--white)"}}}},"textColor":"white","layout":{"type":"constrained"}} -->
-	<div class="wp-block-group has-white-color has-text-color has-background" style="border-radius:var(--wp--custom--brand--radius--2xl);background-color:var(--wp--custom--brand--colors--deepBlue);padding-top:2rem;padding-right:1.75rem;padding-bottom:2rem;padding-left:1.75rem">
-		<!-- wp:columns {"verticalAlignment":"center","style":{"spacing":{"blockGap":"2rem"}}} -->
-		<div class="wp-block-columns are-vertically-aligned-center">
-			<!-- wp:column {"verticalAlignment":"center","style":{"spacing":{"blockGap":"1rem"}}} -->
-			<div class="wp-block-column is-vertically-aligned-center">
-				<!-- wp:paragraph {"style":{"typography":{"textTransform":"uppercase","letterSpacing":"0.15em","fontSize":"0.8rem"},"spacing":{"margin":{"bottom":"0.25rem"}}},"className":"em-label"} -->
-				<p class="em-label" style="margin-bottom:0.25rem;font-size:0.8rem;letter-spacing:0.15em;text-transform:uppercase">Easy Mind, Daily</p>
-				<!-- /wp:paragraph -->
+<!-- wp:group {"metadata":{"name":"Front Page — eMINDy"},"tagName":"main","align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|xl","bottom":"var:preset|spacing|xl"},"blockGap":"var:preset|spacing|l"}},"layout":{"type":"constrained","contentSize":"1100px","wideSize":"1280px"},"ariaLabel":"Front page content"} -->
+<main
+  id="main-content"
+  class="wp-block-group alignfull"
+  style="padding-top:var(--wp--preset--spacing--xl);padding-bottom:var(--wp--preset--spacing--xl)"
+  aria-label="Front page content"
+>
+  <!-- Dev-only: show missing key pages (admin only) -->
+  <!-- wp:shortcode -->
+  [em_admin_notice_missing_pages]
+  <!-- /wp:shortcode -->
 
-				<!-- wp:heading {"level":1,"style":{"typography":{"lineHeight":"1.1"}},"fontSize":"xx-large"} -->
-				<h1 class="wp-block-heading has-xx-large-font-size" style="line-height:1.1">Find calm, one small practice at a time</h1>
-				<!-- /wp:heading -->
+  <!-- HERO (dynamic: title/excerpt/featured image) -->
+  <!-- wp:group {"align":"wide","className":"is-style-emindy-card","style":{"spacing":{"padding":{"top":"var:preset|spacing|xl","right":"var:preset|spacing|xl","bottom":"var:preset|spacing|xl","left":"var:preset|spacing|xl"},"blockGap":"var:preset|spacing|l"},"border":{"radius":"var:preset|radius|2xl"},"shadow":"var:preset|shadow|card"},"gradient":"calm-dawn","layout":{"type":"constrained"},"ariaLabel":"Hero"} -->
+  <div
+    class="wp-block-group alignwide is-style-emindy-card has-calm-dawn-gradient-background has-background"
+    style="border-radius:var(--wp--preset--radius--2xl);padding-top:var(--wp--preset--spacing--xl);padding-right:var(--wp--preset--spacing--xl);padding-bottom:var(--wp--preset--spacing--xl);padding-left:var(--wp--preset--spacing--xl)"
+    aria-label="Hero"
+  >
+    <!-- wp:columns {"verticalAlignment":"center","style":{"spacing":{"blockGap":{"top":"var:preset|spacing|l","left":"var:preset|spacing|l"}}}} -->
+    <div class="wp-block-columns are-vertically-aligned-center">
+      <!-- wp:column {"verticalAlignment":"center","width":"60%"} -->
+      <div class="wp-block-column is-vertically-aligned-center" style="flex-basis:60%">
+        <!-- wp:post-title {"level":1,"style":{"typography":{"fontSize":"clamp(2rem,3.4vw,3.25rem)","lineHeight":"1.08","letterSpacing":"-0.02em"},"spacing":{"margin":{"top":"0","bottom":"0.5rem"}}}} /-->
 
-				<!-- wp:paragraph {"fontSize":"medium"} -->
-				<p class="has-medium-font-size">Science-based videos, exercises and tools to help you understand your mind, ease stress and build healthier habits — in your own language, at your own pace.</p>
-				<!-- /wp:paragraph -->
+        <!-- wp:post-excerpt {"excerptLength":28,"style":{"spacing":{"margin":{"top":"0.25rem","bottom":"0"}},"typography":{"fontSize":"var:preset|font-size|l","lineHeight":"1.55"}}} /-->
+      </div>
+      <!-- /wp:column -->
 
-				<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"flex-start","flexWrap":"wrap"},"style":{"spacing":{"blockGap":"0.75rem"}}} -->
-				<div class="wp-block-buttons">
-					<!-- wp:button {"width":0} -->
-					<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/exercises/">Start a 5-minute calm exercise</a></div>
-					<!-- /wp:button -->
+      <!-- wp:column {"verticalAlignment":"center","width":"40%"} -->
+      <div class="wp-block-column is-vertically-aligned-center" style="flex-basis:40%">
+        <!-- wp:post-featured-image {"isLink":false,"aspectRatio":"4/3","width":"100%","style":{"border":{"radius":"var:preset|radius|2xl"},"shadow":"var:preset|shadow|card"}} /-->
+      </div>
+      <!-- /wp:column -->
+    </div>
+    <!-- /wp:columns -->
+  </div>
+  <!-- /wp:group -->
 
-					<!-- wp:button {"width":0,"className":"is-style-outline"} -->
-					<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="/videos/">Watch guided videos</a></div>
-					<!-- /wp:button -->
-				</div>
-				<!-- /wp:buttons -->
+  <!-- Main page content (build all visible copy/CTAs here so it’s fully translatable) -->
+  <!-- wp:group {"style":{"spacing":{"margin":{"top":"var:preset|spacing|l"},"blockGap":"var:preset|spacing|l"}},"layout":{"type":"constrained","contentSize":"900px","wideSize":"1280px"},"ariaLabel":"Page body"} -->
+  <div class="wp-block-group" aria-label="Page body" style="margin-top:var(--wp--preset--spacing--l)">
+    <!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+  </div>
+  <!-- /wp:group -->
 
-				<!-- wp:paragraph {"style":{"typography":{"fontSize":"0.9rem","lineHeight":"1.4"},"spacing":{"margin":{"top":"0.5rem"}}},"className":"em-meta"} -->
-				<p class="em-meta" style="margin-top:0.5rem;font-size:0.9rem;line-height:1.4">No accounts, no pressure — just simple, gentle steps you can return to every day.</p>
-				<!-- /wp:paragraph -->
-			</div>
-			<!-- /wp:column -->
+  <!-- DISCOVERY (no hardcoded links; uses dynamic blocks/shortcodes) -->
+  <!-- wp:group {"align":"wide","className":"is-style-emindy-card","style":{"spacing":{"margin":{"top":"var:preset|spacing|xl"},"padding":{"top":"var:preset|spacing|l","right":"var:preset|spacing|l","bottom":"var:preset|spacing|l","left":"var:preset|spacing|l"},"blockGap":"var:preset|spacing|m"},"border":{"radius":"var:preset|radius|2xl"},"shadow":"var:preset|shadow|card"},"layout":{"type":"constrained"},"ariaLabel":"Discovery"} -->
+  <div
+    class="wp-block-group alignwide is-style-emindy-card"
+    aria-label="Discovery"
+    style="border-radius:var(--wp--preset--radius--2xl);padding-top:var(--wp--preset--spacing--l);padding-right:var(--wp--preset--spacing--l);padding-bottom:var(--wp--preset--spacing--l);padding-left:var(--wp--preset--spacing--l);margin-top:var(--wp--preset--spacing--xl)"
+  >
+    <!-- wp:search {"showLabel":false,"buttonUseIcon":true,"buttonPosition":"button-inside","align":"wide"} /-->
 
-			<!-- wp:column {"verticalAlignment":"center"} -->
-			<div class="wp-block-column is-vertically-aligned-center">
-				<!-- wp:group {"style":{"spacing":{"blockGap":"0.75rem"},"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"color":{"background":"rgba(11,45,73,0.35)"},"padding":{"top":"1.25rem","right":"1.25rem","bottom":"1.25rem","left":"1.25rem"}},"layout":{"type":"constrained"}} -->
-				<div class="wp-block-group" style="border-radius:var(--wp--custom--brand--radius--xl);background-color:rgba(11,45,73,0.35);padding-top:1.25rem;padding-right:1.25rem;padding-bottom:1.25rem;padding-left:1.25rem">
-					<!-- wp:heading {"level":3,"fontSize":"medium"} -->
-					<h3 class="wp-block-heading has-medium-font-size">Today you can&hellip;</h3>
-					<!-- /wp:heading -->
+    <!-- wp:shortcode -->
+    [em_topics_pills taxonomy="em_topic" post_type="em_exercise"]
+    <!-- /wp:shortcode -->
+  </div>
+  <!-- /wp:group -->
 
-					<!-- wp:list {"className":"em-checklist","style":{"typography":{"fontSize":"0.95rem"},"spacing":{"blockGap":"0.35rem"}}} -->
-					<ul class="em-checklist" style="font-size:0.95rem">
-						<li>Release tension with a short breathing practice</li>
-						<li>Learn one new way to handle difficult thoughts</li>
-						<li>Save a gentle exercise for tonight or tomorrow</li>
-					</ul>
-					<!-- /wp:list -->
+  <!-- Fresh internal links (latest content lists; all output is dynamic + translatable via gettext) -->
+  <!-- wp:columns {"align":"wide","style":{"spacing":{"margin":{"top":"var:preset|spacing|l"},"blockGap":{"top":"var:preset|spacing|l","left":"var:preset|spacing|l"}}}} -->
+  <div class="wp-block-columns alignwide" style="margin-top:var(--wp--preset--spacing--l)">
+    <!-- wp:column -->
+    <div class="wp-block-column">
+      <!-- wp:group {"className":"is-style-emindy-card","style":{"spacing":{"padding":{"top":"var:preset|spacing|m","right":"var:preset|spacing|m","bottom":"var:preset|spacing|m","left":"var:preset|spacing|m"}},"border":{"radius":"var:preset|radius|xl"},"shadow":"var:preset|shadow|card"},"layout":{"type":"constrained"},"ariaLabel":"Latest videos"} -->
+      <div
+        class="wp-block-group is-style-emindy-card"
+        aria-label="Latest videos"
+        style="border-radius:var(--wp--preset--radius--xl);padding-top:var(--wp--preset--spacing--m);padding-right:var(--wp--preset--spacing--m);padding-bottom:var(--wp--preset--spacing--m);padding-left:var(--wp--preset--spacing--m)"
+      >
+        <!-- wp:shortcode -->
+        [em_popular_videos limit="6"]
+        <!-- /wp:shortcode -->
+      </div>
+      <!-- /wp:group -->
+    </div>
+    <!-- /wp:column -->
 
-					<!-- wp:paragraph {"style":{"typography":{"fontSize":"0.85rem","lineHeight":"1.5"},"spacing":{"margin":{"top":"0.75rem"}}}} -->
-					<p style="margin-top:0.75rem;font-size:0.85rem;line-height:1.5">Everything on eMINDy is educational and self-guided. It supports your wellbeing, but it doesn&rsquo;t replace professional care.</p>
-					<!-- /wp:paragraph -->
-				</div>
-				<!-- /wp:group -->
-			</div>
-			<!-- /wp:column -->
-		</div>
-		<!-- /wp:columns -->
-	</div>
-	<!-- /wp:group -->
+    <!-- wp:column -->
+    <div class="wp-block-column">
+      <!-- wp:group {"className":"is-style-emindy-card","style":{"spacing":{"padding":{"top":"var:preset|spacing|m","right":"var:preset|spacing|m","bottom":"var:preset|spacing|m","left":"var:preset|spacing|m"}},"border":{"radius":"var:preset|radius|xl"},"shadow":"var:preset|shadow|card"},"layout":{"type":"constrained"},"ariaLabel":"Latest exercises"} -->
+      <div
+        class="wp-block-group is-style-emindy-card"
+        aria-label="Latest exercises"
+        style="border-radius:var(--wp--preset--radius--xl);padding-top:var(--wp--preset--spacing--m);padding-right:var(--wp--preset--spacing--m);padding-bottom:var(--wp--preset--spacing--m);padding-left:var(--wp--preset--spacing--m)"
+      >
+        <!-- wp:shortcode -->
+        [em_popular_exercises limit="6"]
+        <!-- /wp:shortcode -->
+      </div>
+      <!-- /wp:group -->
+    </div>
+    <!-- /wp:column -->
 
-	<!-- Quick paths -->
-	<!-- wp:group {"style":{"spacing":{"blockGap":"1.75rem"}},"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group">
-		<!-- wp:heading {"level":2,"fontSize":"x-large"} -->
-		<h2 class="wp-block-heading has-x-large-font-size">Start where you are</h2>
-		<!-- /wp:heading -->
+    <!-- wp:column -->
+    <div class="wp-block-column">
+      <!-- wp:group {"className":"is-style-emindy-card","style":{"spacing":{"padding":{"top":"var:preset|spacing|m","right":"var:preset|spacing|m","bottom":"var:preset|spacing|m","left":"var:preset|spacing|m"}},"border":{"radius":"var:preset|radius|xl"},"shadow":"var:preset|shadow|card"},"layout":{"type":"constrained"},"ariaLabel":"Latest posts"} -->
+      <div
+        class="wp-block-group is-style-emindy-card"
+        aria-label="Latest posts"
+        style="border-radius:var(--wp--preset--radius--xl);padding-top:var(--wp--preset--spacing--m);padding-right:var(--wp--preset--spacing--m);padding-bottom:var(--wp--preset--spacing--m);padding-left:var(--wp--preset--spacing--m)"
+      >
+        <!-- wp:shortcode -->
+        [em_popular_posts limit="6"]
+        <!-- /wp:shortcode -->
+      </div>
+      <!-- /wp:group -->
+    </div>
+    <!-- /wp:column -->
+  </div>
+  <!-- /wp:columns -->
 
-		<!-- wp:paragraph {"fontSize":"medium"} -->
-		<p class="has-medium-font-size">Choose the path that fits your energy today. You can always come back and explore more when you feel ready.</p>
-		<!-- /wp:paragraph -->
+  <!-- Footer utilities (dynamic localized links + newsletter form; no hardcoded URLs) -->
+  <!-- wp:group {"align":"wide","className":"is-style-emindy-card","style":{"spacing":{"margin":{"top":"var:preset|spacing|xl"},"padding":{"top":"var:preset|spacing|l","right":"var:preset|spacing|l","bottom":"var:preset|spacing|l","left":"var:preset|spacing|l"},"blockGap":"var:preset|spacing|m"},"border":{"radius":"var:preset|radius|2xl"},"shadow":"var:preset|shadow|card"},"layout":{"type":"constrained"},"ariaLabel":"Homepage utilities"} -->
+  <div
+    class="wp-block-group alignwide is-style-emindy-card"
+    aria-label="Homepage utilities"
+    style="border-radius:var(--wp--preset--radius--2xl);padding-top:var(--wp--preset--spacing--l);padding-right:var(--wp--preset--spacing--l);padding-bottom:var(--wp--preset--spacing--l);padding-left:var(--wp--preset--spacing--l);margin-top:var(--wp--preset--spacing--xl)"
+  >
+    <!-- wp:shortcode -->
+    [em_sitemap_mini]
+    <!-- /wp:shortcode -->
 
-		<!-- wp:columns {"style":{"spacing":{"blockGap":"1.5rem"}}} -->
-		<div class="wp-block-columns">
-			<!-- wp:column -->
-			<div class="wp-block-column">
-				<!-- wp:group {"style":{"spacing":{"blockGap":"0.75rem","padding":{"top":"1.25rem","right":"1.25rem","bottom":"1.25rem","left":"1.25rem"}},"border":{"radius":"var(--wp--custom--brand--radius--xl)","width":"1px","style":"solid","color":"var(--wp--preset--color--border)"},"color":{"background":"var(--wp--preset--color--background)"}}, "layout":{"type":"constrained"}} -->
-				<div class="wp-block-group" style="border-radius:var(--wp--custom--brand--radius--xl);border-width:1px;border-style:solid;border-color:var(--wp--preset--color--border);background-color:var(--wp--preset--color--background);padding-top:1.25rem;padding-right:1.25rem;padding-bottom:1.25rem;padding-left:1.25rem">
-					<!-- wp:heading {"level":3,"fontSize":"large"} -->
-					<h3 class="wp-block-heading has-large-font-size">Guided exercises</h3>
-					<!-- /wp:heading -->
+    <!-- wp:separator {"style":{"spacing":{"margin":{"top":"var:preset|spacing|m","bottom":"var:preset|spacing|m"}}}} -->
+    <hr class="wp-block-separator has-alpha-channel-opacity" style="margin-top:var(--wp--preset--spacing--m);margin-bottom:var(--wp--preset--spacing--m)" />
+    <!-- /wp:separator -->
 
-					<!-- wp:paragraph {"style":{"typography":{"fontSize":"0.95rem"}}} -->
-					<p style="font-size:0.95rem">Step-by-step practices to calm your body, work with thoughts and build gentle daily routines.</p>
-					<!-- /wp:paragraph -->
-
-					<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"flex-start"}} -->
-					<div class="wp-block-buttons">
-						<!-- wp:button {"className":"is-style-outline"} -->
-						<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="/exercises/">Browse exercises</a></div>
-						<!-- /wp:button -->
-					</div>
-					<!-- /wp:buttons -->
-				</div>
-				<!-- /wp:group -->
-			</div>
-			<!-- /wp:column -->
-
-			<!-- wp:column -->
-			<div class="wp-block-column">
-				<!-- wp:group {"style":{"spacing":{"blockGap":"0.75rem","padding":{"top":"1.25rem","right":"1.25rem","bottom":"1.25rem","left":"1.25rem"}},"border":{"radius":"var(--wp--custom--brand--radius--xl)","width":"1px","style":"solid","color":"var(--wp--preset--color--border)"},"color":{"background":"var(--wp--preset--color--background)"}}, "layout":{"type":"constrained"}} -->
-				<div class="wp-block-group" style="border-radius:var(--wp--custom--brand--radius--xl);border-width:1px;border-style:solid;border-color:var(--wp--preset--color--border);background-color:var(--wp--preset--color--background);padding-top:1.25rem;padding-right:1.25rem;padding-bottom:1.25rem;padding-left:1.25rem">
-					<!-- wp:heading {"level":3,"fontSize":"large"} -->
-					<h3 class="wp-block-heading has-large-font-size">Short, calming videos</h3>
-					<!-- /wp:heading -->
-
-					<!-- wp:paragraph {"style":{"typography":{"fontSize":"0.95rem"}}} -->
-					<p style="font-size:0.95rem">Learn about stress, anxiety and mood with gentle, visual explanations and guided practices.</p>
-					<!-- /wp:paragraph -->
-
-					<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"flex-start"}} -->
-					<div class="wp-block-buttons">
-						<!-- wp:button {"className":"is-style-outline"} -->
-						<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="/videos/">Explore videos</a></div>
-						<!-- /wp:button -->
-					</div>
-					<!-- /wp:buttons -->
-				</div>
-				<!-- /wp:group -->
-			</div>
-			<!-- /wp:column -->
-
-			<!-- wp:column -->
-			<div class="wp-block-column">
-				<!-- wp:group {"style":{"spacing":{"blockGap":"0.75rem","padding":{"top":"1.25rem","right":"1.25rem","bottom":"1.25rem","left":"1.25rem"}},"border":{"radius":"var(--wp--custom--brand--radius--xl)","width":"1px","style":"solid","color":"var(--wp--preset--color--border)"},"color":{"background":"var(--wp--preset--color--background)"}}, "layout":{"type":"constrained"}} -->
-				<div class="wp-block-group" style="border-radius:var(--wp--custom--brand--radius--xl);border-width:1px;border-style:solid;border-color:var(--wp--preset--color--border);background-color:var(--wp--preset--color--background);padding-top:1.25rem;padding-right:1.25rem;padding-bottom:1.25rem;padding-left:1.25rem">
-					<!-- wp:heading {"level":3,"fontSize":"large"} -->
-					<h3 class="wp-block-heading has-large-font-size">Articles &amp; guides</h3>
-					<!-- /wp:heading -->
-
-					<!-- wp:paragraph {"style":{"typography":{"fontSize":"0.95rem"}}} -->
-					<p style="font-size:0.95rem">Deeper explanations, worksheets and how-to guides, grounded in psychological science.</p>
-					<!-- /wp:paragraph -->
-
-					<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"flex-start"}} -->
-					<div class="wp-block-buttons">
-						<!-- wp:button {"className":"is-style-outline"} -->
-						<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="/articles/">Read articles</a></div>
-						<!-- /wp:button -->
-					</div>
-					<!-- /wp:buttons -->
-				</div>
-				<!-- /wp:group -->
-			</div>
-			<!-- /wp:column -->
-		</div>
-		<!-- /wp:columns -->
-	</div>
-	<!-- /wp:group -->
-
-	<!-- Latest content -->
-	<!-- wp:group {"style":{"spacing":{"blockGap":"1.75rem","margin":{"top":"0.5rem"}}},"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group" style="margin-top:0.5rem">
-		<!-- wp:heading {"level":2,"fontSize":"x-large"} -->
-		<h2 class="wp-block-heading has-x-large-font-size">Latest from eMINDy</h2>
-		<!-- /wp:heading -->
-
-		<!-- wp:columns {"style":{"spacing":{"blockGap":"1.5rem"}}} -->
-		<div class="wp-block-columns">
-			<!-- wp:column -->
-			<div class="wp-block-column">
-				<!-- wp:heading {"level":3,"fontSize":"medium"} -->
-				<h3 class="wp-block-heading has-medium-font-size">New exercises</h3>
-				<!-- /wp:heading -->
-
-				<!-- wp:query {"query":{"perPage":3,"pages":0,"offset":0,"postType":["em_exercise"],"order":"desc","orderBy":"date","inherit":false},"displayLayout":{"type":"list","columns":1},"layout":{"type":"default"}} -->
-				<div class="wp-block-query">
-					<!-- wp:post-template -->
-					<!-- wp:group {"style":{"spacing":{"blockGap":"0.25rem","margin":{"bottom":"0.85rem"}}}} -->
-					<div class="wp-block-group" style="margin-bottom:0.85rem">
-						<!-- wp:post-title {"level":4,"isLink":true,"fontSize":"medium"} /-->
-						<!-- wp:post-excerpt {"moreText":"Open exercise","excerptLength":16,"style":{"typography":{"fontSize":"0.9rem"}}} /-->
-					</div>
-					<!-- /wp:group -->
-					<!-- /wp:post-template -->
-
-					<!-- wp:query-no-results -->
-					<!-- wp:paragraph -->
-					<p>No exercises available yet. New practices are coming soon.</p>
-					<!-- /wp:paragraph -->
-					<!-- /wp:query-no-results -->
-				</div>
-				<!-- /wp:query -->
-			</div>
-			<!-- /wp:column -->
-
-			<!-- wp:column -->
-			<div class="wp-block-column">
-				<!-- wp:heading {"level":3,"fontSize":"medium"} -->
-				<h3 class="wp-block-heading has-medium-font-size">New videos</h3>
-				<!-- /wp:heading -->
-
-				<!-- wp:query {"query":{"perPage":3,"pages":0,"offset":0,"postType":["em_video"],"order":"desc","orderBy":"date","inherit":false},"displayLayout":{"type":"list","columns":1},"layout":{"type":"default"}} -->
-				<div class="wp-block-query">
-					<!-- wp:post-template -->
-					<!-- wp:group {"style":{"spacing":{"blockGap":"0.25rem","margin":{"bottom":"0.85rem"}}}} -->
-					<div class="wp-block-group" style="margin-bottom:0.85rem">
-						<!-- wp:post-title {"level":4,"isLink":true,"fontSize":"medium"} /-->
-						<!-- wp:post-excerpt {"moreText":"Watch video","excerptLength":16,"style":{"typography":{"fontSize":"0.9rem"}}} /-->
-					</div>
-					<!-- /wp:group -->
-					<!-- /wp:post-template -->
-
-					<!-- wp:query-no-results -->
-					<!-- wp:paragraph -->
-					<p>No videos available yet. New sessions will appear here soon.</p>
-					<!-- /wp:paragraph -->
-					<!-- /wp:query-no-results -->
-				</div>
-				<!-- /wp:query -->
-			</div>
-			<!-- /wp:column -->
-
-			<!-- wp:column -->
-			<div class="wp-block-column">
-				<!-- wp:heading {"level":3,"fontSize":"medium"} -->
-				<h3 class="wp-block-heading has-medium-font-size">New articles</h3>
-				<!-- /wp:heading -->
-
-				<!-- wp:query {"query":{"perPage":3,"pages":0,"offset":0,"postType":["em_article"],"order":"desc","orderBy":"date","inherit":false},"displayLayout":{"type":"list","columns":1},"layout":{"type":"default"}} -->
-				<div class="wp-block-query">
-					<!-- wp:post-template -->
-					<!-- wp:group {"style":{"spacing":{"blockGap":"0.25rem","margin":{"bottom":"0.85rem"}}}} -->
-					<div class="wp-block-group" style="margin-bottom:0.85rem">
-						<!-- wp:post-title {"level":4,"isLink":true,"fontSize":"medium"} /-->
-						<!-- wp:post-excerpt {"moreText":"Read article","excerptLength":18,"style":{"typography":{"fontSize":"0.9rem"}}} /-->
-					</div>
-					<!-- /wp:group -->
-					<!-- /wp:post-template -->
-
-					<!-- wp:query-no-results -->
-					<!-- wp:paragraph -->
-					<p>No articles available yet. New guides will appear here soon.</p>
-					<!-- /wp:paragraph -->
-					<!-- /wp:query-no-results -->
-				</div>
-				<!-- /wp:query -->
-			</div>
-			<!-- /wp:column -->
-		</div>
-		<!-- /wp:columns -->
-	</div>
-	<!-- /wp:group -->
-
-	<!-- Newsletter & safety -->
-	<!-- wp:group {"style":{"spacing":{"blockGap":"1.25rem","padding":{"top":"1.75rem","right":"1.5rem","bottom":"1.75rem","left":"1.5rem"}},"border":{"radius":"var(--wp--custom--brand--radius--2xl)"},"color":{"background":"var(--wp--preset--color--secondary)"},"elements":{"link":{"color":{"text":"var(--wp--preset--color--base"}}}},"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group has-background" style="border-radius:var(--wp--custom--brand--radius--2xl);background-color:var(--wp--preset--color--secondary);padding-top:1.75rem;padding-right:1.5rem;padding-bottom:1.75rem;padding-left:1.5rem">
-		<!-- wp:heading {"level":2,"fontSize":"large"} -->
-		<h2 class="wp-block-heading has-large-font-size">Practice with eMINDy in your inbox</h2>
-		<!-- /wp:heading -->
-
-		<!-- wp:paragraph {"fontSize":"medium"} -->
-		<p class="has-medium-font-size">Get simple, science-based tips, short practices and new videos &mdash; sent occasionally, with care. You can unsubscribe at any time.</p>
-		<!-- /wp:paragraph -->
-
-		<!-- wp:shortcode -->
-		[em_newsletter]
-		<!-- /wp:shortcode -->
-
-		<!-- wp:paragraph {"style":{"typography":{"fontSize":"0.8rem","lineHeight":"1.5"},"spacing":{"margin":{"top":"0.75rem"}}}} -->
-		<p style="margin-top:0.75rem;font-size:0.8rem;line-height:1.5">eMINDy is an educational, self-help platform. It does not provide diagnosis, crisis support or medical treatment. If you&rsquo;re in danger or feel unable to keep yourself safe, please contact local emergency services or crisis support in your area.</p>
-		<!-- /wp:paragraph -->
-	</div>
-	<!-- /wp:group -->
-
+    <!-- wp:shortcode -->
+    [em_newsletter_form]
+    <!-- /wp:shortcode -->
+  </div>
+  <!-- /wp:group -->
 </main>
 <!-- /wp:group -->
 
-<!-- wp:template-part {"slug":"footer","theme":"emindy","area":"footer"} /-->
+<!-- wp:template-part {"slug":"footer","tagName":"footer","align":"full"} /-->
