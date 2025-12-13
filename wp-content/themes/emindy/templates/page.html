@@ -1,63 +1,51 @@
 <!--
 Template: Page — eMINDy
-Default layout for standard content pages.
+Default layout for standard WordPress Pages.
+Block/Shortcode-first and translation-friendly: avoid hardcoded URLs and non-translatable fixed copy.
 -->
 
 <!-- wp:template-part {"slug":"header","tagName":"header","align":"full"} /-->
 
-<!-- wp:group {"metadata":{"name":"Page — eMINDy"},"tagName":"main","align":"full","style":{"spacing":{"padding":{"top":"2.5rem","bottom":"2.5rem"},"blockGap":"1.5rem"}},"layout":{"type":"constrained","contentSize":"900px"},"ariaLabel":"Page content"} -->
-<main
-  id="main-content"
-  class="wp-block-group alignfull"
-  style="padding-top:2.5rem;padding-bottom:2.5rem"
-  aria-label="Page content"
->
-  <!-- Breadcrumbs (Rank Math) -->
-  <!-- wp:group {"tagName":"nav","className":"emindy-breadcrumbs","ariaLabel":"Breadcrumbs","style":{"spacing":{"margin":{"bottom":"1rem"}}},"layout":{"type":"constrained"}} -->
-  <nav
-    class="wp-block-group emindy-breadcrumbs"
-    aria-label="Breadcrumbs"
-    style="margin-bottom:1rem"
-  >
-    <!-- wp:shortcode -->
-    [rank_math_breadcrumb]
-    <!-- /wp:shortcode -->
-  </nav>
-  <!-- /wp:group -->
+<!-- wp:group {"metadata":{"name":"Page — eMINDy"},"tagName":"main","align":"full","className":"em-page","style":{"spacing":{"padding":{"top":"var:preset|spacing|xl","bottom":"var:preset|spacing|3xl"},"blockGap":"var:preset|spacing|l"}},"layout":{"type":"constrained"}} -->
+<main id="main-content" class="wp-block-group alignfull em-page" style="padding-top:var(--wp--preset--spacing--xl);padding-bottom:var(--wp--preset--spacing--3xl)">
 
-  <!-- Title -->
-  <!-- wp:post-title {"level":1,"style":{"typography":{"fontSize":"clamp(1.8rem,3vw,2.5rem)","lineHeight":"1.15"},"spacing":{"margin":{"bottom":"0.5rem"}}}} /-->
+	<!-- wp:group {"align":"wide","layout":{"type":"constrained"}} -->
+	<div class="wp-block-group alignwide">
 
-  <!-- Optional featured image (hero-lite) -->
-  <!-- wp:post-featured-image {"align":"wide","style":{"spacing":{"margin":{"top":"0.75rem","bottom":"1.5rem"}},"border":{"radius":"var(--wp--custom--brand--radius--2xl)"},"shadow":"var(--wp--custom--brand--shadow--card)"}} /-->
+		<!-- HERO (dynamic: breadcrumbs + title + optional excerpt + optional featured image) -->
+		<!-- wp:group {"align":"wide","className":"is-style-emindy-card","style":{"border":{"radius":"var:preset|radius|2xl"},"spacing":{"padding":{"top":"var:preset|spacing|xl","right":"var:preset|spacing|xl","bottom":"var:preset|spacing|xl","left":"var:preset|spacing|xl"},"margin":{"bottom":"var:preset|spacing|l"},"blockGap":"var:preset|spacing|m"},"shadow":"var:preset|shadow|card"},"gradient":"calm-dawn","layout":{"type":"constrained"}} -->
+		<div class="wp-block-group alignwide is-style-emindy-card has-calm-dawn-gradient-background has-background" style="border-radius:var(--wp--preset--radius--2xl);padding-top:var(--wp--preset--spacing--xl);padding-right:var(--wp--preset--spacing--xl);padding-bottom:var(--wp--preset--spacing--xl);padding-left:var(--wp--preset--spacing--xl);margin-bottom:var(--wp--preset--spacing--l)">
 
-  <!-- Content -->
-  <!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+			<!-- Breadcrumbs (Rank Math) -->
+			<!-- wp:group {"className":"em-breadcrumbs","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|xs"}}},"layout":{"type":"constrained"}} -->
+			<div class="wp-block-group em-breadcrumbs" style="margin-bottom:var(--wp--preset--spacing--xs)">
+				<!-- wp:shortcode -->
+				[rank_math_breadcrumb]
+				<!-- /wp:shortcode -->
+			</div>
+			<!-- /wp:group -->
 
-  <!-- Page foot micro-links (safety / credits / newsletter) -->
-  <!-- wp:group {"tagName":"nav","className":"emindy-page-foot-links","ariaLabel":"Safety and newsletter links","style":{"spacing":{"margin":{"top":"2rem"},"padding":{"top":"1.25rem","right":"1.5rem","bottom":"1.25rem","left":"1.5rem"}},"color":{"background":"#0b2d49"},"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"elements":{"link":{"color":{"text":"var(--wp--preset--color--white)"}}}},"textColor":"white","layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between"}} -->
-  <nav
-    class="wp-block-group emindy-page-foot-links has-white-color has-text-color has-background"
-    aria-label="Safety and newsletter links"
-    style="border-radius:var(--wp--custom--brand--radius--xl);background-color:#0b2d49;padding-top:1.25rem;padding-right:1.5rem;padding-bottom:1.25rem;padding-left:1.5rem;margin-top:2rem"
-  >
-    <!-- wp:list {"className":"emindy-page-foot-list","style":{"typography":{"lineHeight":"1.4"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between"}} -->
-    <ul class="wp-block-list emindy-page-foot-list">
-      <!-- wp:list-item -->
-      <li><a href="/safety/">Safety &amp; Disclaimer</a></li>
-      <!-- /wp:list-item -->
+			<!-- wp:post-title {"level":1,"style":{"typography":{"lineHeight":"1.12","letterSpacing":"-0.02em"},"spacing":{"margin":{"top":"0","bottom":"var:preset|spacing|xs"}}}} /-->
 
-      <!-- wp:list-item -->
-      <li><a href="/credits/">Credits &amp; Resources</a></li>
-      <!-- /wp:list-item -->
+			<!-- Optional excerpt (shows only if the page has one) -->
+			<!-- wp:post-excerpt {"excerptLength":32,"style":{"typography":{"fontSize":"var:preset|font-size|l","lineHeight":"1.6"},"spacing":{"margin":{"top":"0","bottom":"0"}}}} /-->
 
-      <!-- wp:list-item -->
-      <li><a href="/newsletter/">Get the newsletter →</a></li>
-      <!-- /wp:list-item -->
-    </ul>
-    <!-- /wp:list -->
-  </nav>
-  <!-- /wp:group -->
+			<!-- Optional featured image (shows only if set) -->
+			<!-- wp:post-featured-image {"align":"wide","isLink":false,"aspectRatio":"16/9","width":"100%","style":{"spacing":{"margin":{"top":"var:preset|spacing|l","bottom":"0"}},"border":{"radius":"var:preset|radius|2xl"},"shadow":"var:preset|shadow|card"}} /-->
+
+		</div>
+		<!-- /wp:group -->
+
+		<!-- BODY (all user-visible copy/CTAs live in page content so Polylang can translate) -->
+		<!-- wp:group {"className":"em-page__body","style":{"spacing":{"blockGap":"var:preset|spacing|l"}},"layout":{"type":"constrained"}} -->
+		<div class="wp-block-group em-page__body">
+			<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+		</div>
+		<!-- /wp:group -->
+
+	</div>
+	<!-- /wp:group -->
+
 </main>
 <!-- /wp:group -->
 
