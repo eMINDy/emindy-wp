@@ -1,125 +1,160 @@
 <!--
-Template: Blog — Posts Page
-
-Dedicated layout for the eMINDy blog index (default "post" type).
-Create a page (for example “Blog”) and assign this template to show latest posts.
+Template: Posts Page (posts-page)
+Used for the “Posts page” (Blog index) when a static page is assigned in Settings → Reading.
+Block/Shortcode-first and translation-friendly: avoid hardcoded URLs and fixed copy.
+Hero + intro copy live in the Posts Page title/excerpt/content (Polylang-translatable).
 -->
 
 <!-- wp:template-part {"slug":"header","tagName":"header","align":"full"} /-->
 
-<!-- wp:group {"metadata":{"name":"Blog — Posts Page"},"tagName":"main","align":"full","style":{"spacing":{"padding":{"top":"1.75rem","bottom":"2.5rem"}}},"layout":{"type":"constrained","contentSize":"1100px"}} -->
+<!-- wp:group {"metadata":{"name":"Posts Page"},"tagName":"main","anchor":"main-content","align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|xl","bottom":"var:preset|spacing|3xl"},"blockGap":"var:preset|spacing|l"}},"layout":{"type":"constrained"}} -->
 <main
-  id="main-content"
-  class="wp-block-group alignfull"
-  style="padding-top:1.75rem;padding-bottom:2.5rem"
-  aria-labelledby="blog-page-title"
+	id="main-content"
+	class="wp-block-group alignfull"
+	style="padding-top:var(--wp--preset--spacing--xl);padding-bottom:var(--wp--preset--spacing--3xl)"
+	aria-labelledby="posts-page-title"
 >
+	<!-- wp:group {"align":"wide","layout":{"type":"constrained"}} -->
+	<div class="wp-block-group alignwide">
 
-  <!-- Hero -->
-  <!-- wp:group {"style":{"spacing":{"blockGap":"1.25rem","margin":{"bottom":"1.75rem"},"padding":{"top":"1.5rem","right":"1.75rem","bottom":"1.5rem","left":"1.75rem"}},"border":{"radius":"var(--wp--custom--brand--radius--2xl)"},"color":{"background":"#0b2d49","text":"var(--wp--preset--color--base)"}}, "layout":{"type":"constrained","contentSize":"900px"},"className":"emindy-blog-hero"} -->
-  <div
-    class="wp-block-group emindy-blog-hero"
-    style="margin-bottom:1.75rem;padding-top:1.5rem;padding-right:1.75rem;padding-bottom:1.5rem;padding-left:1.75rem;border-radius:var(--wp--custom--brand--radius--2xl);background-color:#0b2d49;color:var(--wp--preset--color--base)"
-  >
-    <!-- wp:heading {"level":1,"anchor":"blog-page-title"} -->
-    <h1 id="blog-page-title" class="wp-block-heading">Blog &amp; Updates</h1>
-    <!-- /wp:heading -->
+		<!-- HERO (dynamic: breadcrumb/title/excerpt/optional featured image) -->
+		<!-- wp:group {"align":"wide","className":"is-style-emindy-card","style":{"spacing":{"padding":{"top":"var:preset|spacing|xl","right":"var:preset|spacing|xl","bottom":"var:preset|spacing|xl","left":"var:preset|spacing|xl"},"blockGap":"var:preset|spacing|m","margin":{"bottom":"var:preset|spacing|l"}},"border":{"radius":"var:preset|radius|2xl"},"shadow":"var:preset|shadow|card"},"gradient":"calm-dawn","layout":{"type":"constrained","contentSize":"900px"}} -->
+		<div
+			class="wp-block-group alignwide is-style-emindy-card has-calm-dawn-gradient-background has-background"
+			style="border-radius:var(--wp--preset--radius--2xl);padding-top:var(--wp--preset--spacing--xl);padding-right:var(--wp--preset--spacing--xl);padding-bottom:var(--wp--preset--spacing--xl);padding-left:var(--wp--preset--spacing--xl);margin-bottom:var(--wp--preset--spacing--l)"
+		>
+			<!-- wp:shortcode -->
+			[rank_math_breadcrumb]
+			<!-- /wp:shortcode -->
 
-    <!-- wp:paragraph -->
-    <p>Latest news, stories, and product notes from eMINDy to support your calm, one small step at a time.</p>
-    <!-- /wp:paragraph -->
+			<!-- wp:post-title {"level":1,"anchor":"posts-page-title","style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"typography":{"fontSize":"clamp(2rem,3.6vw,2.8rem)","lineHeight":"1.12","letterSpacing":"-0.02em"}}} /-->
 
-    <!-- wp:group {"style":{"spacing":{"blockGap":"0.75rem"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between","verticalAlignment":"center"},"className":"emindy-blog-filters"} -->
-    <div class="wp-block-group emindy-blog-filters">
-      <!-- wp:search {"label":"Search blog","showLabel":false,"placeholder":"Search posts…","buttonText":"Search","buttonUseIcon":true,"width":260,"widthUnit":"px"} /-->
+			<!-- wp:post-excerpt {"excerptLength":34,"style":{"spacing":{"margin":{"top":"var:preset|spacing|xs","bottom":"0"}},"typography":{"fontSize":"var:preset|font-size|l","lineHeight":"1.6"}}} /-->
 
-      <!-- wp:categories {"showPostCounts":false,"showHierarchy":false,"className":"emindy-blog-filters__categories","style":{"spacing":{"margin":{"top":"0.5rem"}}}} /-->
-    </div>
-    <!-- /wp:group -->
-  </div>
-  <!-- /wp:group -->
+			<!-- Optional featured image (shows only if set) -->
+			<!-- wp:post-featured-image {"align":"wide","isLink":false,"aspectRatio":"16/9","width":"100%","style":{"spacing":{"margin":{"top":"var:preset|spacing|l","bottom":"0"}},"border":{"radius":"var:preset|radius|2xl"},"shadow":"var:preset|shadow|card"}} /-->
+		</div>
+		<!-- /wp:group -->
 
-  <!-- Post list -->
-  <!-- wp:group {"style":{"spacing":{"blockGap":"1.75rem"}},"layout":{"type":"constrained","contentSize":"900px"}} -->
-  <div class="wp-block-group">
-    <!-- wp:query {"queryId":1,"query":{"perPage":10,"pages":0,"offset":0,"postType":["post"],"order":"desc","orderBy":"date","inherit":false},"align":"wide","displayLayout":{"type":"list","columns":1},"layout":{"type":"constrained"}} -->
-    <div class="wp-block-query alignwide">
+		<!-- INTRO (put any translatable intro blocks/CTAs here in the Posts Page content) -->
+		<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|l","margin":{"bottom":"var:preset|spacing|l"}}},"layout":{"type":"constrained","contentSize":"900px"}} -->
+		<div class="wp-block-group" style="margin-bottom:var(--wp--preset--spacing--l)">
+			<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+		</div>
+		<!-- /wp:group -->
 
-      <!-- wp:post-template -->
-      <!-- wp:group {"style":{"spacing":{"blockGap":"0.75rem","padding":{"top":"1.25rem","right":"1.5rem","bottom":"1.25rem","left":"1.5rem"}},"border":{"width":"1px","radius":"var(--wp--custom--brand--radius--2xl)"}}, "layout":{"type":"default"},"className":"emindy-post-card"} -->
-      <div
-        class="wp-block-group emindy-post-card"
-        style="border-width:1px;border-radius:var(--wp--custom--brand--radius--2xl);padding-top:1.25rem;padding-right:1.5rem;padding-bottom:1.25rem;padding-left:1.5rem"
-      >
-        <!-- wp:post-featured-image {"isLink":true,"width":"100%","style":{"border":{"radius":"var(--wp--custom--brand--radius--2xl)"},"spacing":{"margin":{"bottom":"0.75rem"}}}} /-->
+		<!-- TOOLBAR (dynamic: search + filters; avoid fixed copy/URLs) -->
+		<!-- wp:group {"align":"wide","className":"is-style-emindy-card","style":{"spacing":{"padding":{"top":"var:preset|spacing|m","right":"var:preset|spacing|m","bottom":"var:preset|spacing|m","left":"var:preset|spacing|m"},"blockGap":"var:preset|spacing|s","margin":{"bottom":"var:preset|spacing|l"}}},"layout":{"type":"constrained"}} -->
+		<div
+			class="wp-block-group alignwide is-style-emindy-card"
+			style="padding-top:var(--wp--preset--spacing--m);padding-right:var(--wp--preset--spacing--m);padding-bottom:var(--wp--preset--spacing--m);padding-left:var(--wp--preset--spacing--m);margin-bottom:var(--wp--preset--spacing--l)"
+		>
+			<!-- wp:shortcode -->
+			[em_search_bar]
+			<!-- /wp:shortcode -->
 
-        <!-- wp:group {"style":{"spacing":{"blockGap":"0.5rem"}},"layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap","verticalAlignment":"center"},"className":"emindy-post-card__meta"} -->
-        <div class="wp-block-group emindy-post-card__meta">
-          <!-- wp:post-date {"format":"F j, Y"} /-->
+			<!-- wp:shortcode -->
+			[em_blog_categories pills="1"]
+			<!-- /wp:shortcode -->
 
-          <!-- wp:post-terms {"term":"category","className":"emindy-post-card__categories"} /-->
-        </div>
-        <!-- /wp:group -->
+			<!-- wp:shortcode -->
+			[em_quick_filters]
+			<!-- /wp:shortcode -->
+		</div>
+		<!-- /wp:group -->
 
-        <!-- wp:post-title {"isLink":true,"level":2} /-->
+		<!-- POSTS LIST (inherit main query for the Posts Page) -->
+		<!-- wp:query {"queryId":0,"query":{"inherit":true},"align":"wide"} -->
+		<div class="wp-block-query alignwide" aria-live="polite">
 
-        <!-- wp:post-excerpt {"moreText":"Read more","showMoreOnNewLine":false} /-->
+			<!-- wp:post-template {"layout":{"type":"grid","columnCount":2},"style":{"spacing":{"rowGap":"var:preset|spacing|l","blockGap":"var:preset|spacing|l"}}} -->
 
-        <!-- wp:group {"style":{"spacing":{"margin":{"top":"0.75rem"}}}} -->
-        <div class="wp-block-group" style="margin-top:0.75rem">
-          <!-- wp:read-more {"content":"Read full post"} /-->
-        </div>
-        <!-- /wp:group -->
-      </div>
-      <!-- /wp:group -->
-      <!-- /wp:post-template -->
+			<!-- wp:group {"tagName":"article","className":"is-style-emindy-card","style":{"spacing":{"padding":{"top":"0","right":"0","bottom":"0","left":"0"}}},"layout":{"type":"constrained"}} -->
+			<article class="wp-block-group is-style-emindy-card" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
 
-      <!-- wp:query-pagination {"layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap","orientation":"horizontal"},"className":"emindy-posts-pagination"} -->
-      <div class="wp-block-query-pagination emindy-posts-pagination">
-        <!-- wp:query-pagination-previous {"label":"Newer posts"} /-->
-        <!-- wp:query-pagination-numbers /-->
-        <!-- wp:query-pagination-next {"label":"Older posts"} /-->
-      </div>
-      <!-- /wp:query-pagination -->
+				<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"16/9"} /-->
 
-      <!-- wp:query-no-results -->
-      <!-- wp:group {"style":{"spacing":{"blockGap":"0.5rem","padding":{"top":"1.25rem","right":"1.5rem","bottom":"1.25rem","left":"1.5rem"}},"border":{"width":"1px","radius":"var(--wp--custom--brand--radius--2xl)"}}, "layout":{"type":"constrained"},"className":"emindy-posts-empty"} -->
-      <div
-        class="wp-block-group emindy-posts-empty"
-        style="border-width:1px;border-radius:var(--wp--custom--brand--radius--2xl);padding-top:1.25rem;padding-right:1.5rem;padding-bottom:1.25rem;padding-left:1.5rem"
-      >
-        <!-- wp:paragraph {"fontSize":"medium"} -->
-        <p class="has-medium-font-size">No posts found yet. Please check back soon.</p>
-        <!-- /wp:paragraph -->
-      </div>
-      <!-- /wp:group -->
-      <!-- /wp:query-no-results -->
+				<!-- wp:group {"className":"em-card__body","style":{"spacing":{"padding":{"top":"var:preset|spacing|l","right":"var:preset|spacing|l","bottom":"var:preset|spacing|l","left":"var:preset|spacing|l"},"blockGap":"var:preset|spacing|xs"}},"layout":{"type":"constrained"}} -->
+				<div
+					class="wp-block-group em-card__body"
+					style="padding-top:var(--wp--preset--spacing--l);padding-right:var(--wp--preset--spacing--l);padding-bottom:var(--wp--preset--spacing--l);padding-left:var(--wp--preset--spacing--l)"
+				>
 
-    </div>
-    <!-- /wp:query -->
-  </div>
-  <!-- /wp:group -->
+					<!-- wp:group {"layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap","verticalAlignment":"center"},"style":{"spacing":{"blockGap":"var:preset|spacing|xs"}}} -->
+					<div class="wp-block-group">
 
-  <!-- Newsletter CTA -->
-  <!-- wp:group {"style":{"spacing":{"margin":{"top":"2.5rem"},"padding":{"top":"1.5rem","right":"1.75rem","bottom":"1.75rem","left":"1.75rem"},"blockGap":"0.75rem"},"border":{"radius":"var(--wp--custom--brand--radius--2xl)"},"color":{"background":"var(--wp--preset--color--secondary)"}}, "layout":{"type":"constrained","contentSize":"900px"},"className":"emindy-blog-newsletter"} -->
-  <div
-    class="wp-block-group emindy-blog-newsletter"
-    style="margin-top:2.5rem;padding-top:1.5rem;padding-right:1.75rem;padding-bottom:1.75rem;padding-left:1.75rem;border-radius:var(--wp--custom--brand--radius--2xl);background-color:var(--wp--preset--color--secondary)"
-  >
-    <!-- wp:heading {"level":2} -->
-    <h2 class="wp-block-heading">Stay in touch</h2>
-    <!-- /wp:heading -->
+						<!-- wp:group {"layout":{"type":"flex","flexWrap":"wrap","verticalAlignment":"center"},"style":{"spacing":{"blockGap":"var:preset|spacing|xs"}}} -->
+						<div class="wp-block-group">
+							<!-- wp:post-terms {"term":"category","separator":" · ","fontSize":"xs"} /-->
+							<!-- wp:post-terms {"term":"post_tag","separator":" · ","fontSize":"xs"} /-->
+						</div>
+						<!-- /wp:group -->
 
-    <!-- wp:paragraph -->
-    <p>Receive gentle updates when new videos, exercises, or articles are published. No spam, just tools to help you practice your calm.</p>
-    <!-- /wp:paragraph -->
+						<!-- wp:group {"layout":{"type":"flex","flexWrap":"wrap","verticalAlignment":"center"},"style":{"spacing":{"blockGap":"var:preset|spacing|xs"}}} -->
+						<div class="wp-block-group">
+							<!-- wp:post-date {"fontSize":"xs"} /-->
+							<!-- wp:shortcode -->
+							[em_reading_time]
+							<!-- /wp:shortcode -->
+						</div>
+						<!-- /wp:group -->
 
-    <!-- wp:shortcode -->
-    [em_newsletter]
-    <!-- /wp:shortcode -->
-  </div>
-  <!-- /wp:group -->
+					</div>
+					<!-- /wp:group -->
 
+					<!-- wp:post-title {"level":3,"isLink":true,"fontSize":"l"} /-->
+
+					<!-- wp:post-excerpt {"excerptLength":24,"showMoreOnNewLine":false,"fontSize":"s"} /-->
+
+					<!-- wp:read-more /-->
+
+				</div>
+				<!-- /wp:group -->
+
+			</article>
+			<!-- /wp:group -->
+
+			<!-- /wp:post-template -->
+
+			<!-- wp:query-pagination {"layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap"}} -->
+			<div class="wp-block-query-pagination">
+				<!-- wp:query-pagination-previous /-->
+				<!-- wp:query-pagination-numbers /-->
+				<!-- wp:query-pagination-next /-->
+			</div>
+			<!-- /wp:query-pagination -->
+
+			<!-- wp:query-no-results -->
+			<div class="wp-block-query-no-results">
+				<!-- wp:shortcode -->
+				[em_search_bar]
+				<!-- /wp:shortcode -->
+			</div>
+			<!-- /wp:query-no-results -->
+
+		</div>
+		<!-- /wp:query -->
+
+		<!-- BOTTOM (dynamic; keep internal linking + newsletter without fixed copy/URLs in template) -->
+		<!-- wp:group {"className":"is-style-emindy-card","style":{"spacing":{"padding":{"top":"var:preset|spacing|l","right":"var:preset|spacing|l","bottom":"var:preset|spacing|l","left":"var:preset|spacing|l"},"margin":{"top":"var:preset|spacing|2xl"},"blockGap":"var:preset|spacing|m"}},"layout":{"type":"constrained"}} -->
+		<div
+			class="wp-block-group is-style-emindy-card"
+			style="padding-top:var(--wp--preset--spacing--l);padding-right:var(--wp--preset--spacing--l);padding-bottom:var(--wp--preset--spacing--l);padding-left:var(--wp--preset--spacing--l);margin-top:var(--wp--preset--spacing--2xl)"
+		>
+			<!-- wp:shortcode -->
+			[em_newsletter_form]
+			<!-- /wp:shortcode -->
+
+			<!-- wp:separator {"opacity":"css","className":"is-style-wide"} /-->
+
+			<!-- wp:shortcode -->
+			[em_sitemap_mini]
+			<!-- /wp:shortcode -->
+		</div>
+		<!-- /wp:group -->
+
+	</div>
+	<!-- /wp:group -->
 </main>
 <!-- /wp:group -->
 
