@@ -1,145 +1,59 @@
+<!--
+Template: Newsletter (page-newsletter)
+Block/Shortcode-first, translation-friendly (Polylang), no hardcoded URLs/copy.
+All user-visible copy and CTAs should live in the page content (per-language).
+Primary signup form is rendered via [em_newsletter_form] (emindy-core).
+-->
+
 <!-- wp:template-part {"slug":"header","tagName":"header","align":"full"} /-->
 
-<!-- wp:group {"metadata":{"name":"Newsletter Page"},"tagName":"main","align":"full","style":{"spacing":{"padding":{"top":"2rem","bottom":"3rem"}}},"layout":{"type":"constrained","contentSize":"960px"}} -->
+<!-- wp:group {"metadata":{"name":"Page — Newsletter"},"tagName":"main","anchor":"main-content","align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|xl","bottom":"var:preset|spacing|3xl"},"blockGap":"var:preset|spacing|l"}},"layout":{"type":"constrained"}} -->
 <main
-  id="main-content"
-  class="wp-block-group alignfull"
-  aria-labelledby="newsletter-page-title"
-  style="padding-top:2rem;padding-bottom:3rem"
+	id="main-content"
+	class="wp-block-group alignfull"
+	style="padding-top:var(--wp--preset--spacing--xl);padding-bottom:var(--wp--preset--spacing--3xl)"
+	aria-labelledby="newsletter-title"
 >
-  <!-- Hero -->
-  <!-- wp:group {"layout":{"type":"constrained","contentSize":"780px"},"style":{"spacing":{"margin":{"bottom":"1rem"}}}} -->
-  <div class="wp-block-group" style="margin-bottom:1rem">
-    <!-- wp:heading {"level":1,"style":{"typography":{"fontSize":"clamp(2rem,4vw,2.8rem)","lineHeight":"1.15"}}} -->
-    <h1 id="newsletter-page-title">Join the Calm Circle 🌿</h1>
-    <!-- /wp:heading -->
+	<!-- wp:group {"align":"wide","layout":{"type":"constrained"}} -->
+	<div class="wp-block-group alignwide">
 
-    <!-- wp:paragraph -->
-    <p>
-      Weekly calm practices, mindful stories, and simple science-based tools — delivered straight to your inbox.
-    </p>
-    <!-- /wp:paragraph -->
-  </div>
-  <!-- /wp:group -->
+		<!-- HERO (dynamic: breadcrumb/title/excerpt) -->
+		<!-- wp:group {"align":"wide","className":"is-style-emindy-card","style":{"spacing":{"padding":{"top":"var:preset|spacing|xl","right":"var:preset|spacing|xl","bottom":"var:preset|spacing|xl","left":"var:preset|spacing|xl"},"blockGap":"var:preset|spacing|s","margin":{"bottom":"var:preset|spacing|l"}},"border":{"radius":"var:preset|radius|2xl"},"shadow":"var:preset|shadow|card"},"gradient":"calm-dawn","layout":{"type":"constrained","contentSize":"860px"}} -->
+		<div
+			class="wp-block-group alignwide is-style-emindy-card has-calm-dawn-gradient-background has-background"
+			style="border-radius:var(--wp--preset--radius--2xl);padding-top:var(--wp--preset--spacing--xl);padding-right:var(--wp--preset--spacing--xl);padding-bottom:var(--wp--preset--spacing--xl);padding-left:var(--wp--preset--spacing--xl);margin-bottom:var(--wp--preset--spacing--l)"
+		>
+			<!-- wp:shortcode -->
+			[rank_math_breadcrumb]
+			<!-- /wp:shortcode -->
 
-  <!-- Benefits -->
-  <!-- wp:columns {"style":{"spacing":{"margin":{"bottom":"1.25rem"}}}} -->
-  <div class="wp-block-columns" style="margin-bottom:1.25rem">
-    <!-- wp:column -->
-    <div class="wp-block-column">
-      <!-- wp:group {"style":{"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"color":{"background":"#0e3252","text":"#ffffff"},"spacing":{"padding":{"top":"1rem","right":"1rem","bottom":"1rem","left":"1rem"}}}} -->
-      <div
-        class="wp-block-group has-text-color has-background"
-        style="color:#ffffff;background-color:#0e3252;border-radius:var(--wp--custom--brand--radius--xl);padding:1rem"
-      >
-        <!-- wp:heading {"level":3} -->
-        <h3>1-minute calm</h3>
-        <!-- /wp:heading -->
+			<!-- wp:post-title {"level":1,"anchor":"newsletter-title","style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"typography":{"fontSize":"clamp(2rem,3.6vw,2.8rem)","lineHeight":"1.12","letterSpacing":"-0.02em"}}} /-->
 
-        <!-- wp:paragraph -->
-        <p>One short mindful reset you can do anywhere.</p>
-        <!-- /wp:paragraph -->
-      </div>
-      <!-- /wp:group -->
-    </div>
-    <!-- /wp:column -->
+			<!-- wp:post-excerpt {"excerptLength":34,"style":{"spacing":{"margin":{"top":"var:preset|spacing|xs","bottom":"0"}},"typography":{"fontSize":"var:preset|font-size|l","lineHeight":"1.6"}}} /-->
+		</div>
+		<!-- /wp:group -->
 
-    <!-- wp:column -->
-    <div class="wp-block-column">
-      <!-- wp:group {"style":{"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"color":{"background":"#0e3252","text":"#ffffff"},"spacing":{"padding":{"top":"1rem","right":"1rem","bottom":"1rem","left":"1rem"}}}} -->
-      <div
-        class="wp-block-group has-text-color has-background"
-        style="color:#ffffff;background-color:#0e3252;border-radius:var(--wp--custom--brand--radius--xl);padding:1rem"
-      >
-        <!-- wp:heading {"level":3} -->
-        <h3>Science-based</h3>
-        <!-- /wp:heading -->
+		<!-- SIGNUP FORM (dynamic; strings are gettext-translatable via emindy-core) -->
+		<!-- wp:group {"className":"em-newsletter is-style-emindy-card","style":{"spacing":{"padding":{"top":"var:preset|spacing|l","right":"var:preset|spacing|l","bottom":"var:preset|spacing|l","left":"var:preset|spacing|l"},"margin":{"bottom":"var:preset|spacing|l"}},"border":{"radius":"var:preset|radius|2xl"},"shadow":"var:preset|shadow|card"},"layout":{"type":"constrained","contentSize":"760px"}} -->
+		<div
+			class="wp-block-group em-newsletter is-style-emindy-card"
+			style="border-radius:var(--wp--preset--radius--2xl);padding-top:var(--wp--preset--spacing--l);padding-right:var(--wp--preset--spacing--l);padding-bottom:var(--wp--preset--spacing--l);padding-left:var(--wp--preset--spacing--l);margin-bottom:var(--wp--preset--spacing--l)"
+		>
+			<!-- wp:shortcode -->
+			[em_newsletter_form]
+			<!-- /wp:shortcode -->
+		</div>
+		<!-- /wp:group -->
 
-        <!-- wp:paragraph -->
-        <p>Calm tools grounded in cognitive and behavioral research.</p>
-        <!-- /wp:paragraph -->
-      </div>
-      <!-- /wp:group -->
-    </div>
-    <!-- /wp:column -->
+		<!-- PAGE BODY (put all visible copy/links/FAQs/benefits here so it stays Polylang-translatable) -->
+		<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|l"}},"layout":{"type":"constrained","contentSize":"860px"}} -->
+		<div class="wp-block-group">
+			<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+		</div>
+		<!-- /wp:group -->
 
-    <!-- wp:column -->
-    <div class="wp-block-column">
-      <!-- wp:group {"style":{"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"color":{"background":"#0e3252","text":"#ffffff"},"spacing":{"padding":{"top":"1rem","right":"1rem","bottom":"1rem","left":"1rem"}}}} -->
-      <div
-        class="wp-block-group has-text-color has-background"
-        style="color:#ffffff;background-color:#0e3252;border-radius:var(--wp--custom--brand--radius--xl);padding:1rem"
-      >
-        <!-- wp:heading {"level":3} -->
-        <h3>No spam</h3>
-        <!-- /wp:heading -->
-
-        <!-- wp:paragraph -->
-        <p>One thoughtful email per week. Unsubscribe anytime.</p>
-        <!-- /wp:paragraph -->
-      </div>
-      <!-- /wp:group -->
-    </div>
-    <!-- /wp:column -->
-  </div>
-  <!-- /wp:columns -->
-
-  <!-- Form block -->
-  <!-- wp:group {"layout":{"type":"constrained","contentSize":"720px"},"style":{"spacing":{"margin":{"bottom":"1.25rem"},"padding":{"top":"1rem","right":"1rem","bottom":"1rem","left":"1rem"}},"border":{"radius":"var(--wp--custom--brand--radius--xl)"},"color":{"background":"#f5f8fa"}}} -->
-  <div
-    class="wp-block-group"
-    style="background-color:#f5f8fa;border-radius:var(--wp--custom--brand--radius--xl);padding:1rem;margin-bottom:1.25rem"
-  >
-    <!-- wp:heading {"level":2} -->
-    <h2>Practice calm — one email at a time</h2>
-    <!-- /wp:heading -->
-
-    <!-- wp:paragraph -->
-    <p>Enter your email to join. We’ll send you gentle weekly prompts and mini-exercises.</p>
-    <!-- /wp:paragraph -->
-
-    <!-- wp:shortcode -->
-    [em_newsletter]
-    <!-- /wp:shortcode -->
-
-    <!-- wp:paragraph {"style":{"typography":{"fontSize":"0.9rem"},"spacing":{"margin":{"top":"0.5rem"}}}} -->
-    <p style="font-size:0.9rem;margin-top:0.5rem">
-      <em>
-        By subscribing, you agree to receive mindful updates from eMINDy. You can unsubscribe anytime. We never share
-        your data. See our <a href="/privacy-policy/">Privacy Policy</a>. These emails are educational and not a
-        substitute for professional care.
-      </em>
-    </p>
-    <!-- /wp:paragraph -->
-  </div>
-  <!-- /wp:group -->
-
-  <!-- Micro-FAQ -->
-  <!-- wp:group {"layout":{"type":"constrained","contentSize":"780px"},"style":{"spacing":{"margin":{"top":"1.5rem"}}}} -->
-  <div class="wp-block-group" style="margin-top:1.5rem">
-    <!-- wp:heading {"level":2,"style":{"typography":{"fontSize":"1.25rem"},"spacing":{"margin":{"bottom":"0.75rem"}}}} -->
-    <h2 style="font-size:1.25rem;margin-bottom:0.75rem">Questions</h2>
-    <!-- /wp:heading -->
-
-    <!-- wp:details {"summary":"What will I receive?"} -->
-    <details>
-      <summary>What will I receive?</summary>
-      <!-- wp:paragraph -->
-      <p>One weekly email with a short calm practice, a mindfulness tip, and an optional 60-second guided reset.</p>
-      <!-- /wp:paragraph -->
-    </details>
-    <!-- /wp:details -->
-
-    <!-- wp:details {"summary":"Can I unsubscribe?"} -->
-    <details>
-      <summary>Can I unsubscribe?</summary>
-      <!-- wp:paragraph -->
-      <p>Yes — every email includes a one-click unsubscribe link.</p>
-      <!-- /wp:paragraph -->
-    </details>
-    <!-- /wp:details -->
-  </div>
-  <!-- /wp:group -->
+	</div>
+	<!-- /wp:group -->
 </main>
 <!-- /wp:group -->
 
