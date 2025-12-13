@@ -1,118 +1,92 @@
-<!--
-Template: Exercises Archive (em_exercise)
-
-This template powers the main exercise archive at /exercises/.
--->
-
 <!-- wp:template-part {"slug":"header","tagName":"header","align":"full"} /-->
 
-<!-- wp:group {"metadata":{"name":"Archive — em_exercise (Exercises)"},"tagName":"main","align":"full","style":{"spacing":{"padding":{"top":"1.25rem","bottom":"2.5rem"}}},"layout":{"type":"constrained","contentSize":"1200px"}} -->
-<main id="main-content" class="wp-block-group alignfull" style="padding-top:1.25rem;padding-bottom:2.5rem">
+<!-- wp:group {"metadata":{"name":"Archive — em_exercise"},"tagName":"main","anchor":"main-content","align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|xl","bottom":"var:preset|spacing|3xl"}}},"layout":{"type":"constrained"}} -->
+<main id="main-content" class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--xl);padding-bottom:var(--wp--preset--spacing--3xl)">
+	<!-- wp:group {"align":"wide","layout":{"type":"constrained"}} -->
+	<div class="wp-block-group alignwide">
 
-  <!-- Intro -->
-  <!-- wp:group {"style":{"spacing":{"blockGap":"0.5rem","margin":{"bottom":"1.75rem"}}},"layout":{"type":"constrained"}} -->
-  <div class="wp-block-group" style="margin-bottom:1.75rem">
-    <!-- wp:heading {"level":1} -->
-    <h1 class="wp-block-heading">Exercises &amp; Guided Practices</h1>
-    <!-- /wp:heading -->
+		<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|xs","margin":{"bottom":"var:preset|spacing|l"}}},"layout":{"type":"constrained"}} -->
+		<div class="wp-block-group" style="margin-bottom:var(--wp--preset--spacing--l)">
+			<!-- wp:shortcode -->
+			[rank_math_breadcrumb]
+			<!-- /wp:shortcode -->
 
-    <!-- wp:paragraph -->
-    <p>Browse all eMINDy exercises in one place. Filter by topic, search for what you need right now, and find a short, friendly practice to support your mental wellness today.</p>
-    <!-- /wp:paragraph -->
-  </div>
-  <!-- /wp:group -->
+			<!-- wp:query-title {"type":"archive","level":1} /-->
+		</div>
+		<!-- /wp:group -->
 
-  <!-- Controls: search + topics -->
-  <!-- wp:group {"style":{"spacing":{"blockGap":"1.5rem","margin":{"bottom":"2rem"}}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between","verticalAlignment":"center"}} -->
-  <div class="wp-block-group" style="margin-bottom:2rem">
-    <!-- wp:group {"style":{"spacing":{"blockGap":"0.5rem"}},"layout":{"type":"constrained"}} -->
-    <div class="wp-block-group">
-      <!-- wp:heading {"level":3,"fontSize":"medium"} -->
-      <h3 class="wp-block-heading has-medium-font-size">Search exercises</h3>
-      <!-- /wp:heading -->
+		<!-- wp:group {"className":"is-style-emindy-card","style":{"spacing":{"padding":{"top":"var:preset|spacing|l","right":"var:preset|spacing|l","bottom":"var:preset|spacing|l","left":"var:preset|spacing|l"},"blockGap":"var:preset|spacing|m","margin":{"bottom":"var:preset|spacing|2xl"}}},"layout":{"type":"constrained"}} -->
+		<div class="wp-block-group is-style-emindy-card" style="padding-top:var(--wp--preset--spacing--l);padding-right:var(--wp--preset--spacing--l);padding-bottom:var(--wp--preset--spacing--l);padding-left:var(--wp--preset--spacing--l);margin-bottom:var(--wp--preset--spacing--2xl)">
+			<!-- wp:search {"showLabel":false,"buttonUseIcon":true,"buttonPosition":"button-inside","className":"em-search-bar"} /-->
 
-      <!-- wp:search {"label":"Search exercises","showLabel":false,"placeholder":"Search exercises…","buttonText":"Search","buttonPosition":"button-inside","query":{"post_type":["em_exercise"]}} /-->
-    </div>
-    <!-- /wp:group -->
+			<!-- wp:shortcode -->
+			[em_topics_pills taxonomy="topic" post_type="em_exercise"]
+			<!-- /wp:shortcode -->
+		</div>
+		<!-- /wp:group -->
 
-    <!-- wp:group {"style":{"spacing":{"blockGap":"0.5rem"}},"layout":{"type":"constrained"}} -->
-    <div class="wp-block-group">
-      <!-- wp:heading {"level":3,"fontSize":"medium"} -->
-      <h3 class="wp-block-heading has-medium-font-size">Browse by topic</h3>
-      <!-- /wp:heading -->
+		<!-- wp:query {"queryId":0,"query":{"inherit":true},"align":"wide"} -->
+		<div class="wp-block-query alignwide">
+			<!-- wp:post-template {"layout":{"type":"grid","columnCount":3,"columnGap":"var:preset|spacing|l","rowGap":"var:preset|spacing|l"}} -->
 
-      <!-- wp:tag-cloud {"taxonomy":"em_topic","numberOfTags":20,"smallestFontSize":"0.8rem","largestFontSize":"1rem"} /-->
-    </div>
-    <!-- /wp:group -->
-  </div>
-  <!-- /wp:group -->
+			<!-- wp:group {"tagName":"article","className":"is-style-emindy-card","style":{"spacing":{"padding":{"top":"0","right":"0","bottom":"0","left":"0"}}},"layout":{"type":"constrained"}} -->
+			<article class="wp-block-group is-style-emindy-card" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
+				<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"16/9"} /-->
 
-  <!-- Exercises grid -->
-  <!-- wp:query {"query":{"perPage":9,"pages":0,"offset":0,"postType":["em_exercise"],"order":"DESC","orderBy":"date"},"layout":{"type":"constrained","contentSize":"1200px"}} -->
-  <div class="wp-block-query">
-    <!-- wp:post-template {"layout":{"type":"grid","columnCount":3}} -->
-    <!-- wp:group {"tagName":"article","style":{"spacing":{"blockGap":"0.6rem","padding":{"top":"1.1rem","right":"1.25rem","bottom":"1.1rem","left":"1.25rem"}},"border":{"width":"1px","style":"solid","radius":"var(--wp--custom--brand--radius--xl)"},"color":{"background":"var(--wp--preset--color--base-2)"},"shadow":"var(--wp--preset--shadow--natural)"},"layout":{"type":"constrained"}} -->
-    <article class="wp-block-group has-background" style="border-radius:var(--wp--custom--brand--radius--xl);border-width:1px;border-style:solid;border-color:var(--em-border);padding-top:1.1rem;padding-right:1.25rem;padding-bottom:1.1rem;padding-left:1.25rem">
-      <!-- wp:group {"style":{"spacing":{"blockGap":"0.25rem"}},"layout":{"type":"constrained"}} -->
-      <div class="wp-block-group">
-        <!-- wp:post-title {"level":3,"isLink":true,"fontSize":"large"} /-->
+				<!-- wp:group {"className":"em-card__body","style":{"spacing":{"padding":{"top":"var:preset|spacing|l","right":"var:preset|spacing|l","bottom":"var:preset|spacing|l","left":"var:preset|spacing|l"},"blockGap":"var:preset|spacing|xs"}},"layout":{"type":"constrained"}} -->
+				<div class="wp-block-group em-card__body" style="padding-top:var(--wp--preset--spacing--l);padding-right:var(--wp--preset--spacing--l);padding-bottom:var(--wp--preset--spacing--l);padding-left:var(--wp--preset--spacing--l)">
 
-        <!-- wp:post-terms {"term":"em_topic","separator":" • ","className":"em-topic-chips","fontSize":"x-small"} /-->
-      </div>
-      <!-- /wp:group -->
+					<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|xs"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between","verticalAlignment":"center"}} -->
+					<div class="wp-block-group">
+						<!-- wp:post-terms {"term":"topic","separator":" · ","fontSize":"xs"} /-->
 
-      <!-- wp:post-excerpt {"moreText":"View exercise","showMoreOnNewLine":true} /-->
+						<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|2xs"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"right","verticalAlignment":"center"}} -->
+						<div class="wp-block-group">
+							<!-- wp:post-terms {"term":"duration","separator":" · ","fontSize":"xs"} /-->
+							<!-- wp:post-terms {"term":"level","separator":" · ","fontSize":"xs"} /-->
+						</div>
+						<!-- /wp:group -->
+					</div>
+					<!-- /wp:group -->
 
-      <!-- wp:group {"style":{"spacing":{"blockGap":"0.25rem","margin":{"top":"0.75rem"}}},"layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap","verticalAlignment":"center"}} -->
-      <div class="wp-block-group" style="margin-top:0.75rem">
-        <!-- wp:post-date {"format":"M j, Y","isLink":false,"fontSize":"x-small"} /-->
+					<!-- wp:post-title {"level":3,"isLink":true,"fontSize":"l"} /-->
 
-        <!-- wp:paragraph {"fontSize":"x-small"} -->
-        <p class="has-x-small-font-size">Approx. 5–10 minutes</p>
-        <!-- /wp:paragraph -->
-      </div>
-      <!-- /wp:group -->
-    </article>
-    <!-- /wp:group -->
-    <!-- /wp:post-template -->
+					<!-- wp:post-excerpt {"excerptLength":28,"showMoreOnNewLine":false,"fontSize":"s"} /-->
 
-    <!-- wp:query-no-results -->
-    <!-- wp:group {"style":{"spacing":{"blockGap":"0.75rem","padding":{"top":"1.25rem","bottom":"1.25rem"}}},"layout":{"type":"constrained"}} -->
-    <div class="wp-block-group" style="padding-top:1.25rem;padding-bottom:1.25rem">
-      <!-- wp:heading {"level":3} -->
-      <h3 class="wp-block-heading">No exercises found</h3>
-      <!-- /wp:heading -->
+					<!-- wp:post-date {"fontSize":"xs"} /-->
+				</div>
+				<!-- /wp:group -->
+			</article>
+			<!-- /wp:group -->
 
-      <!-- wp:paragraph -->
-      <p>Try a different keyword, remove a filter, or start with our essentials guide below.</p>
-      <!-- /wp:paragraph -->
-    </div>
-    <!-- /wp:group -->
-    <!-- /wp:query-no-results -->
+			<!-- /wp:post-template -->
 
-    <!-- wp:query-pagination {"layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap"},"style":{"spacing":{"margin":{"top":"2rem"}}}} -->
-    <div class="wp-block-query-pagination" style="margin-top:2rem">
-      <!-- wp:query-pagination-previous /-->
-      <!-- wp:query-pagination-numbers /-->
-      <!-- wp:query-pagination-next /-->
-    </div>
-    <!-- /wp:query-pagination -->
-  </div>
-  <!-- /wp:query -->
+			<!-- wp:query-pagination {"layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap"}} -->
+			<div class="wp-block-query-pagination">
+				<!-- wp:query-pagination-previous /-->
+				<!-- wp:query-pagination-numbers /-->
+				<!-- wp:query-pagination-next /-->
+			</div>
+			<!-- /wp:query-pagination -->
+		</div>
+		<!-- /wp:query -->
 
-  <!-- CTA -->
-  <!-- wp:group {"style":{"spacing":{"margin":{"top":"2.5rem"},"padding":{"top":"1.5rem","bottom":"1.5rem","left":"1.5rem","right":"1.5rem"}},"color":{"background":"var(--wp--custom--brand--colors--deepBlue)"},"border":{"radius":"var(--wp--custom--brand--radius--2xl)"},"elements":{"link":{"color":{"text":"var(--wp--preset--color--white)"}}}},"textColor":"white","layout":{"type":"constrained","contentSize":"800px"},"textAlign":"center"} -->
-  <div class="wp-block-group has-white-color has-text-color has-background has-text-align-center" style="border-radius:var(--wp--custom--brand--radius--2xl);background-color:var(--wp--custom--brand--colors--deepBlue);padding-top:1.5rem;padding-right:1.5rem;padding-bottom:1.5rem;padding-left:1.5rem;margin-top:2.5rem">
-    <!-- wp:heading {"level":3} -->
-    <h3 class="wp-block-heading">Not sure where to start?</h3>
-    <!-- /wp:heading -->
+		<!-- wp:group {"className":"is-style-emindy-card","style":{"spacing":{"padding":{"top":"var:preset|spacing|l","right":"var:preset|spacing|l","bottom":"var:preset|spacing|l","left":"var:preset|spacing|l"},"margin":{"top":"var:preset|spacing|2xl"},"blockGap":"var:preset|spacing|m"}},"layout":{"type":"constrained"}} -->
+		<div class="wp-block-group is-style-emindy-card" style="padding-top:var(--wp--preset--spacing--l);padding-right:var(--wp--preset--spacing--l);padding-bottom:var(--wp--preset--spacing--l);padding-left:var(--wp--preset--spacing--l);margin-top:var(--wp--preset--spacing--2xl)">
+			<!-- wp:shortcode -->
+			[em_newsletter_form]
+			<!-- /wp:shortcode -->
 
-    <!-- wp:paragraph -->
-    <p>Begin with <a href="/start-here/">Start Here — Essentials</a> for a gentle 1-minute daily calm routine, then come back to explore more exercises.</p>
-    <!-- /wp:paragraph -->
-  </div>
-  <!-- /wp:group -->
+			<!-- wp:separator {"opacity":"css","className":"is-style-wide"} /-->
 
+			<!-- wp:shortcode -->
+			[em_sitemap_mini]
+			<!-- /wp:shortcode -->
+		</div>
+		<!-- /wp:group -->
+
+	</div>
+	<!-- /wp:group -->
 </main>
 <!-- /wp:group -->
 
