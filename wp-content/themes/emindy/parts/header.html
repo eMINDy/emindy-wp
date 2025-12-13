@@ -1,69 +1,48 @@
-<!-- wp:group {"tagName":"header","align":"full","style":{"spacing":{"padding":{"top":"1rem","bottom":"1rem"},"margin":{"bottom":"0"},"blockGap":"0"},"border":{"bottom":{"color":"var(--em-border)","width":"1px","style":"solid"}}},"layout":{"type":"constrained"}} -->
-<header
-  id="site-header"
-  class="wp-block-group alignfull"
-  aria-label="Site header"
-  style="padding-top:1rem;padding-bottom:1rem;margin-bottom:0;border-bottom:1px solid var(--em-border)"
->
-  <!-- wp:group {"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between","verticalAlignment":"center"},"style":{"spacing":{"blockGap":"1rem"}}} -->
-  <div class="wp-block-group">
-    <!-- Branding -->
-    <!-- wp:group {"layout":{"type":"flex","verticalAlignment":"center"},"style":{"spacing":{"blockGap":"0.5rem"}}} -->
-    <div class="wp-block-group">
-      <!-- wp:site-title {"style":{"typography":{"fontSize":"1.7rem","fontWeight":"700"}}} /-->
-      <!-- wp:site-tagline {"style":{"typography":{"fontSize":"0.8rem"},"color":{"text":"var(--em-teal)"}}} /-->
-    </div>
-    <!-- /wp:group -->
+<!-- wp:group {"tagName":"header","align":"full","className":"em-site-header","style":{"color":{"background":"var(--em-bg)"},"border":{"bottom":{"color":"var(--em-border)","width":"1px"}},"spacing":{"padding":{"top":"var:preset|spacing|s","bottom":"var:preset|spacing|s"}}},"layout":{"type":"constrained"},"lock":{"move":true,"remove":true}} -->
+<header class="wp-block-group alignfull em-site-header" style="border-bottom-color:var(--em-border);border-bottom-width:1px;background-color:var(--em-bg);padding-top:var(--wp--preset--spacing--s);padding-bottom:var(--wp--preset--spacing--s)">
+	<!-- wp:group {"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|s"}},"layout":{"type":"flex","justifyContent":"space-between","verticalAlignment":"center","flexWrap":"wrap"},"lock":{"move":true,"remove":true}} -->
+	<div class="wp-block-group alignwide">
+		<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"},"style":{"spacing":{"blockGap":"0.6rem"}},"lock":{"move":true,"remove":true}} -->
+		<div class="wp-block-group">
+			<!-- wp:site-logo {"width":40,"shouldSyncIcon":true} /-->
 
-    <!-- Navigation -->
-    <!-- wp:navigation {"overlayMenu":"never","layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"blockGap":"1.5rem"}},"fontSize":"small","ariaLabel":"Primary navigation"} /-->
+			<!-- wp:site-title {"level":0,"isLink":true} /-->
+		</div>
+		<!-- /wp:group -->
 
-    <!-- Action items -->
-    <!-- wp:group {"layout":{"type":"flex","verticalAlignment":"center","justifyContent":"flex-end"},"style":{"spacing":{"blockGap":"0.75rem"}}} -->
-    <div class="wp-block-group">
-      <!-- Language switcher (Polylang via shortcode) -->
-      <!-- wp:shortcode -->
-      [em_lang_switcher dropdown="1" show_names="1" show_flags="0"]
-      <!-- /wp:shortcode -->
+		<!-- wp:navigation {"overlayMenu":"mobile","layout":{"type":"flex","justifyContent":"center","flexWrap":"wrap"},"lock":{"move":true,"remove":true}} /-->
 
-      <!-- Search -->
-      <!-- wp:search {"label":"Search eMINDy","showLabel":false,"buttonUseIcon":true,"placeholder":"Search…","style":{"border":{"radius":"12px"}},"backgroundColor":"em-card"} /-->
+		<!-- wp:group {"layout":{"type":"flex","flexWrap":"wrap","verticalAlignment":"center"},"style":{"spacing":{"blockGap":"0.5rem"}},"lock":{"move":true,"remove":true}} -->
+		<div class="wp-block-group">
+			<!-- wp:search {"showLabel":false,"buttonUseIcon":true,"buttonPosition":"button-inside","className":"em-search-bar","width":220,"widthUnit":"px","lock":{"move":true,"remove":true}} /-->
 
-      <!-- CTA button -->
-      <!-- wp:buttons -->
-      <div class="wp-block-buttons">
-        <!-- wp:button {"className":"is-style-fill","backgroundColor":"em-gold","textColor":"em-bg","style":{"border":{"radius":"999px"},"spacing":{"padding":{"top":"0.5rem","bottom":"0.5rem","left":"0.9rem","right":"0.9rem"}},"typography":{"fontWeight":"600"}},"fontSize":"small"} -->
-        <div class="wp-block-button has-custom-font-size has-small-font-size">
-          <a
-            class="wp-block-button__link has-em-bg-color has-em-gold-background-color has-text-color has-background wp-element-button"
-            href="/start-here/"
-          >
-            Start Here
-          </a>
-        </div>
-        <!-- /wp:button -->
-      </div>
-      <!-- /wp:buttons -->
+			<!-- wp:shortcode -->
+			[em_lang_switcher dropdown="1" show_flags="0" show_names="0"]
+			<!-- /wp:shortcode -->
 
-      <!-- Dark mode toggle -->
-      <!-- wp:html -->
-      <button
-        id="em-dark-mode-toggle"
-        class="em-dark-mode-toggle"
-        type="button"
-        data-action="toggle-theme"
-        aria-pressed="false"
-        aria-label="Enable dark mode"
-        data-labelLight="Enable dark mode"
-        data-labelDark="Disable dark mode"
-        style="font-size:1.2rem;line-height:1;background:transparent;border:none;color:var(--em-text);cursor:pointer"
-      >
-        <span aria-hidden="true">🌙</span>
-      </button>
-      <!-- /wp:html -->
-    </div>
-    <!-- /wp:group -->
-  </div>
-  <!-- /wp:group -->
+			<!-- wp:html -->
+			<button
+				id="em-dark-mode-toggle"
+				class="em-dark-mode-toggle"
+				type="button"
+				aria-pressed="false"
+				data-labelToDark="Switch to dark mode"
+				data-labelToLight="Switch to light mode"
+			>🌙</button>
+			<!-- /wp:html -->
+
+			<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"right"},"lock":{"move":true,"remove":true}} -->
+			<div class="wp-block-buttons">
+				<!-- wp:button {"backgroundColor":"emindy-gold","textColor":"emindy-ink","style":{"border":{"radius":"999px"},"spacing":{"padding":{"top":"0.55em","right":"0.95em","bottom":"0.55em","left":"0.95em"}},"typography":{"fontSize":"var:preset|font-size|s","fontWeight":"800"}},"lock":{"move":true,"remove":true}} -->
+				<div class="wp-block-button">
+					<a class="wp-block-button__link has-emindy-ink-color has-emindy-gold-background-color has-text-color has-background wp-element-button" href="https://www.youtube.com/@emindy_official" target="_blank" rel="noopener">YouTube</a>
+				</div>
+				<!-- /wp:button -->
+			</div>
+			<!-- /wp:buttons -->
+		</div>
+		<!-- /wp:group -->
+	</div>
+	<!-- /wp:group -->
 </header>
 <!-- /wp:group -->
